@@ -11,7 +11,7 @@ export default function NameProductScreen() {
             <Link href={"./modal"} style={{padding:5, margin:10, backgroundColor:"#123", color:"#fff"}}>Open Modal</Link>
             <View style={{margin:10, padding:10}}>
                 <Modal
-                    animationType="slide"
+                    animationType="fade"
                     transparent={true}
                     visible={modalVisible}
                     onRequestClose={() => {
@@ -20,12 +20,12 @@ export default function NameProductScreen() {
                     }}>
                     <View style={styles.centeredView}>
                         <View style={styles.modalView}>
-                        <Text style={styles.modalText}>Hello World!</Text>
-                        <Pressable
-                            style={[styles.button, styles.buttonClose]}
-                            onPress={() => setModalVisible(!modalVisible)}>
-                            <Text style={styles.textStyle}>Hide Modal</Text>
-                        </Pressable>
+                          <Text style={styles.modalText}>Hello World!</Text>
+                          <Pressable
+                              style={[styles.button, styles.buttonClose]}
+                              onPress={() => setModalVisible(!modalVisible)}>
+                              <Text style={styles.textStyle}>Hide Modal</Text>
+                          </Pressable>
                         </View>
                     </View>
                 </Modal>
