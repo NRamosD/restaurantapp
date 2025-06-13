@@ -16,6 +16,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Link, router } from "expo-router";
 import { useState } from "react";
+import { TopBarWithMenu } from "@/components/TopBarWithMenu";
 
 export default function HomeScreen() {
   const [nameProduct, setNameProduct] = useState<string>("");
@@ -30,7 +31,9 @@ export default function HomeScreen() {
     //   }>
     <>
       <SafeAreaView style={styles.container}>
-        <ScrollView>
+        <TopBarWithMenu title={"qweqweqw qwe qw"}/>
+
+        <ScrollView style={styles.scrollView}>
           <Text>Contenido seguro aquí</Text>
 
           <ThemedView style={styles.titleContainer}>
@@ -164,7 +167,10 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    paddingTop: 20,
+  },
+  scrollView:{
+    paddingHorizontal: 5,
   },
   titleContainer: {
     flexDirection: "row",
