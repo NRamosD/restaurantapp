@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import MenuPopUpGeneral from './MenuPopUpGeneral';
+import { CText } from '@/components/CText';
 
 type Props = {
     title?:string;
@@ -11,9 +12,9 @@ export const TopBarWithMenu = ({title}: Props) => {
   return (
     <View style={styles.container}>
         <View style={styles.titleSide}>
-            <Text style={{ fontSize:20, fontWeight:'bold'}}>
+            <CText type="title">
                 { title || "Title" }
-            </Text>
+            </CText>
         </View>
         <View style={styles.menuSide}>
             <MenuPopUpGeneral/>
@@ -27,21 +28,22 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
+        borderBottomWidth: 2,
+        borderColor:"#ccc"
     },
     titleSide: {
         width: '70%',
-        height:50,
-        backgroundColor: '#ddd',
         marginBottom: 2,
-        // alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 5,
+        paddingVertical: 5,
+        // alignItems: 'center',
     },
     menuSide: {
         width: '30%',
-        backgroundColor: '#aaf',
-        marginBottom: 1,
-        alignItems: 'center',
+        paddingRight: 5,
+        alignItems: "flex-end",
         justifyContent: 'center',
+        overflow:"visible",
     },
 })

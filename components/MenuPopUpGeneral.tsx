@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View } from 'react-native'
+import { Text, TouchableOpacity, useColorScheme, View } from 'react-native'
 import { Menu, MenuOption, MenuOptions, MenuProvider, MenuTrigger } from 'react-native-popup-menu'
 import { IconSymbol } from './ui/IconSymbol'
 import { Ionicons } from '@expo/vector-icons'
@@ -7,21 +7,24 @@ import { Ionicons } from '@expo/vector-icons'
 type Props = {}
 
 const MenuPopUpGeneral = (props: Props) => {
+  const colorScheme = useColorScheme();
   return (
-    <MenuProvider style={{width:"100%"}}>
-        <Menu >
-        <MenuTrigger style={{ zIndex:100}}>
-            <Ionicons name="ellipsis-vertical" size={20} color="black" />
-        </MenuTrigger>
-        <MenuOptions >
-            <MenuOption onSelect={() => alert(`Save`)} text='Save' />
-            <MenuOption onSelect={() => alert(`Delete`)} >
-                <Text style={{color: 'red'}}>Delete</Text>
-            </MenuOption>
-            <MenuOption onSelect={() => alert(`Not called`)} disabled={true} text='Disabled' />
-        </MenuOptions>
+        <Menu>
+          <MenuTrigger style={{ alignItems:"flex-end"}} >
+              <Ionicons name="ellipsis-vertical" size={25} color={colorScheme === 'dark' ? "white" : "black"} />
+          </MenuTrigger>
+          <MenuOptions >
+              <MenuOption onSelect={() => alert(`Save`)}>
+                <Text style={{fontSize:20}}>
+                  New Registry
+                </Text>
+              </MenuOption>
+              <MenuOption onSelect={() => alert(`Delete`)} >
+                  <Text style={{color: 'red'}}>Delete</Text>
+              </MenuOption>
+              <MenuOption onSelect={() => alert(`Not called`)} disabled={true} text='Disabled' />
+          </MenuOptions>
         </Menu>
-    </MenuProvider>
   )
 }
 
