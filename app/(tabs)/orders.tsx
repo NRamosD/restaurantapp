@@ -1,100 +1,134 @@
-import { StyleSheet, Image, Platform } from 'react-native';
+import { StyleSheet, Image, Platform, FlatList, TouchableOpacity, View } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/CText';
-import { ThemedView } from '@/components/CView';
+import { CText } from '@/components/CText';
+import { CView } from '@/components/CView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { TopBarWithMenu } from '@/components/TopBarWithMenu';
+import { CContainerView } from '@/components/CContainerView';
+import ItemOrderExtendedLink from '@/components/orders/ItemOrderExtendedLink';
+import { Ionicons } from '@expo/vector-icons';
+import ItemOrderExtended from '../interfaces/orders';
+
+
+const mockOrders: ItemOrderExtended[] = [
+  {
+    order_uui: 'uuid-001',
+    order_id: 1,
+    order_number: 1001,
+    details: '2x Hamburguesa, 1x Papas Fritas',
+    time: '11:15',
+    date: '2025-06-23'
+  },
+  {
+    order_uui: 'uuid-002',
+    order_id: 2,
+    order_number: 1002,
+    details: '1x Pizza Margarita, 2x Gaseosa',
+    time: '11:45',
+    date: '2025-06-23'
+  },
+  {
+    order_uui: 'uuid-003',
+    order_id: 3,
+    order_number: 1003,
+    details: '1x Ensalada César',
+    time: '12:05',
+    date: '2025-06-23'
+  },
+  {
+    order_uui: 'uuid-004',
+    order_id: 4,
+    order_number: 1004,
+    details: '3x Tacos, 1x Agua con gas',
+    time: '12:28',
+    date: '2025-06-23'
+  },
+  {
+    order_uui: 'uuid-005',
+    order_id: 5,
+    order_number: 1005,
+    details: '1x Lasaña, 1x Té Helado',
+    time: '12:50',
+    date: '2025-06-23'
+  },
+  {
+    order_uui: 'uuid-006',
+    order_id: 6,
+    order_number: 1006,
+    details: '1x Pollo Frito, 1x Jugo de Naranja',
+    time: '13:10',
+    date: '2025-06-23'
+  },
+  {
+    order_uui: 'uuid-007',
+    order_id: 7,
+    order_number: 1007,
+    details: '2x Sushi Rolls, 1x Agua',
+    time: '13:35',
+    date: '2025-06-23'
+  },
+  {
+    order_uui: 'uuid-008',
+    order_id: 8,
+    order_number: 1008,
+    details: '1x Burrito, 1x Coca-Cola',
+    time: '13:50',
+    date: '2025-06-23'
+  },
+  {
+    order_uui: 'uuid-009',
+    order_id: 9,
+    order_number: 1009,
+    details: '1x Filete de Res, 1x Vino Tinto',
+    time: '14:10',
+    date: '2025-06-23'
+  },
+  {
+    order_uui: 'uuid-010',
+    order_id: 10,
+    order_number: 1010,
+    details: '1x Helado, 1x Café Expreso',
+    time: '14:30',
+    date: '2025-06-23'
+  }
+];
+
 
 export default function TabTwoScreen() {
+  
   return (
-    <>
-    
-    </>
-    // <ParallaxScrollView
-    //   headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-    //   headerImage={
-    //     <IconSymbol
-    //       size={310}
-    //       color="#808080"
-    //       name="chevron.left.forwardslash.chevron.right"
-    //       style={styles.headerImage}
-    //     />
-    //   }>
-    //   <ThemedView style={styles.titleContainer}>
-    //     <ThemedText type="title">Explore</ThemedText>
-    //   </ThemedView>
-    //   <ThemedText>This app includes example code to help you get started.</ThemedText>
-    //   <Collapsible title="File-based routing">
-    //     <ThemedText>
-    //       This app has two screens:{' '}
-    //       <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-    //       <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-    //     </ThemedText>
-    //     <ThemedText>
-    //       The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-    //       sets up the tab navigator.
-    //     </ThemedText>
-    //     <ExternalLink href="https://docs.expo.dev/router/introduction">
-    //       <ThemedText type="link">Learn more</ThemedText>
-    //     </ExternalLink>
-    //   </Collapsible>
-    //   <Collapsible title="Android, iOS, and web support">
-    //     <ThemedText>
-    //       You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-    //       <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-    //     </ThemedText>
-    //   </Collapsible>
-    //   <Collapsible title="Images">
-    //     <ThemedText>
-    //       For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-    //       <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-    //       different screen densities
-    //     </ThemedText>
-    //     <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-    //     <ExternalLink href="https://reactnative.dev/docs/images">
-    //       <ThemedText type="link">Learn more</ThemedText>
-    //     </ExternalLink>
-    //   </Collapsible>
-    //   <Collapsible title="Custom fonts">
-    //     <ThemedText>
-    //       Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-    //       <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-    //         custom fonts such as this one.
-    //       </ThemedText>
-    //     </ThemedText>
-    //     <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-    //       <ThemedText type="link">Learn more</ThemedText>
-    //     </ExternalLink>
-    //   </Collapsible>
-    //   <Collapsible title="Light and dark mode components">
-    //     <ThemedText>
-    //       This template has light and dark mode support. The{' '}
-    //       <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-    //       what the user's current color scheme is, and so you can adjust UI colors accordingly.
-    //     </ThemedText>
-    //     <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-    //       <ThemedText type="link">Learn more</ThemedText>
-    //     </ExternalLink>
-    //   </Collapsible>
-    //   <Collapsible title="Animations">
-    //     <ThemedText>
-    //       This template includes an example of an animated component. The{' '}
-    //       <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-    //       the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-    //       library to create a waving hand animation.
-    //     </ThemedText>
-    //     {Platform.select({
-    //       ios: (
-    //         <ThemedText>
-    //           The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-    //           component provides a parallax effect for the header image.
-    //         </ThemedText>
-    //       ),
-    //     })}
-    //   </Collapsible>
-    // </ParallaxScrollView>
+    <CContainerView style={{
+      flex: 1,
+      flexDirection:"column",
+    }}>
+        <TopBarWithMenu title={"Historial de Ventas"}/>
+        <CView style={{flex:10}}>
+          <FlatList<ItemOrderExtended>
+            data={mockOrders}
+            renderItem={({item}) => <ItemOrderExtendedLink data={item}/> }
+            keyExtractor={item => item.order_uui}
+          />
+        </CView>
+        <View style={styles.sectionFilters}>
+          <CView style={styles.filtersStyle}>
+            <CView >
+              <TouchableOpacity style={styles.filtersBtnStyle}>
+                  <Ionicons name="filter" size={30}/>
+                  <CText type="subtitle">Option 1</CText>
+              </TouchableOpacity>
+            </CView>
+            <CView>
+              <TouchableOpacity style={styles.filtersBtnStyle}>
+                <Ionicons name="filter" size={30}/>
+                <CText type="subtitle">Option 2</CText>
+              </TouchableOpacity>
+            </CView>
+          </CView>
+        </View>
+    </CContainerView>
   );
 }
 
@@ -109,4 +143,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 8,
   },
+  sectionFilters: {
+    flex:1,
+    flexDirection:"row",
+    backgroundColor: "#28fa15"
+  },
+  filtersStyle: {
+    flex:1,
+    flexDirection:"row",
+    justifyContent:"space-between"
+  },
+  filtersBtnStyle: {
+    flex:1,
+    width:200,
+    justifyContent:"center",
+    alignItems:"center",
+    padding:5,
+
+  }
 });
