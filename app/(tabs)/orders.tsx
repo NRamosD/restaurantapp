@@ -10,7 +10,7 @@ import { TopBarWithMenu } from '@/components/TopBarWithMenu';
 import { CContainerView } from '@/components/CContainerView';
 import ItemOrderExtendedLink from '@/components/orders/ItemOrderExtendedLink';
 import { Ionicons } from '@expo/vector-icons';
-import ItemOrderExtended from '../interfaces/orders';
+import { ItemOrderExtended } from '../../interfaces/orders';
 
 
 const mockOrders: ItemOrderExtended[] = [
@@ -114,18 +114,18 @@ export default function TabTwoScreen() {
         </CView>
         <View style={styles.sectionFilters}>
           <CView style={styles.filtersStyle}>
-            <CView >
+            {/* <CView > */}
               <TouchableOpacity style={styles.filtersBtnStyle}>
                   <Ionicons name="filter" size={30}/>
                   <CText type="subtitle">Option 1</CText>
               </TouchableOpacity>
-            </CView>
-            <CView>
+            {/* </CView> */}
+            {/* <CView> */}
               <TouchableOpacity style={styles.filtersBtnStyle}>
                 <Ionicons name="filter" size={30}/>
                 <CText type="subtitle">Option 2</CText>
               </TouchableOpacity>
-            </CView>
+            {/* </CView> */}
           </CView>
         </View>
     </CContainerView>
@@ -151,14 +151,18 @@ const styles = StyleSheet.create({
   filtersStyle: {
     flex:1,
     flexDirection:"row",
-    justifyContent:"space-between"
+    justifyContent:"space-between",
+    gap:50,
+
   },
   filtersBtnStyle: {
     flex:1,
-    width:200,
+    flexDirection:"row",
+    backgroundColor:"green",
     justifyContent:"center",
     alignItems:"center",
-    padding:5,
+    paddingHorizontal:5,
+    paddingVertical: 10,
 
   }
 });

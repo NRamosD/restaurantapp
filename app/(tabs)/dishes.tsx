@@ -8,6 +8,8 @@ import { CContainerView } from '@/components/CContainerView';
 import { TopBarWithMenu } from '@/components/TopBarWithMenu';
 import { CView } from '@/components/CView';
 import { CText } from '@/components/CText';
+import { Products } from "@/interfaces/products";
+import ItemMenuSquareDetails from '@/components/orders/ItemMenuSquareDetails';
 
 export default function TabTwoScreen() {
   return (
@@ -16,11 +18,17 @@ export default function TabTwoScreen() {
       flexDirection:"column",
     }}>
         <TopBarWithMenu title={"Menú"}/>
-        <CView style={{flex:10}}>
-          <FlatList
-            data={[]}
-            renderItem={({item}) => <CText>qweqwjehuqwh qweqw {item}</CText> }
+        <CView style={{flex:10, flexDirection:"row"}}>
+          <FlatList<Products>
+            data={["1","2","3","4","5","6"]}
+            renderItem={({item}) => <ItemMenuSquareDetails data={item}/> }
+            horizontal={false}
+            numColumns={2}
             keyExtractor={item => item}
+            columnWrapperStyle={{
+              justifyContent:"space-between",
+              width:"100%"
+            }}
           />
           {/* <ItemOrderExtendedLink data={item}/> */}
         </CView>

@@ -3,7 +3,7 @@ import { CView } from "../CView";
 import { TouchableOpacity } from "react-native";
 import { CText } from "../CText";
 import { Ionicons } from "@expo/vector-icons";
-import ItemOrderExtended from "@/app/interfaces/orders";
+import { ItemOrderExtended } from "@/interfaces/orders";
 
 type Props = {
   data:ItemOrderExtended

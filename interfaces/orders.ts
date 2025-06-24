@@ -1,4 +1,4 @@
-export default interface ItemOrderExtended {
+export interface ItemOrderExtended {
     order_uui:string;
     order_id:number;
     order_number:number;
