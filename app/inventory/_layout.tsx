@@ -1,15 +1,9 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 
 export default function InventoryLayout() {
-  const {nameproduct} = useLocalSearchParams()
+  const {productname} = useLocalSearchParams()
   return <Stack>
-    <Stack.Screen name='(tabs)' options={{title:"Inventario"}}/>
-    <Stack.Screen name='[nameproduct]' options={{title:"Producto de Inventario"+nameproduct}}/>
-    <Stack.Screen
-        name="modal"
-        options={{
-          presentation: 'modal',
-        }}
-      />
+    {/* <Stack.Screen name='(tabs)' options={{title:"Inventario"}}/> */}
+    <Stack.Screen name='[productname]' options={{title:"Producto de Inventario"+productname}}/>
   </Stack>;
 }

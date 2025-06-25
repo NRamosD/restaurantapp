@@ -4,6 +4,7 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 import { CText } from "../CText";
 import { Ionicons } from "@expo/vector-icons";
 import { Products } from "@/interfaces/products";
+import { Link, router } from 'expo-router';
 
 type Props = {
   data:Products
@@ -16,7 +17,9 @@ const ItemMenuSquareDetails = ({
   return (
     <CView style={styles.containerItem}>
       <TouchableOpacity
-        onPress={() => alert("se fue al detalle del registro")}
+        // onPress={() => alert("se fue al detalle del registro")}
+        // <Link href={"/inventory/:tomate"}>Veamos el tomate</Link>
+        onPress={() => router.navigate(`inventory/:${data.name}`)}
         style={{ flex: 1 }}
       >
         <CView style={styles.containerImgText}>

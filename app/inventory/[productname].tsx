@@ -7,12 +7,12 @@ import React from 'react'
 type Props = {}
 
 const DetailedProductScreen = (props: Props) => {
-    const {nameproduct} = useLocalSearchParams()
+    const {productname} = useLocalSearchParams()
     return (
         <CContainerView>
             <CView>
                 <CText type="title">
-                    {`Detalles de ${nameproduct}`}
+                    {`Detalles de ${productname}`}
                 </CText>
                 <CText type="title">
                     Si, aqui esta el detalle

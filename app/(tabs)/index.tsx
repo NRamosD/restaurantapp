@@ -25,7 +25,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { ItemOrderLink } from "@/components/orders";
 
 export default function HomeScreen() {
-  const [nameProduct, setNameProduct] = useState<string>("");
+  // const [nameProduct, setNameProduct] = useState<string>("");
   const insets = useSafeAreaInsets()
   return (
     // <ParallaxScrollView
@@ -53,11 +53,6 @@ export default function HomeScreen() {
             <ItemOrderLink/>
             <ItemOrderLink/>
             <ItemOrderLink/>
-            <ItemOrderLink/>
-
-            
-            
-
           </ScrollView>
         </CView>
         <View style={styles.easyAccess}>
