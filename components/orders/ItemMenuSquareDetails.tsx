@@ -1,6 +1,6 @@
 import React from "react";
 import { CView } from "../CView";
-import { TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import { CText } from "../CText";
 import { Ionicons } from "@expo/vector-icons";
 import { Products } from "@/interfaces/products";
@@ -14,15 +14,16 @@ const ItemMenuSquareDetails = ({
 }: Props) => {
 
   return (
-    <CView style={{ padding: 10, marginVertical: 2, borderWidth:3, borderColor:"#cecece"  }}>
+    <CView style={styles.containerItem}>
       <TouchableOpacity
         onPress={() => alert("se fue al detalle del registro")}
         style={{ flex: 1 }}
       >
-        <CView style={{ flex: 5 }}>
+        <CView style={styles.containerImgText}>
           <CView style={{width:100, height:100, backgroundColor:"orange"}}></CView>
-          <CText type="subtitle">{data.name||"Nombre de plato"}</CText>
-          
+          <CText numberOfLines={1} type="subtitle">
+            {data.name||"Nombre de plato"}
+          </CText>
         </CView>
       </TouchableOpacity>
     </CView>
@@ -30,3 +31,11 @@ const ItemMenuSquareDetails = ({
 };
 
 export default ItemMenuSquareDetails;
+
+
+const styles = StyleSheet.create({
+  containerItem : { padding: 10, marginVertical: 5, borderWidth:3, 
+    borderColor:"#cecece", borderRadius:5, width:180 },
+  containerImgText : { flex:1, alignItems:"center" },
+
+})

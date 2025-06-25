@@ -11,6 +11,8 @@ import { CContainerView } from '@/components/CContainerView';
 import ItemOrderExtendedLink from '@/components/orders/ItemOrderExtendedLink';
 import { Ionicons } from '@expo/vector-icons';
 import { ItemOrderExtended } from '../../interfaces/orders';
+import GenericModal from '@/components/ui/GenericModal';
+import { useState } from 'react';
 
 
 const mockOrders: ItemOrderExtended[] = [
@@ -98,6 +100,9 @@ const mockOrders: ItemOrderExtended[] = [
 
 
 export default function TabTwoScreen() {
+
+  const [openModal1, setopenModal1] = useState(false);
+  const [openModal2, setopenModal2] = useState(false);
   
   return (
     <CContainerView style={{
@@ -115,19 +120,43 @@ export default function TabTwoScreen() {
         <View style={styles.sectionFilters}>
           <CView style={styles.filtersStyle}>
             {/* <CView > */}
-              <TouchableOpacity style={styles.filtersBtnStyle}>
-                  <Ionicons name="filter" size={30}/>
-                  <CText type="subtitle">Option 1</CText>
+              <TouchableOpacity onPress={()=>setopenModal1(true)} style={styles.filtersBtnStyle}>
+                  <Ionicons name="filter" size={25}/>
+                  <CText type="default">Filtrar por fecha</CText>
               </TouchableOpacity>
             {/* </CView> */}
             {/* <CView> */}
-              <TouchableOpacity style={styles.filtersBtnStyle}>
-                <Ionicons name="filter" size={30}/>
-                <CText type="subtitle">Option 2</CText>
+              <TouchableOpacity onPress={()=>setopenModal2(true)} style={styles.filtersBtnStyle}>
+                <Ionicons name="filter" size={25}/>
+                <CText type="default">Filtrar por usuario</CText>
               </TouchableOpacity>
             {/* </CView> */}
           </CView>
         </View>
+
+
+        <GenericModal
+          title='Filtrar por Fecha'
+          showModal={openModal1}
+          setShowModal={setopenModal1}
+          nodeContent={
+            <CView>
+              <CText>qweqweqwe qwe qwe  qwe qw eqwe qwe qwe qw eqw</CText>
+            </CView>
+          }
+          textConfirmButton='qweqw'
+        />
+        <GenericModal
+          title='Filtrar por Usuario'
+          showModal={openModal2}
+          setShowModal={setopenModal2}
+          nodeContent={
+            <CView>
+              <CText>qweqweqwe qwe qwe  qwe qw eqwe qwe qwe qw eqw</CText>
+            </CView>
+          }
+          textConfirmButton='qweqw'
+        />
     </CContainerView>
   );
 }
@@ -157,12 +186,11 @@ const styles = StyleSheet.create({
   },
   filtersBtnStyle: {
     flex:1,
+    gap:5,
     flexDirection:"row",
     backgroundColor:"green",
     justifyContent:"center",
     alignItems:"center",
-    paddingHorizontal:5,
-    paddingVertical: 10,
 
   }
 });
