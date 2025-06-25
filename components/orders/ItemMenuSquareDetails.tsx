@@ -1,10 +1,10 @@
 import React from "react";
 import { CView } from "../CView";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { Image, StyleSheet, TouchableOpacity } from "react-native";
 import { CText } from "../CText";
 import { Ionicons } from "@expo/vector-icons";
 import { Products } from "@/interfaces/products";
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 
 type Props = {
   data:Products
@@ -13,6 +13,7 @@ type Props = {
 const ItemMenuSquareDetails = ({
   data
 }: Props) => {
+  const fallBackImage = "https://www.tipos.co/wp-content/uploads/2015/02/La-sabana-es-un-paisaje.jpg"
 
   return (
     <CView style={styles.containerItem}>
@@ -20,11 +21,17 @@ const ItemMenuSquareDetails = ({
         // onPress={() => alert("se fue al detalle del registro")}
         // <Link href={"/inventory/:tomate"}>Veamos el tomate</Link>
         onPress={() => router.navigate(`inventory/:${data.name}`)}
-        style={{ flex: 1 }}
+        style={{  }}
       >
         <CView style={styles.containerImgText}>
-          <CView style={{width:100, height:100, backgroundColor:"orange"}}></CView>
-          <CText numberOfLines={1} type="subtitle">
+          <CView style={{width:"100%", height:100}}>
+            <Image
+              // source={{ uri: data?.image || fallBackImage }}
+                source={{ uri: data?.image ||'https://reactnative.dev/img/tiny_logo.png' }}
+              style={{ width: "100%", height: "100%", objectFit:"cover", borderRadius:5 }}
+            />
+          </CView>
+          <CText numberOfLines={1} type="defaultSemiBold">
             {data.name||"Nombre de plato"}
           </CText>
         </CView>

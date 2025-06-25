@@ -15,7 +15,7 @@ import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { CText } from "@/components/CText";
 import { CView } from "@/components/CView";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import { useState } from "react";
 import { TopBarWithMenu } from "@/components/TopBarWithMenu";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -61,22 +61,22 @@ export default function HomeScreen() {
           </CText>
           <CView style={styles.easyAccessOptionsContainer}>
             <TouchableOpacity style={styles.easyAccessOption}>
-              <Ionicons name="woman" size={70}/>
-              <CText type="subtitle">Option 1</CText>
+              <Ionicons name="search-outline" size={70}/>
+              <CText type="subtitle">Buscar</CText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.easyAccessOption}>
-              <Ionicons name="woman" size={70}/>
-              <CText type="subtitle">Option 2</CText>
+              <Ionicons name="storefront-outline" size={70}/>
+              <CText type="subtitle">Añadir</CText>
             </TouchableOpacity>
             <TouchableOpacity style={styles.easyAccessOption}>
-              <Ionicons name="woman" size={70}/>
-              <CText type="subtitle">Option 3</CText>
+              <Ionicons name="settings-outline" size={70}/>
+              <CText type="subtitle">Ajustes</CText>
             </TouchableOpacity>
           </CView>
 
         </View>
         <View style={styles.contNewPedido}>
-          <CButton title={"NUEVO PEDIDO"} containerStyles={styles.touchableCreate}/>
+          <CButton onPress={()=>router.push({pathname:"/orders/create-order"})} title={"NUEVO PEDIDO"} containerStyles={styles.touchableCreate}/>
         </View>
     </View>
     // </ParallaxScrollView>

@@ -1,8 +1,8 @@
 import React from 'react'
-import { StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, TouchableOpacity, type TouchableOpacityProps , View, ViewStyle } from 'react-native';
 import { CText } from './CText';
 
-type Props = {
+type Props =  TouchableOpacityProps & {
     title?: string;
     containerStyles?: any,
     textStyles?: any,
@@ -11,10 +11,13 @@ type Props = {
 const CButton = ({
     title="Default Title",
     containerStyles,
-    textStyles
+    textStyles,
+    ...rest
 }: Props) => {
   return (
-    <TouchableOpacity style={[
+    <TouchableOpacity 
+    {...rest}
+    style={[
         styles.container,
         containerStyles,
     ]}>
