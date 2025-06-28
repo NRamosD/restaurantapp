@@ -1,10 +1,10 @@
 import React from 'react'
-import { StyleProp, StyleSheet, TouchableOpacity, type TouchableOpacityProps , View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, TouchableOpacity, type TouchableOpacityProps , ViewStyle } from 'react-native';
 import { CText } from './CText';
 
 type Props =  TouchableOpacityProps & {
     title?: string;
-    containerStyles?: any,
+    containerStyles?: StyleProp<ViewStyle>,
     textStyles?: any,
 }
 
