@@ -3,7 +3,7 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, type TouchableOpacityProps, StyleProp, ViewStyle, OpaqueColorValue } from 'react-native';
 
 type FloatingButtonProps = TouchableOpacityProps & {
-    nameIcon?: "add"|"apps";
+    nameIcon?: "add"|"apps"|"mic";
     colorIcon?: string | OpaqueColorValue;
     floatProps?:StyleProp<ViewStyle>
 } 
