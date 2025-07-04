@@ -2,26 +2,39 @@
 import { CButton, CContainerView, CText, CView } from '@/components'
 import CInputText from '@/components/CInputText'
 import FloatingButton from '@/components/FloatingButton'
+import { ItemOrderSelected } from '@/components/orders'
 import { Ionicons } from '@expo/vector-icons'
 import React, { useEffect, useState } from 'react'
 import { FlatList, StyleSheet, TouchableOpacity } from 'react-native'
+import { Product } from '@/interfaces'
+import { v4 as uuidv4 } from 'uuid';
+import ItemOrderOptionSquare from '@/components/orders/ItemOrderOptionSquare'
+
+
 
 type Props = {}
 type dataType = {id:string, name:string}
-const data:dataType[] = Array.from({ length: 20 }, (_, i) => ({ id: i.toString(), name: `Producto ${i + 1}` }) as dataType );
+const data:Product[] = Array.from({ length: 20 }, (_, i) => ({ 
+  id: i.toString(), 
+  uuid:uuidv4(),//"Producto #"+(i/2),
+  nombre:"Producto #"+i,
+  precio:(Math.random()*100)+ parseFloat(Math.random().toFixed(3)),
+  activo:true,
+  fechaCreacion:new Date(),
+}) as Product );
 
 const CreateOrder = (props: Props) => {
-  const [dataTest, setdataTest] = useState<dataType[]>(data||[]);
-  const [dataSelected, setDataSelected] = useState<dataType[]>([]);
+  const [dataTest, setdataTest] = useState<Product[]>(data||[]);
+  const [dataSelected, setDataSelected] = useState<Product[]>([]);
   const [textSearchedItem, setTextSearchedItem] = useState<string>("");
   
 
-  const addProductToOrder = (item:dataType) => {
+  const addProductToOrder = (item:Product) => {
     setDataSelected([...dataSelected,item])
     setTextSearchedItem("")
   }
 
-  const deleteItemSelected = (item:dataType) => {
+  const deleteItemSelected = (item:Product) => {
     const auxFiltered = dataSelected.filter(x=>x.id!==item.id)
     setDataSelected(auxFiltered)
   }
@@ -36,7 +49,7 @@ const CreateOrder = (props: Props) => {
     if(!!textSearchedItem){
 
       const filteredSearched = data?.filter(x=>{
-        if(x.name.includes(textSearchedItem)){
+        if(x.nombre.includes(textSearchedItem)){
           return x
         }
       })
@@ -53,36 +66,22 @@ const CreateOrder = (props: Props) => {
         <CText type="title" style={{ textAlign:"center"}}>Nuevo Pedido</CText>
       </CView>
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
-        <FlatList<dataType>
+        <FlatList<Product>
           data={dataSelected}
-          renderItem={({item}) => <CView key={`item-selected-${item.id}`}
-            style={{flex:1, flexDirection:"row", backgroundColor:"blue", padding:5, margin:5 }}>
-              <CText style={{ flex:8, color:"white"}}>
-                {item.name}
-              </CText>
-              <TouchableOpacity style={{flex:1}} onPress={()=>deleteItemSelected(item)}>
-                <Ionicons name={"trash"} size={25} color={"white"} />
-              </TouchableOpacity>
-          </CView> }
-          keyExtractor={item => item.id}
+          renderItem={({item}) => <ItemOrderSelected singleProduct={item} removeItem={()=>deleteItemSelected(item)} /> }
+          keyExtractor={item => item.uuid}
           style={{height:"100%", width:"100%"}}
         />
       </CView>
 
       <CView style={{flex:4, flexDirection:"row", gap:15,
         justifyContent:"flex-start", alignItems:"center", backgroundColor:"blue"}}>
-          <FlatList<dataType>
+          <FlatList<Product>
             data={dataTest.filter(x=>!dataSelected.find(y=>y.id==x.id))}
             horizontal={true}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item.uuid}
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <TouchableOpacity key={`item-${item.id}`} onPress={() => addProductToOrder(item)}>
-                <CView style={styles.item}>
-                  <CText style={styles.text}>{item.name}</CText>
-                </CView>
-              </TouchableOpacity>
-            )}
+            renderItem={({ item }) => <ItemOrderOptionSquare singleProduct={item} touchAction={()=>addProductToOrder(item)}/>}
             contentContainerStyle={{ paddingHorizontal: 10, paddingTop: 10 }}
           />
 
@@ -111,18 +110,3 @@ const CreateOrder = (props: Props) => {
 
 export default CreateOrder
 
-const styles = StyleSheet.create({
-  item: {
-    backgroundColor: '#ff8c00',
-    padding: 20,
-    marginRight: 10,
-    borderRadius: 10,
-    width: 140,
-    height:"90%",
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  text: {
-    color: '#fff',
-  },
-})

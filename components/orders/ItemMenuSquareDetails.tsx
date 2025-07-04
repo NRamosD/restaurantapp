@@ -3,11 +3,11 @@ import { CView } from "../CView";
 import { Image, StyleSheet, TouchableOpacity } from "react-native";
 import { CText } from "../CText";
 import { Ionicons } from "@expo/vector-icons";
-import { Products } from "@/interfaces/products";
+import { Product } from "@/interfaces/products";
 import { router } from 'expo-router';
 
 type Props = {
-  data:Products
+  data:Product
 };
 
 const ItemMenuSquareDetails = ({
@@ -20,19 +20,19 @@ const ItemMenuSquareDetails = ({
       <TouchableOpacity
         // onPress={() => alert("se fue al detalle del registro")}
         // <Link href={"/inventory/:tomate"}>Veamos el tomate</Link>
-        onPress={() => router.navigate(`inventory/:${data.name}`)}
+        onPress={() => router.navigate(`inventory/:${data.nombre}`)}
         style={{  }}
       >
         <CView style={styles.containerImgText}>
           <CView style={{width:"100%", height:100}}>
             <Image
               // source={{ uri: data?.image || fallBackImage }}
-                source={{ uri: data?.image ||'https://reactnative.dev/img/tiny_logo.png' }}
+                source={{ uri: data?.imagenUrl ||'https://reactnative.dev/img/tiny_logo.png' }}
               style={{ width: "100%", height: "100%", objectFit:"cover", borderRadius:5 }}
             />
           </CView>
           <CText numberOfLines={1} type="defaultSemiBold">
-            {data.name||"Nombre de plato"}
+            {data.nombre||"Nombre de plato"}
           </CText>
         </CView>
       </TouchableOpacity>
