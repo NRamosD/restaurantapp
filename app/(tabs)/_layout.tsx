@@ -43,8 +43,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="orders"
         options={{
-          title: 'Recientes',
-          tabBarIcon: ({ color }) => <IconSymbol size={30} name="camera.fill" color={color} />,
+          title: 'Historial',
+          tabBarIcon: ({ color }) => <IconSymbol size={30} name="archivebox.fill" color={color} />,
           tabBarLabelStyle: {
             fontSize:20
           }
@@ -54,7 +54,7 @@ export default function TabLayout() {
         name="dishes"
         options={{
           title: 'Menú',
-          tabBarIcon: ({ color }) => <IconSymbol size={30} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={30} name="list.clipboard" color={color} />,
           tabBarLabelStyle: {
             fontSize:20
           }
