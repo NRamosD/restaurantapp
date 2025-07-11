@@ -16,7 +16,7 @@ export interface Dimensiones {
 
 export interface Product {
   // Identificación
-  id: number | string;
+  id?: number | string;
   uuid: string;
   sku?: string;
   codigoBarras?: string;
@@ -25,11 +25,11 @@ export interface Product {
   // Datos básicos
   nombre: string;
   descripcion?: string;
-  precio: number;
+  precio?: number;
   moneda?: string;              // USD, EUR, etc.
   stock?: number;
   unidad?: string;              // unidad, kg, litro, etc.
-  activo: boolean;
+  activo?: boolean;
 
   // Organización
   categoria?: string;
@@ -45,8 +45,8 @@ export interface Product {
   // Control / Gestión
   destacado?: boolean;
   orden?: number;               // Para orden personalizado
-  fechaCreacion: Date;
-  fechaActualizacion?: Date;
+  fechaCreacion: Date|string;
+  fechaActualizacion?: Date|string;
   usuarioCreadorId?: number;
 
   // Comerciales

@@ -11,13 +11,13 @@ const AddReduceButton = (props: Props) => {
     return (
         <CView style={{flex:1, flexDirection:"row", justifyContent:"space-between"}}>
             <TouchableOpacity onPress={()=>numberProducts>=2?setnumberProducts(numberProducts-1):null}>
-                <IconSymbol size={30} name="minus" color={"red"}/>
+                <IconSymbol size={30} name="minus" color={"#8c8c8c"}/>
             </TouchableOpacity>
             <CText style={{marginHorizontal:5, marginTop:5, fontSize:25}}>
                 {numberProducts}
             </CText>
             <TouchableOpacity onPress={()=>setnumberProducts(numberProducts+1)}>
-                <IconSymbol size={30} name="plus" color={"red"}/>
+                <IconSymbol size={30} name="plus" color={"black"}/>
             </TouchableOpacity>
         </CView>
     )

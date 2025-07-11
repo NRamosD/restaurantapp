@@ -48,7 +48,7 @@ const style = StyleSheet.create({
     flexDirection:"row", 
     // backgroundColor:"blue", 
     padding:10, 
-    margin:10,
+    margin:5,
     height:110,
     boxShadow: "2px 3px 2px gray",
     borderWidth:2,

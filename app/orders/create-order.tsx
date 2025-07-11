@@ -62,8 +62,8 @@ const CreateOrder = (props: Props) => {
 
   return (
     <CContainerView style={{flex:1}}>
-      <CView style={{flex:1.5, backgroundColor:"green", justifyContent:"center", height:20 }}>
-        <CText type="title" style={{ textAlign:"center"}}>Nuevo Pedido</CText>
+      <CView style={{flex:1.5, backgroundColor:"#acacac", justifyContent:"center", height:20 }}>
+        <CText type="title" style={{ textAlign:"center", color:"white"}}>Nuevo Pedido</CText>
       </CView>
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
         <FlatList<Product>
@@ -75,7 +75,7 @@ const CreateOrder = (props: Props) => {
       </CView>
 
       <CView style={{flex:4, flexDirection:"row", gap:15,
-        justifyContent:"flex-start", alignItems:"center", backgroundColor:"blue"}}>
+        justifyContent:"flex-start", alignItems:"center", backgroundColor:"#1c1c1c"}}>
           <FlatList<Product>
             data={dataTest.filter(x=>!dataSelected.find(y=>y.id==x.id))}
             horizontal={true}
@@ -88,17 +88,18 @@ const CreateOrder = (props: Props) => {
       </CView>
 
       <CView style={{flex:2, flexDirection:"row", gap:15,
-        justifyContent:"flex-start", alignItems:"center", backgroundColor:"red"}}>
+        justifyContent:"flex-start", alignItems:"center" }}>
 
-        <CView style={{width:"80%", padding:5}}>
-          <CInputText value={textSearchedItem} onChangeText={(val)=>setTextSearchedItem(val)}/>
+        <CView style={{width:"80%", paddingHorizontal:5}}>
+          <CInputText value={textSearchedItem} 
+          onChangeText={(val)=>setTextSearchedItem(val)} style={{}}/>
           {/* <CButton title='Agregar' onPress={()=>{
             addProductToOrder()
           }} containerStyles={{backgroundColor:"orange", borderRadius:40 }}/> */}
         </CView>
 
         <FloatingButton onPress={()=>alert("pressed float")} nameIcon="mic" 
-        floatProps={{position:"relative", backgroundColor:"black", width:50,height:50}}/>
+        floatProps={{position:"relative", backgroundColor:"#8c8c8c", width:50,height:50}}/>
         
       </CView>
       
