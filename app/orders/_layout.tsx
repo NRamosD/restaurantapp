@@ -6,5 +6,9 @@ export default function OrdersLayout() {
       animation:"fade_from_bottom",
       headerShown:false
     }}/>
+    <Stack.Screen name='checkout' options={{
+      animation:"slide_from_right",
+      headerShown:false
+    }}/>
   </Stack>;
 }
