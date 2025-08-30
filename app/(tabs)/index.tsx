@@ -60,17 +60,17 @@ export default function HomeScreen() {
             Acceso Rápido
           </CText>
           <CView style={styles.easyAccessOptionsContainer}>
-            <TouchableOpacity style={styles.easyAccessOption}>
-              <Ionicons name="search-outline" size={70}/>
-              <CText type="subtitle">Buscar</CText>
+            <TouchableOpacity onPress={()=>router.push({pathname:"/inventory/top-sellers"})} style={styles.easyAccessOption}>
+              <Ionicons name="heart-outline" size={70}/>
+              <CText type="subtitle" style={{fontSize:14}}>Más Vendidos</CText>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.easyAccessOption}>
+            <TouchableOpacity onPress={()=>router.push({pathname:"/inventory/create-product"})} style={styles.easyAccessOption}>
               <Ionicons name="storefront-outline" size={70}/>
-              <CText type="subtitle">Añadir</CText>
+              <CText type="subtitle" style={{fontSize:13}}>Nuevo Producto</CText>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.easyAccessOption}>
+            <TouchableOpacity onPress={()=>router.push({pathname:"/settings"})} style={styles.easyAccessOption}>
               <Ionicons name="settings-outline" size={70}/>
-              <CText type="subtitle">Ajustes</CText>
+              <CText type="subtitle" style={{fontSize:14}}>Ajustes</CText>
             </TouchableOpacity>
           </CView>
 

@@ -24,7 +24,7 @@ const data:Product[] = Array.from({ length: 20 }, (_, i) => ({
   fechaCreacion:new Date(),
 }) as Product );
 
-const CreateOrder = (props: Props) => {
+const CheckoutOrder = (props: Props) => {
   const [dataTest, setdataTest] = useState<Product[]>(data||[]);
   const [dataSelected, setDataSelected] = useState<Product[]>([]);
   const [textSearchedItem, setTextSearchedItem] = useState<string>("");
@@ -64,7 +64,7 @@ const CreateOrder = (props: Props) => {
   return (
     <CContainerView style={{flex:1}}>
       <CView style={{flex:1.5, backgroundColor:"#acacac", justifyContent:"center", height:20 }}>
-        <CText type="title" style={{ textAlign:"center", color:"white"}}>Nuevo Pedido</CText>
+        <CText type="title" style={{ textAlign:"center", color:"white"}}>Resumen de la Orden</CText>
       </CView>
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
         <FlatList<Product>
@@ -75,32 +75,16 @@ const CreateOrder = (props: Props) => {
         />
       </CView>
 
-      <CView style={{flex:5, flexDirection:"row", gap:15,
+      <CView style={{flex:2, flexDirection:"row", gap:15,
         justifyContent:"flex-start", alignItems:"center", backgroundColor:"#1c1c1c"}}>
-          <FlatList<Product>
-            data={dataTest.filter(x=>!dataSelected.find(y=>y.id==x.id))}
-            horizontal={true}
-            keyExtractor={item => item.uuid}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => <ItemOrderOptionSquare singleProduct={item} touchAction={()=>addProductToOrder(item)}/>}
-            contentContainerStyle={{ paddingHorizontal: 10, paddingTop: 10 }}
-          />
+          <CText type="title" style={{color:"white"}}>Total</CText>
+          <CText type="title" style={{color:"white"}}>$55.25</CText>
 
       </CView>
 
-      <CView style={{flex:3, flexDirection:"row", gap:15,
-        justifyContent:"flex-start", alignItems:"center" }}>
-
-        <CView style={{width:"80%", paddingHorizontal:5}}>
-          <CInputText label={""} value={textSearchedItem} 
-          onChangeText={(val)=>setTextSearchedItem(val)} style={{}} />
-          {/* <CButton title='Agregar' onPress={()=>{
-            addProductToOrder()
-          }} containerStyles={{backgroundColor:"orange", borderRadius:40 }}/> */}
-        </CView>
-
-        <FloatingButton onPress={()=>router.push({pathname:"/orders/checkout"})} nameIcon="arrow-forward" 
-        floatProps={{position:"relative", backgroundColor:"#8c8c8c", width:40,height:40}}/>
+      <CView style={{flex:2, flexDirection:"row", gap:15,
+        justifyContent:"flex-start", alignItems:"center", paddingHorizontal:10 }}>
+          <CButton onPress={()=>router.push({pathname:"/orders/final-status-checkout"})} title={"FACTURAR"} containerStyles={styles.touchableCreate}/>
         
       </CView>
       
@@ -110,5 +94,17 @@ const CreateOrder = (props: Props) => {
   )
 }
 
-export default CreateOrder
+export default CheckoutOrder
 
+const styles = StyleSheet.create({
+  touchableCreate:{
+    backgroundColor:"#dedede",
+    padding:10,
+    textAlign:"center",
+    justifyContent:"center",
+    borderRadius:10,
+    height:60,
+    borderWidth:5,
+    borderColor:"#cecece"
+  },
+})

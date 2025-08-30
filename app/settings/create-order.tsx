@@ -93,7 +93,7 @@ const CreateOrder = (props: Props) => {
 
         <CView style={{width:"80%", paddingHorizontal:5}}>
           <CInputText label={""} value={textSearchedItem} 
-          onChangeText={(val)=>setTextSearchedItem(val)} style={{}} />
+          onChangeText={(val)=>setTextSearchedItem(val)} style={{}}/>
           {/* <CButton title='Agregar' onPress={()=>{
             addProductToOrder()
           }} containerStyles={{backgroundColor:"orange", borderRadius:40 }}/> */}

@@ -5,5 +5,7 @@ export default function InventoryLayout() {
   return <Stack>
     {/* <Stack.Screen name='(tabs)' options={{title:"Inventario"}}/> */}
     <Stack.Screen name='[productname]' options={{title:"Producto de Inventario"+productname}}/>
+    <Stack.Screen name='create-product' options={{headerShown:false}}/>
+    <Stack.Screen name='top-sellers' options={{ headerShown:false }}/>
   </Stack>;
 }
