@@ -24,7 +24,9 @@ const data:Product[] = Array.from({ length: 20 }, (_, i) => ({
   fechaCreacion:new Date(),
 }) as Product );
 
-const CreateOrder = (props: Props) => {
+const CreateOrder = ({
+  
+}: Props) => {
   const [dataTest, setdataTest] = useState<Product[]>(data||[]);
   const [dataSelected, setDataSelected] = useState<Product[]>([]);
   const [textSearchedItem, setTextSearchedItem] = useState<string>("");
@@ -88,19 +90,22 @@ const CreateOrder = (props: Props) => {
 
       </CView>
 
-      <CView style={{flex:3, flexDirection:"row", gap:15,
+      <CView style={{flex:2, flexDirection:"row", gap:2,
         justifyContent:"flex-start", alignItems:"center" }}>
-
-        <CView style={{width:"80%", paddingHorizontal:5}}>
-          <CInputText label={""} value={textSearchedItem} 
-          onChangeText={(val)=>setTextSearchedItem(val)} style={{}} />
-          {/* <CButton title='Agregar' onPress={()=>{
-            addProductToOrder()
-          }} containerStyles={{backgroundColor:"orange", borderRadius:40 }}/> */}
+        <CView style={{flex:1, paddingHorizontal:5, justifyContent:"center", alignItems:"center"}}>
+          <FloatingButton onPress={()=>router.dismissTo({pathname:"/"})} nameIcon="save" 
+          floatProps={{backgroundColor:"#8c8c8c", padding:7, width:"auto", height:"auto"}}/>
         </CView>
 
-        <FloatingButton onPress={()=>router.push({pathname:"/orders/checkout"})} nameIcon="arrow-forward" 
-        floatProps={{position:"relative", backgroundColor:"#8c8c8c", width:40,height:40}}/>
+        <CView style={{flex:6, paddingHorizontal:0}}>
+          <CInputText label={""} value={textSearchedItem} 
+          onChangeText={(val)=>setTextSearchedItem(val)} style={{}} />
+        </CView>
+        <CView style={{flex:1, paddingHorizontal:5, justifyContent:"center", alignItems:"center"}}>
+          <FloatingButton onPress={()=>router.push({pathname:"/orders/checkout"})} nameIcon="arrow-forward" 
+          floatProps={{backgroundColor:"#8c8c8c", padding:7, width:"auto", height:"auto"}}/>
+        </CView>
+
         
       </CView>
       

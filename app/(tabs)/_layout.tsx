@@ -43,7 +43,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="orders"
         options={{
-          title: 'Historial',
+          title: 'Ventas',
           tabBarIcon: ({ color }) => <IconSymbol size={30} name="archivebox.fill" color={color} />,
           tabBarLabelStyle: {
             fontSize:20
@@ -51,9 +51,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="dishes"
+        name="products"
         options={{
-          title: 'Menú',
+          title: 'Productos',
           tabBarIcon: ({ color }) => <IconSymbol size={30} name="list.clipboard" color={color} />,
           tabBarLabelStyle: {
             fontSize:20

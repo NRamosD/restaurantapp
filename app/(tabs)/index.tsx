@@ -45,14 +45,14 @@ export default function HomeScreen() {
         <TopBarWithMenu title={"Inicio"}/>
         <CView style={{flex:3}}>
           <CText type="title" style={{textAlign:"center", paddingVertical:5}}>
-            Ventas Recientes
+            Pendientes de Facturar
           </CText>
           <ScrollView style={styles.scrollView}>
-            <ItemOrderLink/>
-            <ItemOrderLink/>
-            <ItemOrderLink/>
-            <ItemOrderLink/>
-            <ItemOrderLink/>
+            <ItemOrderLink path={"/orders/create-order"}/>
+            <ItemOrderLink path={"/orders/create-order"}/>
+            <ItemOrderLink path={"/orders/create-order"}/>
+            <ItemOrderLink path={"/orders/create-order"}/>
+            <ItemOrderLink path={"/orders/create-order"}/>
           </ScrollView>
         </CView>
         <View style={styles.easyAccess}>

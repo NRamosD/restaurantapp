@@ -1,7 +1,8 @@
 import React from 'react'
-import { Modal, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Modal, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { CView } from '../CView';
 import { CText } from '../CText';
+import { Button, Dialog, Divider, Portal } from 'react-native-paper';
 type Props = {
     title?:string
     textContent?:string
@@ -11,10 +12,11 @@ type Props = {
     textOpenButton?: string;
     textConfirmButton?: string;
     textCloseButton?: string;
-    showModal?: boolean;
+    showModal: boolean;
+    setShowModal:  React.Dispatch<React.SetStateAction<boolean>>
 
     onConfirm?: () => void
-    setShowModal:  React.Dispatch<React.SetStateAction<boolean>>
+    onCancel?: () => void
 }
 /**
  * Title: Modal genérico
@@ -32,9 +34,10 @@ const GenericModal = ({
     textCloseButton,
     showModal,
     onConfirm,
+    onCancel,
     setShowModal
 }: Props) => {
-    // const [showModal, setShowModal] = useState(false)
+    const hideDialog = () => setShowModal(false)
 
     return (
         <CView style={styles.container}>
@@ -47,7 +50,35 @@ const GenericModal = ({
             }
 
             {/* Modal personalizado */}
-            <Modal
+            <Portal>
+              <Dialog visible={showModal} onDismiss={hideDialog} style={{borderRadius:10, backgroundColor:"white"}}>
+                <Dialog.Title>{title||"Título del Modal"}</Dialog.Title>
+                <Dialog.ScrollArea style={{height:200, paddingHorizontal:0}}>
+                  <ScrollView contentContainerStyle={{padding:10}}>
+                    {
+                      textContent &&
+                      <Text style={styles.modalText}>{textContent}</Text>
+                    }
+                    {
+                      nodeContent &&
+                      nodeContent    
+                    }
+                  </ScrollView>
+                </Dialog.ScrollArea>
+                <Divider/>
+                <Dialog.Actions>
+                  <Button onPress={()=>{
+                    onCancel &&onCancel()
+                    hideDialog()
+                  }}>Cancel</Button>
+                  <Button onPress={ ()=>{
+                    onConfirm && onConfirm()
+                    hideDialog()
+                  }}>Ok</Button>
+                </Dialog.Actions>
+              </Dialog>
+            </Portal>
+            {/* <Modal
                 transparent
                 animationType="fade"
                 visible={showModal}
@@ -86,7 +117,7 @@ const GenericModal = ({
                     }
                 </CView>
                 </CView>
-            </Modal>
+            </Modal> */}
         </CView>
     )
 }
@@ -100,7 +131,7 @@ const styles = StyleSheet.create({
   },
   openButton: {
     padding: 12,
-    backgroundColor: '#3498db',
+    // backgroundColor: '#3498db',
     borderRadius: 6,
   },
   openButtonText: {
@@ -117,7 +148,7 @@ const styles = StyleSheet.create({
     width: 300,
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 20,
+    paddingVertical: 20,
     alignItems: 'center',
     elevation: 5, // sombra para Android
     shadowColor: '#000', // sombra para iOS

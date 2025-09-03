@@ -13,6 +13,51 @@ import ItemMenuSquareDetails from '@/components/orders/ItemMenuSquareDetails';
 import GenericModal from '@/components/ui/GenericModal';
 
 
+
+
+
+
+
+export default function TabTwoScreen() {
+  return (
+    <CContainerView style={{
+      flex: 1,
+      flexDirection:"column",
+    }}>
+        <TopBarWithMenu title={"Productos"}/>
+        <CView style={{flex:10, flexDirection:"row"}}>
+          <FlatList<Product>
+            data={mockProducts}
+            renderItem={({item}) => <ItemMenuSquareDetails data={item}/> }
+            horizontal={false}
+            numColumns={2}
+            keyExtractor={item => item.uuid}
+            columnWrapperStyle={{
+              justifyContent:"space-evenly",
+              gap:10,
+              width:"100%"
+            }}
+          />
+          {/* <ItemOrderExtendedLink data={item}/> */}
+        </CView>
+        
+    </CContainerView>
+  );
+}
+
+const styles = StyleSheet.create({
+  headerImage: {
+    color: '#808080',
+    bottom: -90,
+    left: -35,
+    position: 'absolute',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+});
+
 export const mockProducts: Product[] = [
   {
     uuid: "1a2b3c4d-0001",
@@ -175,47 +220,3 @@ export const mockProducts: Product[] = [
     fechaActualizacion: "2025-06-08"
   }
 ];
-
-
-
-
-
-export default function TabTwoScreen() {
-  return (
-    <CContainerView style={{
-      flex: 1,
-      flexDirection:"column",
-    }}>
-        <TopBarWithMenu title={"Menú"}/>
-        <CView style={{flex:10, flexDirection:"row"}}>
-          <FlatList<Product>
-            data={mockProducts}
-            renderItem={({item}) => <ItemMenuSquareDetails data={item}/> }
-            horizontal={false}
-            numColumns={2}
-            keyExtractor={item => item.uuid}
-            columnWrapperStyle={{
-              justifyContent:"space-evenly",
-              gap:10,
-              width:"100%"
-            }}
-          />
-          {/* <ItemOrderExtendedLink data={item}/> */}
-        </CView>
-        
-    </CContainerView>
-  );
-}
-
-const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-});

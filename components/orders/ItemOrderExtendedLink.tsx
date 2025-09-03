@@ -14,7 +14,7 @@ const ItemOrderExtendedLink = ({
 }: Props) => {
 
   return (
-    <CView style={{ padding: 10, marginVertical: 2, borderWidth:3, borderColor:"#cecece"  }}>
+    <CView style={{ padding: 10, marginVertical: 2, borderWidth:3, borderColor:"#cecece", borderRadius:10  }}>
       <TouchableOpacity
         onPress={() => alert("se fue al detalle del registro")}
         style={{ flex: 1, flexDirection: "row", }}

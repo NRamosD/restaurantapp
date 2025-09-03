@@ -35,6 +35,16 @@ const ItemMenuSquareDetails = ({
             {data.nombre||"Nombre de plato"}
           </CText>
         </CView>
+        <CView style={{flex:1, flexDirection:"row", justifyContent:"space-between"}}>
+          <CView style={{alignItems:"flex-start", gap:1}}>
+            <CText type="defaultSemiBold" style={{fontSize:12}}>Precio</CText>
+            <CText type="defaultSemiBold">${data.precio || "10"}</CText>
+          </CView>
+          <CView style={{alignItems:"flex-end", gap:1}}>
+            <CText type="defaultSemiBold" style={{fontSize:12}}>Stock</CText>
+            <CText type="defaultSemiBold">{data.stock || "10"}</CText>
+          </CView>
+        </CView>
       </TouchableOpacity>
     </CView>
   );

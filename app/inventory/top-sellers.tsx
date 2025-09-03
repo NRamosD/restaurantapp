@@ -10,15 +10,19 @@ import * as ImagePicker from 'expo-image-picker';
 import { Switch, TextInput } from 'react-native-paper'
 import { Picker } from '@react-native-picker/picker'
 import { useSQLiteContext } from 'expo-sqlite'
+import { SegmentedButtons } from 'react-native-paper';
+import DetailTopSeller from '@/components/inventory/DetailTopSeller'
 
 type Props = {}
 
 const CreateProductScreen = (props: Props) => {
     const {productname} = useLocalSearchParams()
-
+    const db = useSQLiteContext();
+    
+    const [todos, setTodos] = useState<any[]>([]);
     const [image, setImage] = useState<string | null>(null);
-    const [switchEnvioGratis, setSwitchEnvioGratis] = React.useState(false);
-
+    const [switchEnvioGratis, setSwitchEnvioGratis] = useState(false);
+    const [segmentedButtonValue, setSegmentedButtonValue] = useState('today');
 
 
     const onToggleSwitch = () => setSwitchEnvioGratis(!switchEnvioGratis);
@@ -39,37 +43,75 @@ const CreateProductScreen = (props: Props) => {
         }
     };
 
-    const db = useSQLiteContext();
-    const [todos, setTodos] = useState<any[]>([]);
+
 
     useEffect(() => {
-        async function setup() {
-        const result = await db.getAllAsync<any>('SELECT * FROM platos');
-            setTodos(result);
+        switch (segmentedButtonValue) {
+            case 'today':
+                async function setup() {
+                const result = await db.getAllAsync<any>('SELECT * FROM platos');
+                    setTodos(result);
+                }
+                setup();
+                break;
+            case 'week':
+                setTodos([]);
+                break;
+            case 'month':
+                setTodos([{
+                    nombre:"Producto 1",
+                    precio:10,
+                    stock:24,
+                    vendido:24
+                }]);
+                break;
+            default:
+                break;
         }
-        setup();
-    }, []);
+    }, [segmentedButtonValue]);
 
 
     return (
         <CContainerView style={{flex:1}}>
+            
             <CText type="title" style={{textAlign:"center", paddingVertical:5}}>
                 Productos Más Vendidos
             </CText>
-            <ScrollView style={{flex:8, padding:10}}>
-                {
-                    todos.map((item,key)=>{
-                        return <TouchableOpacity key={key} onPress={async()=>{
-                                const dataPressed:any =  await db.getFirstAsync('SELECT * FROM platos where id=?',[item.id]);
-                                console.log({dataPressed})
-                                alert(`Boton presionado: ${dataPressed?.nombre}`)
-                            }}>
-                                <CText>{item.nombre||"nada"}</CText>
-                        </TouchableOpacity>
-                        
-                    })
-                }
-            </ScrollView>
+            <CView style={{flex:8, padding:10}}>
+                <ScrollView style={{flex:8, padding:10, gap:10}}>
+                    {
+                        todos.length > 0 ?
+                        todos.map((item,key)=>{
+                            return (
+                                <DetailTopSeller
+                                    product={item}
+                                    key={`${item.name||"item"}+${key}`}
+                                />
+                            )
+                            // <TouchableOpacity key={key} onPress={async()=>{
+                            //         const dataPressed:any =  await db.getFirstAsync('SELECT * FROM platos where id=?',[item.id]);
+                            //         console.log({dataPressed})
+                            //         alert(`Boton presionado: ${dataPressed?.nombre}`)
+                            //     }}>
+                            //         <CText>{item.nombre||"nada"}</CText>
+                            // </TouchableOpacity>
+                            
+                        })
+                        :
+                        <CText>No hay resultados</CText>
+                    }
+                </ScrollView>    
+            </CView>
+            <SegmentedButtons
+                style={{marginVertical:5, padding:10}}
+                value={segmentedButtonValue}
+                onValueChange={setSegmentedButtonValue}
+                buttons={[
+                    { value: 'today', label: 'Hoy' },
+                    { value: 'week', label: 'Semana' },
+                    { value: 'month', label: 'Mes' },
+                ]}
+            />
             <CView style={{flex:1, padding:10}}>
                 <CButton title="Volver Inicio" onPress={()=>router.dismissTo("/")}
                 textStyles={{fontSize:20}}

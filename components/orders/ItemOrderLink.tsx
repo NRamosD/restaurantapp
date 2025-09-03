@@ -3,16 +3,21 @@ import { CView } from "../CView";
 import { TouchableOpacity } from "react-native";
 import { CText } from "../CText";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 
-type Props = {};
+type Props = {
+  path?:any
+};
 
-const ItemOrderLink = (props: Props) => {
+const ItemOrderLink = ({
+  path
+}: Props) => {
   const text1 = "Description of order in one line qioweu qoiwu e qwe qjweqw";
 
   return (
     <CView style={{ padding: 10, marginVertical: 2, borderWidth:3, borderColor:"#cecece"  }}>
       <TouchableOpacity
-        onPress={() => alert("se fue al detalle del registro")}
+        onPress={() => path? router.push({pathname:path||"/orders/create-order"}):alert("No hay ruta")}
         style={{ flex: 1, flexDirection: "row", }}
       >
         <CView style={{ flex: 5 }}>
