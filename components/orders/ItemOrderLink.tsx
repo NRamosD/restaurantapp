@@ -15,7 +15,7 @@ const ItemOrderLink = ({
   const text1 = "Description of order in one line qioweu qoiwu e qwe qjweqw";
 
   return (
-    <CView style={{ padding: 10, marginVertical: 2, borderWidth:3, borderColor:"#cecece"  }}>
+    <CView style={{ padding: 10, marginVertical: 2, borderWidth:3, borderRadius:5, borderColor:"#cecece"  }}>
       <TouchableOpacity
         onPress={() => path? router.push({pathname:path||"/orders/create-order"}):alert("No hay ruta")}
         style={{ flex: 1, flexDirection: "row", }}
