@@ -14,7 +14,7 @@ export interface Dimensiones {
   largo: number;
 }
 
-export interface Product {
+export interface ProductOld {
   // Identificación
   id?: number | string;
   uuid: string;
@@ -57,14 +57,36 @@ export interface Product {
   envioGratis?: boolean;
   tiempoEntrega?: string;       // Ej: "3-5 días"
 
-  // Técnicos
-  atributosAdicionales?: any;
-  esDigital?: boolean;
-  descargable?: boolean;
-  archivoUrl?: string;
-  peso?: number;
-  dimensiones?: Dimensiones;
 
   // Relaciones
   relacionados?: number[];      // IDs de productos relacionados
+}
+
+
+
+export interface Product {
+  id_producto: number;
+  uuid: string;
+  id_perfil: number;
+  nombre: string;
+  descripcion?: string | null;
+  imagen?: string | null;
+  iva?: number | null;
+  precio: number;
+  precio_total: number;
+  stock: number;
+  estado: string; // default "disponible"
+
+  // Visual / Media
+  imagen_url?: string;
+  galeria?: string;           // Otras imágenes
+  video_url?: string;
+  codigo_barras?: string;
+  slug?: string;
+
+  descuento?: number;           // En porcentaje
+  precio_anterior?: number;
+  envio_gratis?: boolean;
+  tiempo_entrega?: string;  
+
 }
