@@ -14,6 +14,5 @@ export interface Componente {
     porciones?: number | null;
     color?: string | null;
     fecha_creacion?: string;         // DATETIME en SQLite como string
-    id_negocio?: number | null;      // Foreign Key opcional
 }
   
