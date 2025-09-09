@@ -76,7 +76,10 @@ export default function HomeScreen() {
 
         </View>
         <View style={styles.contNewPedido}>
-          <CButton onPress={()=>router.push({pathname:"/orders/create-order"})} title={"NUEVO PEDIDO"} containerStyles={styles.touchableCreate}/>
+          <CButton onPress={()=>{
+            alert("hola")
+            // router.push({pathname:"/orders/create-order"})
+          }} title={"NUEVO PEDIDO"} containerStyles={styles.touchableCreate}/>
         </View>
     </View>
     // </ParallaxScrollView>
