@@ -16,17 +16,53 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { CText } from "@/components/CText";
 import { CView } from "@/components/CView";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TopBarWithMenu } from "@/components/TopBarWithMenu";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MenuPopUpGeneral from "@/components/MenuPopUpGeneral";
 import CButton from "@/components/CButton";
 import { Ionicons } from "@expo/vector-icons";
 import { ItemOrderLink } from "@/components/orders";
+import { createComponent, getAllComponents } from "@/database/components.operations";
+import { dbConnection } from "@/database/database.connection";
+import { Componente } from "@/interfaces";
 
 export default function HomeScreen() {
   // const [nameProduct, setNameProduct] = useState<string>("");
+  const [components, setComponents] = useState<Componente[]>([])
   const insets = useSafeAreaInsets()
+
+
+  const createComponentWithButton = async () => {
+    await createComponent(await dbConnection, {
+      nombre: "Nuevo Componente",
+      descripcion: "Descripción del nuevo componente",
+      tipo: "Tipo del nuevo componente",
+      material: "Material del nuevo componente",
+      peso: 1.5,
+      longitud: 50,
+      ancho: 30,
+      alto: 20,
+      calorias: 150,
+      stock: 0,
+      porciones: 3,
+      color: "#FF0000",
+    });
+
+  }
+
+  const getComponentsList = async () => {
+    const components = await getAllComponents(await dbConnection)
+    alert(components)
+    console.log(components)
+    setComponents(components)
+  }
+
+  useEffect(() => {
+    getComponentsList()
+  }, [components])
+
+
   return (
     // <ParallaxScrollView
     //   headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -77,6 +113,21 @@ export default function HomeScreen() {
         </View>
         <View style={styles.contNewPedido}>
           <CButton onPress={()=>router.push({pathname:"/orders/create-order"})} title={"NUEVO PEDIDO"} containerStyles={styles.touchableCreate}/>
+        </View>
+        <View style={styles.contNewPedido}>
+          <CButton onPress={()=>{
+            createComponentWithButton()
+          }} title={"NUEVO componente"} containerStyles={styles.touchableCreate}/>
+        </View>
+        <View style={styles.contNewPedido}>
+          <CText type="title" style={{textAlign:"center", paddingVertical:5}}>
+            Componentes
+          </CText>
+          <ScrollView style={styles.scrollView}>
+            {components.map((componente, index) => (
+              <CText key={index} style={{padding:5}}>{componente.nombre}</CText>
+            ))}
+          </ScrollView>
         </View>
     </View>
     // </ParallaxScrollView>

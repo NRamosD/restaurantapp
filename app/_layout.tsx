@@ -30,7 +30,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <SQLiteProvider databaseName="rest-app.db" onInit={StartDatabase} useSuspense>
+      <SQLiteProvider databaseName="rest-app.db" onInit={StartDatabase}>
         <App/>
       </SQLiteProvider>
     </ThemeProvider>

@@ -3,6 +3,10 @@ import { CreateAllTablesTable } from "./database.connection";
 
 export async function StartDatabase(db:SQLiteDatabase) {
   await CreateAllTablesTable(db)
+
+}
+  
+
   // const DATABASE_VERSION = 1;
   // let { user_version: currentDbVersion } = await db.getFirstAsync<{ user_version: number }>(
   //   'PRAGMA user_version'
@@ -23,5 +27,3 @@ export async function StartDatabase(db:SQLiteDatabase) {
   //   Add more migrations
   // }
   // await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
-}
-  
