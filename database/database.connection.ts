@@ -1,9 +1,10 @@
 import * as SQLite from 'expo-sqlite';
 
-export const dbConnection = SQLite.openDatabaseAsync('rest-app.db');
+// export const dbConnection = SQLite.openDatabaseAsync('rest-app.db');
 
 export const CreateAllTablesTable = async (dbConnection:SQLite.SQLiteDatabase) => {
-    (await dbConnection).execAsync(`
+    await dbConnection.execAsync(`
+        PRAGMA foreign_keys = ON;
         CREATE TABLE IF NOT EXISTS Perfil (
             id_perfil INTEGER PRIMARY KEY AUTOINCREMENT,
             id_usuario INTEGER NOT NULL,
@@ -13,14 +14,12 @@ export const CreateAllTablesTable = async (dbConnection:SQLite.SQLiteDatabase) =
             telefono TEXT,
             nombre_perfil TEXT NOT NULL,
             password_perfil TEXT NOT NULL,
-            tipo_perfil TEXT NOT NULL, -- admin, cliente, etc.
+            tipo_perfil TEXT NOT NULL, 
             tipo_negocio TEXT,
             estado TEXT DEFAULT 'activo',
             valores_configuraciones TEXT NOT NULL,
             auth TEXT NOT NULL,
-            fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario),
-            FOREIGN KEY (id_negocio) REFERENCES Negocio(id_negocio)
+            fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
         );
 
 
@@ -50,6 +49,7 @@ export const CreateAllTablesTable = async (dbConnection:SQLite.SQLiteDatabase) =
 
         CREATE TABLE IF NOT EXISTS Componentes (
             id_componente INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_perfil INTEGER NOT NULL,
             uuid TEXT NOT NULL UNIQUE,
             nombre TEXT NOT NULL,
             descripcion TEXT,
@@ -64,15 +64,15 @@ export const CreateAllTablesTable = async (dbConnection:SQLite.SQLiteDatabase) =
             porciones INTEGER,
             color TEXT,
             fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (id_negocio) REFERENCES Negocio(id_negocio)
+            FOREIGN KEY (id_perfil) REFERENCES Perfil(id_perfil)
         );
 
         CREATE TABLE IF NOT EXISTS Producto_Componentes (
+            id_producto_componente INTEGER PRIMARY KEY AUTOINCREMENT,
             id_producto INTEGER NOT NULL,
             id_componente INTEGER NOT NULL,
             uuid TEXT NOT NULL UNIQUE,
             cantidad INTEGER DEFAULT 1,
-            PRIMARY KEY (id_producto, id_componente),
             FOREIGN KEY (id_producto) REFERENCES Producto(id_producto),
             FOREIGN KEY (id_componente) REFERENCES Componentes(id_componente)
         );
@@ -82,12 +82,13 @@ export const CreateAllTablesTable = async (dbConnection:SQLite.SQLiteDatabase) =
             id_perfil INTEGER NOT NULL,
             uuid TEXT NOT NULL UNIQUE,
             fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
-            estado TEXT DEFAULT 'pendiente', -- pendiente, pagado, cancelado
+            estado TEXT DEFAULT 'pendiente', 
             total REAL NOT NULL,
             FOREIGN KEY (id_perfil) REFERENCES Perfil(id_perfil)
         );
 
         CREATE TABLE IF NOT EXISTS Ordenes_Producto (
+            id_orden_producto INTEGER PRIMARY KEY AUTOINCREMENT,
             id_orden INTEGER NOT NULL,
             id_producto INTEGER NOT NULL,
             uuid TEXT NOT NULL UNIQUE,
@@ -95,7 +96,6 @@ export const CreateAllTablesTable = async (dbConnection:SQLite.SQLiteDatabase) =
             precio_unitario REAL NOT NULL,
             subtotal REAL NOT NULL,
             detalle TEXT,
-            PRIMARY KEY (id_orden, id_producto),
             FOREIGN KEY (id_orden) REFERENCES Ordenes(id_orden),
             FOREIGN KEY (id_producto) REFERENCES Producto(id_producto)
         );
@@ -109,21 +109,20 @@ export const CreateAllTablesTable = async (dbConnection:SQLite.SQLiteDatabase) =
             valor_total REAL NOT NULL,
             fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
             fecha_emision DATETIME,
-            estado TEXT DEFAULT 'pendiente', -- pagada, pendiente, anulada
+            estado TEXT DEFAULT 'pendiente',
             FOREIGN KEY (id_orden) REFERENCES Ordenes(id_orden)
         );
 
         CREATE TABLE IF NOT EXISTS Auditoria (
-            uuid TEXT NOT NULL UNIQUE,
+            uuid TEXT PRIMARY KEY,
             tabla_afectada TEXT NOT NULL,
-            operacion TEXT NOT NULL, -- INSERT, UPDATE, DELETE
+            operacion TEXT NOT NULL, 
             id_perfil INTEGER,
             cambio_anterior TEXT,
             fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
             detalle TEXT,
             FOREIGN KEY (id_perfil) REFERENCES Perfil(id_perfil)
         );
-
 
 
     `)
@@ -286,7 +285,7 @@ export const CreateAllTablesTable = async (dbConnection:SQLite.SQLiteDatabase) =
 // -- AUDITORÍA
 // -- =========================
 
-
-
-
-
+// -- admin, cliente, etc.
+// -- INSERT, UPDATE, DELETE
+//-- pendiente, pagado, cancelado
+// -- pagada, pendiente, anulada

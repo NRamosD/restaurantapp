@@ -1,5 +1,17 @@
+import * as SQLite from "expo-sqlite";
 import { SQLiteDatabase } from "expo-sqlite";
 import { CreateAllTablesTable } from "./database.connection";
+
+
+let db: SQLite.SQLiteDatabase | null = null;
+
+export async function getDbConnection(): Promise<SQLite.SQLiteDatabase> {
+  if (!db) {
+    db = await SQLite.openDatabaseAsync("rest-app.db");
+  }
+  return db;
+}
+
 
 export async function StartDatabase(db:SQLiteDatabase) {
   const DATABASE_VERSION = 1;
@@ -14,15 +26,6 @@ export async function StartDatabase(db:SQLiteDatabase) {
     currentDbVersion = 1;
   }
   await CreateAllTablesTable(db)
-    // await db.execAsync(`
-    //   PRAGMA journal_mode = 'wal';
-      
-    // `);
-    // await db.runAsync('INSERT INTO todos (value, intValue) VALUES (?, ?)', 'hello', 1);
-    // await db.runAsync('INSERT INTO todos (value, intValue) VALUES (?, ?)', 'world', 2);
-  // if (currentDbVersion === 1) {
-  //   Add more migrations
-  // }
   await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
 }
   

@@ -6,31 +6,34 @@ import * as SQLite from 'expo-sqlite';
 export const createComponent = async (
     dbConnection: SQLite.SQLiteDatabase,
     componente: Omit<Componente, 'id_componente' | 'uuid' | 'fecha_creacion'>
-): Promise<number> => {
+  ): Promise<number> => {
     const result = await dbConnection.runAsync(
-        `INSERT INTO Componente (
-            uuid, nombre, descripcion, tipo, material, peso, longitud, 
-            ancho, alto, calorias, stock, porciones, color, fecha_creacion
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-            uuid(),
-            componente.nombre,
-            componente.descripcion ?? null,
-            componente.tipo ?? null,
-            componente.material ?? null,
-            componente.peso ?? null,
-            componente.longitud ?? null,
-            componente.ancho ?? null,
-            componente.alto ?? null,
-            componente.calorias ?? null,
-            componente.stock ?? 0,
-            componente.porciones ?? null,
-            componente.color ?? null,
-            new Date().toISOString()
-        ]
+      `INSERT INTO Componentes (
+        id_perfil, uuid, nombre, descripcion, tipo, material, peso, longitud,
+        ancho, alto, calorias, stock, porciones, color, fecha_creacion
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        componente.id_perfil, // 🔹 este es obligatorio
+        uuid(),
+        componente.nombre,
+        componente.descripcion ?? null,
+        componente.tipo ?? null,
+        componente.material ?? null,
+        componente.peso ?? null,
+        componente.longitud ?? null,
+        componente.ancho ?? null,
+        componente.alto ?? null,
+        componente.calorias ?? null,
+        componente.stock ?? 0,
+        componente.porciones ?? null,
+        componente.color ?? null,
+        new Date().toISOString()
+      ]
     );
+  
     return result.lastInsertRowId as number;
 };
+  
 
 // Obtener componente por ID
 export const getComponentById = async (
@@ -38,19 +41,19 @@ export const getComponentById = async (
     id_componente: number
 ): Promise<Componente | null> => {
     const result = await db.getFirstAsync<Componente>(
-        `SELECT * FROM Componente WHERE id_componente = ?`,
+        `SELECT * FROM Componentes WHERE id_componente = ?`,
         [id_componente]
     );
     return result ?? null;
 };
 
-// Obtener componente por UUID
+// Obtener componentes por UUID
 export const getComponentByUuid = async (
     db: SQLite.SQLiteDatabase,
     uuid: string
 ): Promise<Componente | null> => {
     const result = await db.getFirstAsync<Componente>(
-        `SELECT * FROM Componente WHERE uuid = ?`,
+        `SELECT * FROM Componentes WHERE uuid = ?`,
         [uuid]
     );
     return result ?? null;
@@ -63,7 +66,7 @@ export const getAllComponents = async (
     offset: number = 0
 ): Promise<Componente[]> => {
     const results = await db.getAllAsync<Componente>(
-        `SELECT * FROM Componente 
+        `SELECT * FROM Componentes 
          ORDER BY nombre ASC
          LIMIT ? OFFSET ?`,
         [limit, offset]
@@ -78,7 +81,7 @@ export const searchComponents = async (
     limit: number = 50
 ): Promise<Componente[]> => {
     const results = await db.getAllAsync<Componente>(
-        `SELECT * FROM Componente 
+        `SELECT * FROM Componentes 
          WHERE nombre LIKE ? 
          ORDER BY nombre ASC
          LIMIT ?`,
@@ -93,11 +96,11 @@ export const updateComponent = async (
     componente: Componente
 ) => {
     if (!componente.id_componente) {
-        throw new Error("❌ El componente debe tener un id_componente para actualizar");
+        throw new Error("❌ El componentes debe tener un id_componente para actualizar");
     }
 
     await db.runAsync(
-        `UPDATE Componente SET
+        `UPDATE Componentes SET
             nombre = ?,
             descripcion = ?,
             tipo = ?,
@@ -136,7 +139,7 @@ export const updateComponentStock = async (
     cantidad: number
 ) => {
     await db.runAsync(
-        `UPDATE Componente 
+        `UPDATE Componentes 
          SET stock = stock + ? 
          WHERE id_componente = ?`,
         [cantidad, id_componente]
@@ -149,7 +152,7 @@ export const deleteComponent = async (
     id_componente: number
 ) => {
     await db.runAsync(
-        "DELETE FROM Componente WHERE id_componente = ?",
+        "DELETE FROM Componentes WHERE id_componente = ?",
         [id_componente]
     );
 };
@@ -162,7 +165,7 @@ export const getComponentsByType = async (
     offset: number = 0
 ): Promise<Componente[]> => {
     const results = await db.getAllAsync<Componente>(
-        `SELECT * FROM Componente 
+        `SELECT * FROM Componentes 
          WHERE tipo = ? 
          ORDER BY nombre ASC
          LIMIT ? OFFSET ?`,
@@ -177,7 +180,7 @@ export const getLowStockComponents = async (
     threshold: number = 5
 ): Promise<Componente[]> => {
     const results = await db.getAllAsync<Componente>(
-        `SELECT * FROM Componente 
+        `SELECT * FROM Componentes 
          WHERE stock <= ? 
          ORDER BY stock ASC, nombre ASC`,
         [threshold]
@@ -199,20 +202,20 @@ export const getComponentStatistics = async (
             `SELECT 
                 COUNT(*) as count,
                 SUM(stock) as total
-             FROM Componente`
+             FROM Componentes`
         ),
         db.getAllAsync<{ tipo: string; count: number }>(
             `SELECT 
                 COALESCE(tipo, 'Sin tipo') as tipo, 
                 COUNT(*) as count 
-             FROM Componente
+             FROM Componentes
              GROUP BY tipo`
         ),
         db.getAllAsync<{ tipo: string; total: number }>(
             `SELECT 
                 COALESCE(tipo, 'Sin tipo') as tipo, 
                 SUM(stock) as total
-             FROM Componente
+             FROM Componentes
              GROUP BY tipo`
         )
     ]);

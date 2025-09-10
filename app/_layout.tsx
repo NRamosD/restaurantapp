@@ -2,12 +2,13 @@ import 'react-native-get-random-values';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { SQLiteProvider, type SQLiteDatabase } from 'expo-sqlite';
 import { StartDatabase } from '@/database/index';
 import App from './App';
+import { Text } from 'react-native';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -30,9 +31,11 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <SQLiteProvider databaseName="rest-app.db" onInit={StartDatabase}>
-        <App/>
-      </SQLiteProvider>
+      <Suspense fallback={<Text>Loading...</Text>}>
+        <SQLiteProvider databaseName="rest-app.db" onInit={StartDatabase} useSuspense={true}>
+          <App/>
+        </SQLiteProvider>
+      </Suspense>
     </ThemeProvider>
   );
 }

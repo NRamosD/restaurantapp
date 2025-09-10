@@ -5,23 +5,49 @@ import * as SQLite from 'expo-sqlite';
 // Crear un nuevo registro de auditoría
 export const createAuditLog = async (
     dbConnection: SQLite.SQLiteDatabase,
-    auditData: Omit<Auditoria, 'uuid' | 'fecha_creacion'>
+    auditData: Omit<Auditoria, 'fecha_creacion'> & { uuid: string }
 ): Promise<void> => {
     await dbConnection.runAsync(
         `INSERT INTO Auditoria (
             uuid, tabla_afectada, operacion, id_perfil, 
-            cambio_anterior, detalle, fecha_creacion
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            cambio_anterior, detalle
+        ) VALUES (?, ?, ?, ?, ?, ?)`,
         [
-            uuid(),
+            auditData.uuid || uuid(),
             auditData.tabla_afectada,
             auditData.operacion,
             auditData.id_perfil ?? null,
             auditData.cambio_anterior ?? null,
-            auditData.detalle ?? null,
-            new Date().toISOString()
+            auditData.detalle ?? null
         ]
     );
+};
+
+// Obtener todos los registros de auditoría
+export const getAllAuditLogs = async (
+    db: SQLite.SQLiteDatabase,
+    limit: number = 100,
+    offset: number = 0
+): Promise<Auditoria[]> => {
+    const results = await db.getAllAsync<Auditoria>(
+        `SELECT * FROM Auditoria 
+         ORDER BY fecha_creacion DESC
+         LIMIT ? OFFSET ?`,
+        [limit, offset]
+    );
+    return results;
+};
+
+// Obtener registro de auditoría por UUID
+export const getAuditLogByUuid = async (
+    db: SQLite.SQLiteDatabase,
+    uuid: string
+): Promise<Auditoria | null> => {
+    const result = await db.getFirstAsync<Auditoria>(
+        `SELECT * FROM Auditoria WHERE uuid = ?`,
+        [uuid]
+    );
+    return result ?? null;
 };
 
 // Obtener registros de auditoría por tabla
@@ -44,7 +70,7 @@ export const getAuditLogsByTable = async (
 // Obtener registros de auditoría por tipo de operación
 export const getAuditLogsByOperation = async (
     db: SQLite.SQLiteDatabase,
-    operacion: "CREATE" | "INSERT" | "UPDATE" | "DELETE",
+    operacion: string,
     limit: number = 100,
     offset: number = 0
 ): Promise<Auditoria[]> => {

@@ -8,22 +8,36 @@ export const createBill = async (
     factura: Omit<Factura, 'id_factura' | 'uuid' | 'fecha_creacion'>
 ): Promise<number> => {
     const result = await dbConnection.runAsync(
-        `INSERT INTO Factura (
+        `INSERT INTO Facturas (
             id_orden, uuid, valor_subtotal, valor_iva, 
-            valor_total, fecha_creacion, fecha_emision, estado
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+            valor_total, fecha_emision, estado
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
             factura.id_orden,
             uuid(),
             factura.valor_subtotal,
             factura.valor_iva ?? null,
             factura.valor_total,
-            new Date().toISOString(),
             factura.fecha_emision ?? null,
             factura.estado ?? 'pendiente'
         ]
     );
     return result.lastInsertRowId as number;
+};
+
+// Obtener todas las facturas
+export const getAllBills = async (
+    db: SQLite.SQLiteDatabase,
+    limit: number = 100,
+    offset: number = 0
+): Promise<Factura[]> => {
+    const results = await db.getAllAsync<Factura>(
+        `SELECT * FROM Facturas 
+         ORDER BY fecha_creacion DESC
+         LIMIT ? OFFSET ?`,
+        [limit, offset]
+    );
+    return results;
 };
 
 // Obtener factura por ID
@@ -32,7 +46,7 @@ export const getBillById = async (
     id_factura: number
 ): Promise<Factura | null> => {
     const result = await db.getFirstAsync<Factura>(
-        `SELECT * FROM Factura WHERE id_factura = ?`,
+        `SELECT * FROM Facturas WHERE id_factura = ?`,
         [id_factura]
     );
     return result ?? null;
@@ -44,7 +58,7 @@ export const getBillByUuid = async (
     uuid: string
 ): Promise<Factura | null> => {
     const result = await db.getFirstAsync<Factura>(
-        `SELECT * FROM Factura WHERE uuid = ?`,
+        `SELECT * FROM Facturas WHERE uuid = ?`,
         [uuid]
     );
     return result ?? null;
@@ -56,7 +70,7 @@ export const getBillsByOrderId = async (
     id_orden: number
 ): Promise<Factura[]> => {
     const results = await db.getAllAsync<Factura>(
-        `SELECT * FROM Factura 
+        `SELECT * FROM Facturas 
          WHERE id_orden = ? 
          ORDER BY fecha_creacion DESC`,
         [id_orden]
@@ -74,7 +88,7 @@ export const updateBill = async (
     }
 
     await db.runAsync(
-        `UPDATE Factura SET
+        `UPDATE Facturas SET
             valor_subtotal = ?,
             valor_iva = ?,
             valor_total = ?,
@@ -99,7 +113,7 @@ export const updateBillStatus = async (
     estado: "pagada" | "pendiente" | "anulada"
 ) => {
     await db.runAsync(
-        `UPDATE Factura SET
+        `UPDATE Facturas SET
             estado = ?,
             fecha_emision = CASE 
                 WHEN ? = 'pagada' AND fecha_emision IS NULL THEN CURRENT_TIMESTAMP
@@ -116,7 +130,7 @@ export const deleteBill = async (
     id_factura: number
 ) => {
     await db.runAsync(
-        "DELETE FROM Factura WHERE id_factura = ?",
+        "DELETE FROM Facturas WHERE id_factura = ?",
         [id_factura]
     );
 };
@@ -129,7 +143,7 @@ export const getBillsByStatus = async (
     offset: number = 0
 ): Promise<Factura[]> => {
     const results = await db.getAllAsync<Factura>(
-        `SELECT * FROM Factura 
+        `SELECT * FROM Facturas 
          WHERE estado = ? 
          ORDER BY fecha_creacion DESC
          LIMIT ? OFFSET ?`,
@@ -166,7 +180,7 @@ export const getBillingStatistics = async (
                 COALESCE(SUM(valor_total), 0) as total,
                 COALESCE(SUM(COALESCE(valor_iva, 0)), 0) as iva,
                 COUNT(*) as count
-             FROM Factura
+             FROM Facturas
              ${dateFilter}`,
             params
         ),
@@ -174,7 +188,7 @@ export const getBillingStatistics = async (
             `SELECT 
                 estado, 
                 COUNT(*) as count 
-             FROM Factura
+             FROM Facturas
              ${dateFilter}
              GROUP BY estado`,
             params
@@ -183,7 +197,7 @@ export const getBillingStatistics = async (
             `SELECT 
                 strftime('%Y-%m', fecha_creacion) as mes,
                 SUM(valor_total) as total
-             FROM Factura
+             FROM Facturas
              ${dateFilter}
              GROUP BY strftime('%Y-%m', fecha_creacion)
              ORDER BY mes DESC

@@ -24,45 +24,73 @@ import CButton from "@/components/CButton";
 import { Ionicons } from "@expo/vector-icons";
 import { ItemOrderLink } from "@/components/orders";
 import { createComponent, getAllComponents } from "@/database/components.operations";
-import { dbConnection } from "@/database/database.connection";
+// import { dbConnection } from "@/database/database.connection";
+import { useSQLiteContext } from "expo-sqlite";
 import { Componente } from "@/interfaces";
+import { createProfile, getAllProfiles } from "@/database/profile.operations";
+import { Perfil } from "@/interfaces/profile";
 
 export default function HomeScreen() {
   // const [nameProduct, setNameProduct] = useState<string>("");
-  const [components, setComponents] = useState<Componente[]>([])
+  const dbConnection = useSQLiteContext()
+  const [profiles, setProfiles] = useState<Perfil[]>([])
   const insets = useSafeAreaInsets()
 
 
   const createComponentWithButton = async () => {
-    alert("hola")
-    const result = await createComponent(await dbConnection, {
-      nombre: "Nuevo Componente",
-      descripcion: "Descripción del nuevo componente",
-      tipo: "Tipo del nuevo componente",
-      material: "Material del nuevo componente",
-      peso: 1.5,
-      longitud: 50,
-      ancho: 30,
-      alto: 20,
-      calorias: 150,
-      stock: 0,
-      porciones: 3,
-      color: "#FF0000",
+    const tables = await dbConnection.getAllAsync<{ name: string }>(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
+    );
+    console.log("Tablas creadas:", tables);
+
+
+    const newProfileId = await createProfile(dbConnection, {
+      id_usuario: 1,
+      id_negocio: null,
+      correo: "test@correo.com",
+      telefono: "555-1234",
+      nombre_perfil: "Admin",
+      password_perfil: "123456",
+      tipo_perfil: "admin",
+      tipo_negocio: "tienda",
+      estado: "activo",
+      valores_configuraciones: "{}",
+      auth: "token-de-prueba",
     });
-    console.log(result)
-    alert(result)
+    
+    console.log("Nuevo perfil creado con ID:", newProfileId);
+    getProfilesList()
+    // alert("hola")
+    // const result = await createComponent(dbConnection, {
+    //   id_perfil: 1, // 🔹 este debe existir en la tabla Perfil
+    //   nombre: "Nuevo Componente",
+    //   descripcion: "Descripción del nuevo componente",
+    //   tipo: "Tipo del nuevo componente",
+    //   material: "Material del nuevo componente",
+    //   peso: 1.5,
+    //   longitud: 50,
+    //   ancho: 30,
+    //   alto: 20,
+    //   calorias: 150,
+    //   stock: 0,
+    //   porciones: 3,
+    //   color: "#FF0000",
+    // });
+    
+    // console.log(result)
+    // alert(result)
   }
 
-  const getComponentsList = async () => {
-    const components = await getAllComponents(await dbConnection)
-    alert(components)
-    console.log(components)
-    setComponents(components)
+  const getProfilesList = async () => {
+    const profiles = await getAllProfiles(dbConnection)
+    // alert(components)
+    console.log(profiles)
+    setProfiles(profiles)
   }
 
-  useEffect(() => {
-    getComponentsList()
-  }, [components])
+  // useEffect(() => {
+  //   getProfilesList()
+  // }, [profiles])
 
 
   return (
@@ -126,11 +154,11 @@ export default function HomeScreen() {
         </View>
         <View style={styles.contNewPedido}>
           <CText type="title" style={{textAlign:"center", paddingVertical:5}}>
-            Componentes
+            Perfiles
           </CText>
           <ScrollView style={styles.scrollView}>
-            {components.map((componente, index) => (
-              <CText key={index} style={{padding:5}}>{componente.nombre}</CText>
+            {profiles.map((profile, index) => (
+              <CText key={index} style={{padding:5}}>{profile.nombre_perfil}</CText>
             ))}
           </ScrollView>
         </View>

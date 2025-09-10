@@ -1,6 +1,7 @@
 export interface Componente {
     id_componente?: number;          // autoincrement, opcional al crear
     uuid: string;                    // UNIQUE
+    id_perfil: number;
     nombre: string;
     descripcion?: string | null;
     tipo?: string | null;
