@@ -3,22 +3,23 @@ import * as SQLite from 'expo-sqlite';
 // export const dbConnection = SQLite.openDatabaseAsync('rest-app.db');
 
 export const InitializeDatabase = async (dbConnection:SQLite.SQLiteDatabase) => {
+    console.log("Initializing database...");
     try {
         // Execute delete queries sequentially
-        for (const query of DeleteDataFromTables) {
-          const result = await dbConnection.execAsync(query);
-          console.log(result);
-        }
+        // for (const query of DeleteDataFromTables) {
+        //   const result = await dbConnection.execAsync(query);
+        //   console.log(result);
+        // }
         
         // Execute create table queries sequentially
         for (const query of CreateAllTables) {
-          const result = await dbConnection.execAsync(query);
+          const result = await dbConnection.execSync(query);
           console.log(result);
         }
         
         // Execute insert queries sequentially
         for (const query of InsertDefaultData) {
-          const result = await dbConnection.execAsync(query);
+          const result = await dbConnection.execSync(query);
           console.log(result);
         }
         console.log('Database initialized successfully');
