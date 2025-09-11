@@ -6,20 +6,20 @@ export const InitializeDatabase = async (dbConnection:SQLite.SQLiteDatabase) => 
     console.log("Initializing database...");
     try {
         // Execute delete queries sequentially
-        // for (const query of DeleteDataFromTables) {
-        //   const result = await dbConnection.execAsync(query);
-        //   console.log(result);
-        // }
+        for (const query of DeleteDataFromTables) {
+          const result = await dbConnection.execAsync(query);
+          console.log(result);
+        }
         
         // Execute create table queries sequentially
         for (const query of CreateAllTables) {
-          const result = await dbConnection.execSync(query);
+          const result = await dbConnection.execAsync(query);
           console.log(result);
         }
         
         // Execute insert queries sequentially
         for (const query of InsertDefaultData) {
-          const result = await dbConnection.execSync(query);
+          const result = await dbConnection.execAsync(query);
           console.log(result);
         }
         console.log('Database initialized successfully');
@@ -59,7 +59,7 @@ const CreateAllTables = [
     valores_configuraciones TEXT NOT NULL,
     auth TEXT NOT NULL,
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
-  )`,
+  );`,
   `CREATE TABLE IF NOT EXISTS Producto (
     id_producto INTEGER PRIMARY KEY AUTOINCREMENT,
     uuid TEXT NOT NULL UNIQUE,
@@ -82,7 +82,7 @@ const CreateAllTables = [
     envio_gratis INTEGER,
     tiempo_entrega TEXT,
     FOREIGN KEY (id_perfil) REFERENCES Perfil(id_perfil)
-  )`,
+  );`,
   `CREATE TABLE IF NOT EXISTS Componentes (
     id_componente INTEGER PRIMARY KEY AUTOINCREMENT,
     id_perfil INTEGER NOT NULL,
@@ -101,7 +101,7 @@ const CreateAllTables = [
     color TEXT,
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_perfil) REFERENCES Perfil(id_perfil)
-  )`,
+  );`,
   `CREATE TABLE IF NOT EXISTS Producto_Componentes (
     id_producto_componente INTEGER PRIMARY KEY AUTOINCREMENT,
     id_producto INTEGER NOT NULL,
@@ -110,7 +110,7 @@ const CreateAllTables = [
     cantidad INTEGER DEFAULT 1,
     FOREIGN KEY (id_producto) REFERENCES Producto(id_producto),
     FOREIGN KEY (id_componente) REFERENCES Componentes(id_componente)
-  )`,
+  );`,
   `CREATE TABLE IF NOT EXISTS Ordenes (
     id_orden INTEGER PRIMARY KEY AUTOINCREMENT,
     id_perfil INTEGER NOT NULL,
@@ -119,7 +119,7 @@ const CreateAllTables = [
     estado TEXT DEFAULT 'pendiente', 
     total REAL NOT NULL,
     FOREIGN KEY (id_perfil) REFERENCES Perfil(id_perfil)
-  )`,
+  );`,
   `CREATE TABLE IF NOT EXISTS Ordenes_Producto (
     id_orden_producto INTEGER PRIMARY KEY AUTOINCREMENT,
     id_orden INTEGER NOT NULL,
@@ -131,7 +131,7 @@ const CreateAllTables = [
     detalle TEXT,
     FOREIGN KEY (id_orden) REFERENCES Ordenes(id_orden),
     FOREIGN KEY (id_producto) REFERENCES Producto(id_producto)
-  )`,
+  );`,
   `CREATE TABLE IF NOT EXISTS Facturas (
     id_factura INTEGER PRIMARY KEY AUTOINCREMENT,
     id_orden INTEGER NOT NULL,
@@ -143,7 +143,7 @@ const CreateAllTables = [
     fecha_emision DATETIME,
     estado TEXT DEFAULT 'pendiente',
     FOREIGN KEY (id_orden) REFERENCES Ordenes(id_orden)
-  )`,
+  );`,
   `CREATE TABLE IF NOT EXISTS Auditoria (
     uuid TEXT PRIMARY KEY,
     tabla_afectada TEXT NOT NULL,
@@ -153,7 +153,7 @@ const CreateAllTables = [
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     detalle TEXT,
     FOREIGN KEY (id_perfil) REFERENCES Perfil(id_perfil)
-  )`
+  );`
 ];
 
 const InsertDefaultData = [

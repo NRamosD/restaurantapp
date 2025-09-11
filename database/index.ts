@@ -24,7 +24,7 @@ export async function StartDatabase(db: SQLiteDatabase) {
     console.log(`Current DB version: ${currentDbVersion}, Target version: ${DATABASE_VERSION}`);
     
     // Only initialize if needed
-    if (currentDbVersion < DATABASE_VERSION) {
+    if (currentDbVersion <= DATABASE_VERSION) {
       console.log('Initializing database...');
       await InitializeDatabase(db);
       await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
