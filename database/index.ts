@@ -1,6 +1,6 @@
 import * as SQLite from "expo-sqlite";
 import { SQLiteDatabase } from "expo-sqlite";
-import { CreateAllTablesTable } from "./database.connection";
+import { InitializeDatabase } from "./database.connection";
 
 
 let db: SQLite.SQLiteDatabase | null = null;
@@ -25,7 +25,8 @@ export async function StartDatabase(db:SQLiteDatabase) {
   if (currentDbVersion === 0) {
     currentDbVersion = 1;
   }
-  await CreateAllTablesTable(db)
+  const resultInitializeDatabase = await InitializeDatabase(db)
+  console.log(resultInitializeDatabase)
   await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
 }
   

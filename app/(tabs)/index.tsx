@@ -29,6 +29,7 @@ import { useSQLiteContext } from "expo-sqlite";
 import { Componente } from "@/interfaces";
 import { createProfile, getAllProfiles } from "@/database/profile.operations";
 import { Perfil } from "@/interfaces/profile";
+import { getAllProducts } from "@/database/product.operations";
 
 export default function HomeScreen() {
   // const [nameProduct, setNameProduct] = useState<string>("");
@@ -43,23 +44,26 @@ export default function HomeScreen() {
     );
     console.log("Tablas creadas:", tables);
 
+    const resultProducts = await getAllProducts(dbConnection)
+    console.log("Productos:", resultProducts);
 
-    const newProfileId = await createProfile(dbConnection, {
-      id_usuario: 1,
-      id_negocio: null,
-      correo: "test@correo.com",
-      telefono: "555-1234",
-      nombre_perfil: "Admin",
-      password_perfil: "123456",
-      tipo_perfil: "admin",
-      tipo_negocio: "tienda",
-      estado: "activo",
-      valores_configuraciones: "{}",
-      auth: "token-de-prueba",
-    });
+
+    // const newProfileId = await createProfile(dbConnection, {
+    //   id_usuario: 1,
+    //   id_negocio: null,
+    //   correo: "test@correo.com",
+    //   telefono: "555-1234",
+    //   nombre_perfil: "Admin",
+    //   password_perfil: "123456",
+    //   tipo_perfil: "admin",
+    //   tipo_negocio: "tienda",
+    //   estado: "activo",
+    //   valores_configuraciones: "{}",
+    //   auth: "token-de-prueba",
+    // });
     
-    console.log("Nuevo perfil creado con ID:", newProfileId);
-    getProfilesList()
+    // console.log("Nuevo perfil creado con ID:", newProfileId);
+    // getProfilesList()
     // alert("hola")
     // const result = await createComponent(dbConnection, {
     //   id_perfil: 1, // 🔹 este debe existir en la tabla Perfil
