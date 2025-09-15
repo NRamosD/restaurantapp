@@ -1,28 +1,48 @@
 import * as SQLite from 'expo-sqlite';
 
+
 // export const dbConnection = SQLite.openDatabaseAsync('rest-app.db');
 
 export const InitializeDatabase = async (dbConnection:SQLite.SQLiteDatabase) => {
     console.log("Initializing database...");
+    
     try {
-        // Execute delete queries sequentially
+    //   await dbConnection.execSync(`
+    //     DROP TABLE IF EXISTS Facturas;
+    //     DROP TABLE IF EXISTS Ordenes_Producto;
+    //     DROP TABLE IF EXISTS Ordenes;
+    //     DROP TABLE IF EXISTS Producto_Componentes;
+    //     DROP TABLE IF EXISTS Componentes;
+    //     DROP TABLE IF EXISTS Producto;
+    //     DROP TABLE IF EXISTS Perfil;
+    //     DROP TABLE IF EXISTS Auditoria;
+    //   `);
+      // Execute delete queries sequentially
+      const tables = await dbConnection.getAllAsync<{ name: string }>(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
+      );
+      if(tables.length>0){
+        console.log("Deleting data from tables...");
         for (const query of DeleteDataFromTables) {
-          const result = await dbConnection.execAsync(query);
+          const result = dbConnection.execSync(query);
           console.log(result);
         }
-        
-        // Execute create table queries sequentially
-        for (const query of CreateAllTables) {
-          const result = await dbConnection.execAsync(query);
-          console.log(result);
-        }
-        
-        // Execute insert queries sequentially
-        for (const query of InsertDefaultData) {
-          const result = await dbConnection.execAsync(query);
-          console.log(result);
-        }
-        console.log('Database initialized successfully');
+      }
+      
+      // Execute create table queries sequentially
+      console.log("Creating tables...");
+      for (const query of CreateAllTables) {
+        const result = dbConnection.execSync(query);
+        console.log(result);
+      }
+      
+      // Execute insert queries sequentially
+      console.log("Inserting default data...");
+      for (const query of InsertDefaultData) {
+        const result = dbConnection.execSync(query);
+        console.log(result);
+      }
+      console.log('Database initialized successfully');
     } catch (error) {
         console.error('Error initializing database:', error);
         throw error;
@@ -162,9 +182,9 @@ const InsertDefaultData = [
         nombre_perfil, password_perfil, tipo_perfil, tipo_negocio, 
         estado, valores_configuraciones, auth
     ) VALUES (
-        1, 
-        1, 
-        '550e8400-e29b-41d4-a716-446655440000', 
+        2, 
+        2, 
+        '550e8400-e29b-41d4-a716-4466554400003', 
         'restaurante@ejemplo.com', 
         '1234567890', 
         'Restaurante Principal', 
@@ -172,7 +192,7 @@ const InsertDefaultData = [
         'admin', 
         'restaurante', 
         'activo', 
-        '{"tema":"claro","moneda":"USD"}', 
+        '{\"tema\":\"claro\",\"moneda\":\"USD\"}', 
         'auth_token_123'
     )`,
     `INSERT INTO Componentes (
@@ -211,7 +231,7 @@ const InsertDefaultData = [
         6.71,
         50,
         'disponible',
-        'https://ejemplo.com/img/hamburguesa.jpg',
+        'https://images.unsplash.com/photo-1744116432674-e6ff2b6d9544',
         '["img1.jpg", "img2.jpg"]',
         '123456789012',
         'hamburguesa-clasica',

@@ -12,6 +12,7 @@ import { Picker } from '@react-native-picker/picker'
 import { useSQLiteContext } from 'expo-sqlite'
 import { SegmentedButtons } from 'react-native-paper';
 import DetailTopSeller from '@/components/inventory/DetailTopSeller'
+import { getAllProducts } from '@/database/product.operations'
 
 type Props = {}
 
@@ -49,7 +50,7 @@ const CreateProductScreen = (props: Props) => {
         switch (segmentedButtonValue) {
             case 'today':
                 async function setup() {
-                const result = await db.getAllAsync<any>('SELECT * FROM platos');
+                const result = await getAllProducts(db);
                     setTodos(result);
                 }
                 setup();

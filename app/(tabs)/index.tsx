@@ -145,18 +145,18 @@ export default function HomeScreen() {
           </CView>
 
         </View>
-        {/* <View style={styles.contNewPedido}>
-          <CButton onPress={()=>{
-            alert("hola")
-            // router.push({pathname:"/orders/create-order"})
-          }} title={"NUEVO PEDIDO"} containerStyles={styles.touchableCreate}/>
-        </View> */}
         <View style={styles.contNewPedido}>
+          <CButton onPress={()=>{
+            // alert("hola")
+            router.push({pathname:"/orders/create-order"})
+          }} title={"NUEVO PEDIDO"} containerStyles={styles.touchableCreate}/>
+        </View>
+        {/* <View style={styles.contNewPedido}>
           <CButton onPress={()=>{
             createComponentWithButton()
           }} title={"NUEVO componente"} containerStyles={styles.touchableCreate}/>
-        </View>
-        <View style={styles.contNewPedido}>
+        </View> */}
+        {/* <View style={styles.contNewPedido}>
           <CText type="title" style={{textAlign:"center", paddingVertical:5}}>
             Perfiles
           </CText>
@@ -165,7 +165,7 @@ export default function HomeScreen() {
               <CText key={index} style={{padding:5}}>{profile.nombre_perfil}</CText>
             ))}
           </ScrollView>
-        </View>
+        </View> */}
     </View>
     // </ParallaxScrollView>
   );

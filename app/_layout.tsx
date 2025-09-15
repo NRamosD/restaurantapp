@@ -5,7 +5,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { Suspense, useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { SQLiteProvider, type SQLiteDatabase } from 'expo-sqlite';
+import { SQLiteProvider } from 'expo-sqlite';
+import * as SQLite from 'expo-sqlite';
 import { StartDatabase } from '@/database/index';
 import App from './App';
 import { Text } from 'react-native';
@@ -18,6 +19,13 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
+
+  useEffect(() => {
+    (async () => {
+      console.log("Deleting database...");
+      await SQLite.deleteDatabaseAsync("rest-app.db");
+    })();
+  }, []);
 
   useEffect(() => {
     if (loaded) {

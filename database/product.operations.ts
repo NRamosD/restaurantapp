@@ -1,9 +1,10 @@
 import { uuid } from "@/assets/utils/uuid";
 import { Product } from "@/interfaces";
 import * as SQLite from 'expo-sqlite';
+import { ToastAndroid } from "react-native";
 
 // Types
-type CreateProductInput = Omit<Product, 'id_producto' | 'uuid' | 'fecha_creacion'> & { 
+export type CreateProductInput = Omit<Product, 'id_producto' | 'uuid' | 'fecha_creacion'> & { 
     uuid?: string;
     galeria?: string | null;
 };
@@ -59,6 +60,7 @@ export const createProduct = async (
             product.tiempo_entrega ?? null,
         ]
     );
+    ToastAndroid.show(`${product.nombre} creado exitosamente`, ToastAndroid.LONG);
     
     return result.lastInsertRowId as number;
 };

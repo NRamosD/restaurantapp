@@ -2,6 +2,7 @@ import * as SQLite from "expo-sqlite";
 import { SQLiteDatabase } from "expo-sqlite";
 import { InitializeDatabase } from "./database.connection";
 
+export const DB_NAME = "rest-app.db";
 
 let db: SQLite.SQLiteDatabase | null = null;
 
@@ -12,26 +13,47 @@ export async function getDbConnection(): Promise<SQLite.SQLiteDatabase> {
   return db;
 }
 
+export async function closeDbConnection(): Promise<void> {
+  const db = await getDbConnection();
+  if (db) {
+    await db.closeAsync();
+    // db = null;
+    console.log("Database connection closed");
+  }
+}
+
+export async function resetDatabase(): Promise<void> {
+  try {
+    await closeDbConnection(); // asegúrate de cerrar antes
+    await SQLite.deleteDatabaseAsync(DB_NAME);
+    console.log("Database deleted successfully");
+  } catch (error) {
+    console.error("Error deleting database:", error);
+  }
+}
 
 export async function StartDatabase(db: SQLiteDatabase) {
   const DATABASE_VERSION = 1;
   
   try {
-    // Get current database version
-    const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
-    const currentDbVersion = result?.user_version ?? 0;
+    // await closeDbConnection();
+    // await resetDatabase();
+    await InitializeDatabase(db);
+
+
+    // const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
+    // const currentDbVersion = result?.user_version ?? 0;
     
-    console.log(`Current DB version: ${currentDbVersion}, Target version: ${DATABASE_VERSION}`);
+    // console.log(`Current DB version: ${currentDbVersion}, Target version: ${DATABASE_VERSION}`);
     
-    // Only initialize if needed
-    if (currentDbVersion <= DATABASE_VERSION) {
-      console.log('Initializing database...');
-      await InitializeDatabase(db);
-      await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
-      console.log('Database initialized successfully');
-    } else {
-      console.log('Database is up to date');
-    }
+    // if (currentDbVersion <= DATABASE_VERSION) {
+    //   console.log('Initializing database...');
+    //   await InitializeDatabase(db);
+    //   await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
+    //   console.log('Database initialized successfully');
+    // } else {
+    //   console.log('Database is up to date');
+    // }
   } catch (error) {
     console.error('Error during database initialization:', error);
     throw error; // Re-throw to be caught by Suspense boundary
