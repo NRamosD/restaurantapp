@@ -39,10 +39,12 @@ const CreateProductScreen = (props: Props) => {
         codigo_barras: '',
         iva: null,
         slug: '',
-        tiempo_entrega: ''
+        tiempo_entrega: '',
+        ilimitado: false
     });
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [switchEnvioGratis, setSwitchEnvioGratis] = useState(false);
+    const [switchIlimitado, setSwitchIlimitado] = useState(false);
     const [image, setImage] = useState<string>("");
 
     const handleInputChange = (field: keyof Product, value: any) => {
@@ -54,10 +56,7 @@ const CreateProductScreen = (props: Props) => {
             
             // Auto-generate slug from nombre
             if (field === 'nombre') {
-                newData.slug = value
-                    .toLowerCase()
-                    .replace(/[^a-z0-9]+/g, '-')
-                    .replace(/(^-|-$)/g, '');
+                newData.slug = encodeURI(value.toLowerCase());
             }
             
             return newData;
@@ -65,10 +64,19 @@ const CreateProductScreen = (props: Props) => {
 
     };
 
-    const onToggleSwitch = () => {
+    const onToggleSwitchEnvioGratis = (nameField: keyof Product) => {
         const newValue = !switchEnvioGratis;
         setSwitchEnvioGratis(newValue);
-        handleInputChange('envio_gratis', newValue);
+        handleInputChange(nameField, newValue);
+    };
+
+    const onToggleSwitchIlimitado = (nameField: keyof Product) => {
+        const newValue = !switchIlimitado;
+        if(newValue){
+            handleInputChange("stock", 0);
+        }
+        setSwitchIlimitado(newValue);
+        handleInputChange(nameField, newValue);
     };
 
     const pickImage = async () => {
@@ -88,6 +96,7 @@ const CreateProductScreen = (props: Props) => {
     const handleSaveProduct = async() => {
         console.log(formData);
         await createProduct(db, formData)
+        router.dismissTo("/")
     };
 
     useEffect(() => {
@@ -150,8 +159,16 @@ const CreateProductScreen = (props: Props) => {
                                     keyboardType="numeric"
                                     value={formData.stock?.toString()}
                                     onChangeText={(text) => handleInputChange('stock', parseInt(text) || 0)}
+                                    disabled={switchIlimitado}
                                 />
                             </CView>
+                        </CView>
+                        <CView style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 8, backgroundColor: '#f5f5f5', borderRadius: 5}}>
+                            <CText>Ilimitado</CText>
+                            <Switch 
+                                value={formData.ilimitado} 
+                                onValueChange={()=>onToggleSwitchIlimitado("ilimitado")} 
+                            />
                         </CView>
                         
                         <CView>
@@ -255,7 +272,7 @@ const CreateProductScreen = (props: Props) => {
                             <CText>Envío Gratis</CText>
                             <Switch 
                                 value={formData.envio_gratis} 
-                                onValueChange={onToggleSwitch} 
+                                onValueChange={()=>onToggleSwitchEnvioGratis("envio_gratis")} 
                             />
                         </CView>
                     </CView>

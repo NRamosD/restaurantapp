@@ -74,6 +74,7 @@ export interface Product {
   iva?: number | null;
   precio: number;
   precio_total: number;
+  ilimitado?: boolean;
   stock: number;
   estado: string; // default "disponible"
 

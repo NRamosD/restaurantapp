@@ -20,14 +20,14 @@ const ItemMenuSquareDetails = ({
       <TouchableOpacity
         // onPress={() => alert("se fue al detalle del registro")}
         // <Link href={"/inventory/:tomate"}>Veamos el tomate</Link>
-        onPress={() => router.navigate(`inventory/:${data.nombre}`)}
+        onPress={() => router.navigate(`inventory/:${data?.nombre}`)}
         style={{  }}
       >
         <CView style={styles.containerImgText}>
           <CView style={{width:"100%", height:100}}>
             <Image
               // source={{ uri: data?.image || fallBackImage }}
-                source={{ uri: data?.imagenUrl ||'https://reactnative.dev/img/tiny_logo.png' }}
+                source={{ uri: data?.imagen_url ||'https://reactnative.dev/img/tiny_logo.png' }}
               style={{ width: "100%", height: "100%", objectFit:"cover", borderRadius:5 }}
             />
           </CView>
@@ -38,11 +38,11 @@ const ItemMenuSquareDetails = ({
         <CView style={{flex:1, flexDirection:"row", justifyContent:"space-between"}}>
           <CView style={{alignItems:"flex-start", gap:1}}>
             <CText type="defaultSemiBold" style={{fontSize:12}}>Precio</CText>
-            <CText type="defaultSemiBold">${data.precio || "10"}</CText>
+            <CText type="defaultSemiBold">${data.precio || "N/D"}</CText>
           </CView>
           <CView style={{alignItems:"flex-end", gap:1}}>
             <CText type="defaultSemiBold" style={{fontSize:12}}>Stock</CText>
-            <CText type="defaultSemiBold">{data.stock || "10"}</CText>
+            <CText type="defaultSemiBold">{!!data.ilimitado ? "Ilimitado" : data.stock || "N/D"}</CText>
           </CView>
         </CView>
       </TouchableOpacity>

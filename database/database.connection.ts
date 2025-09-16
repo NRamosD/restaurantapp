@@ -101,6 +101,7 @@ const CreateAllTables = [
     precio_anterior REAL,
     envio_gratis INTEGER,
     tiempo_entrega TEXT,
+    ilimitado INTEGER DEFAULT 1,
     FOREIGN KEY (id_perfil) REFERENCES Perfil(id_perfil)
   );`,
   `CREATE TABLE IF NOT EXISTS Componentes (
@@ -219,7 +220,8 @@ const InsertDefaultData = [
         uuid, id_perfil, nombre, descripcion, imagen, 
         iva, precio, precio_total, stock, estado, 
         imagen_url, galeria, codigo_barras, slug, 
-        descuento, precio_anterior, envio_gratis, tiempo_entrega
+        descuento, precio_anterior, envio_gratis, tiempo_entrega,
+        ilimitado
     ) VALUES (
         '550e8400-e29b-41d4-a716-446655440002',
         1,
@@ -238,7 +240,8 @@ const InsertDefaultData = [
         0.00,
         6.99,
         1,
-        '30-45 minutos'
+        '30-45 minutos',
+        1
     )`,
     `INSERT INTO Producto_Componentes (
         id_producto, id_componente, uuid, cantidad

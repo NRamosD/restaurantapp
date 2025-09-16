@@ -36,8 +36,8 @@ export const createProduct = async (
         `INSERT INTO Producto (
             uuid, id_perfil, nombre, descripcion, imagen, iva, precio, precio_total,
             stock, estado, imagen_url, galeria, video_url, codigo_barras, slug,
-            descuento, precio_anterior, envio_gratis, tiempo_entrega
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            descuento, precio_anterior, envio_gratis, tiempo_entrega, ilimitado
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
             product.uuid || uuid(),
             product.id_perfil,
@@ -58,6 +58,7 @@ export const createProduct = async (
             product.precio_anterior ?? null,
             product.envio_gratis ?? 0,
             product.tiempo_entrega ?? null,
+            product.ilimitado ?? 1
         ]
     );
     ToastAndroid.show(`${product.nombre} creado exitosamente`, ToastAndroid.LONG);
@@ -185,7 +186,7 @@ export const updateProduct = async (
     const fields: Array<keyof typeof product> = [
         'nombre', 'descripcion', 'imagen', 'iva', 'precio', 'precio_total',
         'stock', 'estado', 'imagen_url', 'galeria', 'video_url', 'codigo_barras',
-        'slug', 'descuento', 'precio_anterior', 'envio_gratis', 'tiempo_entrega'
+        'slug', 'descuento', 'precio_anterior', 'envio_gratis', 'tiempo_entrega', 'ilimitado'
     ];
 
     fields.forEach(field => {
