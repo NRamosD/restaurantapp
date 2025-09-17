@@ -38,22 +38,10 @@ export async function StartDatabase(db: SQLiteDatabase) {
   try {
     // await closeDbConnection();
     // await resetDatabase();
-    await InitializeDatabase(db);
+
+    // await InitializeDatabase(db);
 
 
-    // const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
-    // const currentDbVersion = result?.user_version ?? 0;
-    
-    // console.log(`Current DB version: ${currentDbVersion}, Target version: ${DATABASE_VERSION}`);
-    
-    // if (currentDbVersion <= DATABASE_VERSION) {
-    //   console.log('Initializing database...');
-    //   await InitializeDatabase(db);
-    //   await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
-    //   console.log('Database initialized successfully');
-    // } else {
-    //   console.log('Database is up to date');
-    // }
   } catch (error) {
     console.error('Error during database initialization:', error);
     throw error; // Re-throw to be caught by Suspense boundary

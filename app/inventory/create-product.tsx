@@ -90,6 +90,7 @@ const CreateProductScreen = (props: Props) => {
 
         if (!result.canceled && result.assets && result.assets.length > 0) {
             setImage(result.assets?.[0]?.uri ||"");
+            handleInputChange("imagen_url", result.assets?.[0]?.uri ||"");
         }
     };
 
