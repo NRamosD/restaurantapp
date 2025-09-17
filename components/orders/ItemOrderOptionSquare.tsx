@@ -17,7 +17,7 @@ const ItemOrderOptionSquare = ({
     <TouchableOpacity key={`item-${singleProduct.uuid}`} onPress={() => touchAction && touchAction(singleProduct)}>
         <CView style={styles.item}>
           <ImageBackground
-            source={{ uri: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" }}
+            source={{ uri: singleProduct.imagen || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" }}
             style={styles.imageBackground}
           >
             <CView style={styles.overlay} />
@@ -40,11 +40,13 @@ const styles = StyleSheet.create({
     height:"90%",
     alignItems: 'center',
     justifyContent: 'center',
+    textAlign:"center"
   },
   text: {
     color: '#fff',
     zIndex:1,
-    fontWeight:"700"
+    fontWeight:"700",
+    textAlign:"center",backgroundColor:"black", padding:5
   },
   imageBackground: { 
     width: "100%", 
@@ -54,6 +56,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
+    textAlign:"center"
   },
   overlay: {
     ...StyleSheet.absoluteFillObject, // Llena todo el contenedor

@@ -4,13 +4,16 @@ import { TouchableOpacity } from "react-native";
 import { CText } from "../CText";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { Orden } from "@/interfaces";
 
 type Props = {
   path?:any
+  order?:Orden
 };
 
 const ItemOrderLink = ({
-  path
+  path,
+  order
 }: Props) => {
   const text1 = "Description of order in one line qioweu qoiwu e qwe qjweqw";
 
@@ -21,7 +24,7 @@ const ItemOrderLink = ({
         style={{ flex: 1, flexDirection: "row", }}
       >
         <CView style={{ flex: 5 }}>
-          <CText type="title">Orden #223</CText>
+          <CText type="title">Orden #{order?.id_orden}</CText>
           <CText
             type="default"
             style={{ overflow: "hidden", textOverflow: "ellipsis" }}

@@ -16,7 +16,7 @@ const ItemOrderSelected = ({
     removeItem
 }: Props) => {
   return (
-    <CView key={`singleProduct-selected-${singleProduct.id}`}
+    <CView key={`singleProduct-selected-${singleProduct.uuid}`}
     style={style.container}>
         <CView style={{flex:8}}>
           <CText style={style.nameProduct}>

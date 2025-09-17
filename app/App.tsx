@@ -14,11 +14,11 @@ const App = ({
     <SafeAreaProvider>
         <MenuProvider>
         <PaperProvider>
-            <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="inventory" options={{ headerShown: false }} />
-            <Stack.Screen name="orders" options={{ headerShown: false }} />
-            <Stack.Screen name="settings" options={{ headerShown: false }} />
+            <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)"  />
+            <Stack.Screen name="inventory"  />
+            <Stack.Screen name="orders"  />
+            <Stack.Screen name="settings"  />
             <Stack.Screen name="+not-found" />
             </Stack>
             <StatusBar style="auto" />

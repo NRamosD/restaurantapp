@@ -1,100 +1,41 @@
 import {
-  Image,
   StyleSheet,
-  Platform,
-  Button,
   View,
-  TextInput,
-  SafeAreaView,
-  Text,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
 
-import { HelloWave } from "@/components/HelloWave";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
+
 import { CText } from "@/components/CText";
 import { CView } from "@/components/CView";
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { TopBarWithMenu } from "@/components/TopBarWithMenu";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import MenuPopUpGeneral from "@/components/MenuPopUpGeneral";
 import CButton from "@/components/CButton";
 import { Ionicons } from "@expo/vector-icons";
 import { ItemOrderLink } from "@/components/orders";
-import { createComponent, getAllComponents } from "@/database/components.operations";
-// import { dbConnection } from "@/database/database.connection";
 import { useSQLiteContext } from "expo-sqlite";
-import { Componente } from "@/interfaces";
-import { createProfile, getAllProfiles } from "@/database/profile.operations";
-import { Perfil } from "@/interfaces/profile";
-import { getAllProducts } from "@/database/product.operations";
+import { Orden } from "@/interfaces";
+import { getAllOrders } from "@/database/order.operations";
 
 export default function HomeScreen() {
   // const [nameProduct, setNameProduct] = useState<string>("");
   const dbConnection = useSQLiteContext()
-  const [profiles, setProfiles] = useState<Perfil[]>([])
+  const [orderList, setOrderList] = useState<Orden[]>([])
+  // const [profiles, setProfiles] = useState<Perfil[]>([])
   const insets = useSafeAreaInsets()
 
 
-  const createComponentWithButton = async () => {
-    const tables = await dbConnection.getAllAsync<{ name: string }>(
-      "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
-    );
-    console.log("Tablas creadas:", tables);
-
-    const resultProducts = await getAllProducts(dbConnection)
-    console.log("Productos:", resultProducts);
-
-
-    // const newProfileId = await createProfile(dbConnection, {
-    //   id_usuario: 1,
-    //   id_negocio: null,
-    //   correo: "test@correo.com",
-    //   telefono: "555-1234",
-    //   nombre_perfil: "Admin",
-    //   password_perfil: "123456",
-    //   tipo_perfil: "admin",
-    //   tipo_negocio: "tienda",
-    //   estado: "activo",
-    //   valores_configuraciones: "{}",
-    //   auth: "token-de-prueba",
-    // });
-    
-    // console.log("Nuevo perfil creado con ID:", newProfileId);
-    // getProfilesList()
-    // alert("hola")
-    // const result = await createComponent(dbConnection, {
-    //   id_perfil: 1, // 🔹 este debe existir en la tabla Perfil
-    //   nombre: "Nuevo Componente",
-    //   descripcion: "Descripción del nuevo componente",
-    //   tipo: "Tipo del nuevo componente",
-    //   material: "Material del nuevo componente",
-    //   peso: 1.5,
-    //   longitud: 50,
-    //   ancho: 30,
-    //   alto: 20,
-    //   calorias: 150,
-    //   stock: 0,
-    //   porciones: 3,
-    //   color: "#FF0000",
-    // });
-    
-    // console.log(result)
-    // alert(result)
+  const getAllOrdersList = async () => {
+    const result = await getAllOrders(dbConnection)
+    console.log(result)
+    setOrderList(result)
   }
 
-  const getProfilesList = async () => {
-    const profiles = await getAllProfiles(dbConnection)
-    // alert(components)
-    console.log(profiles)
-    setProfiles(profiles)
-  }
-
-  // useEffect(() => {
-  //   getProfilesList()
-  // }, [profiles])
+  useEffect(() => {
+    getAllOrdersList()
+  }, []);
 
 
   return (
@@ -118,11 +59,19 @@ export default function HomeScreen() {
             Pendientes de Facturar
           </CText>
           <ScrollView style={styles.scrollView}>
-            <ItemOrderLink path={"/orders/create-order"}/>
-            <ItemOrderLink path={"/orders/create-order"}/>
-            <ItemOrderLink path={"/orders/create-order"}/>
-            <ItemOrderLink path={"/orders/create-order"}/>
-            <ItemOrderLink path={"/orders/create-order"}/>
+            {
+              orderList.length === 0 ? (
+                <CText type="subtitle" style={{textAlign:"center", paddingVertical:5}}>
+                  No hay pedidos pendientes
+                </CText>
+              ) : (
+                orderList.map((order, index) => (
+                  <ItemOrderLink key={`pending-order-${index}`} 
+                  order={order}
+                  path={"/orders/create-order"}/>
+                ))
+              )
+            }
           </ScrollView>
         </CView>
         <View style={styles.easyAccess}>
@@ -148,7 +97,7 @@ export default function HomeScreen() {
         <View style={styles.contNewPedido}>
           <CButton onPress={()=>{
             // alert("hola")
-            router.push({pathname:"/orders/create-order"})
+            router.push("/orders/create-order")
           }} title={"NUEVO PEDIDO"} containerStyles={styles.touchableCreate}/>
         </View>
         {/* <View style={styles.contNewPedido}>

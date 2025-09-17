@@ -39,7 +39,7 @@ export async function StartDatabase(db: SQLiteDatabase) {
     // await closeDbConnection();
     // await resetDatabase();
 
-    // await InitializeDatabase(db);
+    await InitializeDatabase(db);
 
 
   } catch (error) {

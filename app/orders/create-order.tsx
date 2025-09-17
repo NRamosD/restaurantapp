@@ -10,24 +10,29 @@ import { FlatList, StyleSheet, TouchableOpacity } from 'react-native'
 import { Product } from '@/interfaces'
 import { v4 as uuidv4 } from 'uuid';
 import ItemOrderOptionSquare from '@/components/orders/ItemOrderOptionSquare'
+import { useSQLiteContext } from 'expo-sqlite'
+import { getAllProducts } from '@/database/product.operations'
 
 
 
 type Props = {}
 type dataType = {id:string, name:string}
-const data:Product[] = Array.from({ length: 20 }, (_, i) => ({ 
-  id: i.toString(), 
-  uuid:uuidv4(),//"Producto #"+(i/2),
-  nombre:"Producto #"+i,
-  precio:(Math.random()*100)+ parseFloat(Math.random().toFixed(3)),
-  activo:true,
-  fechaCreacion:new Date(),
-}) as Product );
+// const data:Product[] = Array.from({ length: 20 }, (_, i) => ({ 
+//   id: i.toString(), 
+//   uuid:uuidv4(),//"Producto #"+(i/2),
+//   nombre:"Producto #"+i,
+//   precio:(Math.random()*100)+ parseFloat(Math.random().toFixed(3)),
+//   activo:true,
+//   fechaCreacion:new Date(),
+// }) as Product );
 
 const CreateOrder = ({
   
 }: Props) => {
-  const [dataTest, setdataTest] = useState<Product[]>(data||[]);
+  const dbConnection = useSQLiteContext()
+
+  const [dataProducts, setDataProducts] = useState<Product[]>([]);
+  const [productsList, setProductsList] = useState<Product[]>([]);
   const [dataSelected, setDataSelected] = useState<Product[]>([]);
   const [textSearchedItem, setTextSearchedItem] = useState<string>("");
   
@@ -38,27 +43,29 @@ const CreateOrder = ({
   }
 
   const deleteItemSelected = (item:Product) => {
-    const auxFiltered = dataSelected.filter(x=>x.id!==item.id)
+    const auxFiltered = dataSelected.filter(x=>x.uuid!==item.uuid)
     setDataSelected(auxFiltered)
   }
 
   useEffect(() => {
-    if(data){
-      setdataTest(data)
-    }
-  }, [data]);
+    (async () => {
+      const result = await getAllProducts(dbConnection)
+      setDataProducts(result)
+      setProductsList(result)
+    })()
+  }, []);
 
   useEffect(() => {
     if(!!textSearchedItem){
 
-      const filteredSearched = data?.filter(x=>{
-        if(x.nombre.includes(textSearchedItem)){
+      const filteredSearched = dataProducts?.filter(x=>{
+        if(x.nombre.toLowerCase().includes(textSearchedItem.toLowerCase())){
           return x
         }
       })
-      setdataTest(filteredSearched)
+      setProductsList(filteredSearched)
     }else{
-      setdataTest(data)
+      setProductsList(dataProducts)
     }
   }, [textSearchedItem]);
 
@@ -80,7 +87,7 @@ const CreateOrder = ({
       <CView style={{flex:5, flexDirection:"row", gap:15,
         justifyContent:"flex-start", alignItems:"center", backgroundColor:"#1c1c1c"}}>
           <FlatList<Product>
-            data={dataTest.filter(x=>!dataSelected.find(y=>y.id==x.id))}
+            data={productsList.filter(x=>!dataSelected.find(y=>y.uuid==x.uuid))}
             horizontal={true}
             keyExtractor={item => item.uuid}
             showsHorizontalScrollIndicator={false}

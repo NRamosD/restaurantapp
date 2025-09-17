@@ -11,7 +11,7 @@ type Props =  TextInputProps & {
 
 const CInputText = ({
     label,
-    optionText,
+    optionText="text",
     ...rest
 }: Props) => {
 

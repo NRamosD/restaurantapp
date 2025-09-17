@@ -20,12 +20,12 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  // useEffect(() => {
-  //   (async () => {
-  //     console.log("Deleting database...");
-  //     await SQLite.deleteDatabaseAsync("rest-app.db");
-  //   })();
-  // }, []);
+  useEffect(() => {
+    (async () => {
+      console.log("Deleting database...");
+      await SQLite.deleteDatabaseAsync("rest-app.db");
+    })();
+  }, []);
 
   useEffect(() => {
     if (loaded) {

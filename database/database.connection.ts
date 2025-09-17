@@ -243,6 +243,63 @@ const InsertDefaultData = [
         '30-45 minutos',
         1
     )`,
+    `
+    INSERT INTO Producto (
+        uuid, id_perfil, nombre, descripcion, imagen, 
+        iva, precio, precio_total, stock, estado, 
+        imagen_url, galeria, codigo_barras, slug, 
+        descuento, precio_anterior, envio_gratis, tiempo_entrega,
+        ilimitado
+    ) VALUES (
+        '550e8400-e29b-41d4-a716-446655440008',
+        1,
+        'Pizza Margarita',
+        'Pizza clásica con salsa de tomate, mozzarella y albahaca fresca',
+        'pizza.jpg',
+        0.12,
+        8.50,
+        9.52,
+        30,
+        'disponible',
+        'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3',
+        '["pizza1.jpg", "pizza2.jpg"]',
+        '987654321098',
+        'pizza-margarita',
+        0.00,
+        9.50,
+        0,
+        '20-30 minutos',
+        0
+    )
+    `,
+    `INSERT INTO Producto (
+        uuid, id_perfil, nombre, descripcion, imagen, 
+        iva, precio, precio_total, stock, estado, 
+        imagen_url, galeria, codigo_barras, slug, 
+        descuento, precio_anterior, envio_gratis, tiempo_entrega,
+        ilimitado
+    ) VALUES (
+        '550e8400-e29b-41d4-a716-446655440009',
+        1,
+        'Tacos al Pastor',
+        'Tacos tradicionales con cerdo marinado, piña y cilantro',
+        'tacos.jpg',
+        0.12,
+        7.50,
+        8.40,
+        40,
+        'disponible',
+        'https://images.unsplash.com/photo-1624300629298-e9de39c13be5',
+        '["tacos1.jpg", "tacos2.jpg"]',
+        '112233445566',
+        'tacos-al-pastor',
+        0.00,
+        8.00,
+        1,
+        '15-25 minutos',
+        1
+    )`
+    ,
     `INSERT INTO Producto_Componentes (
         id_producto, id_componente, uuid, cantidad
     ) VALUES (
