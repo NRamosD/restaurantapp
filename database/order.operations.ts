@@ -362,3 +362,31 @@ export const getOrderStatistics = async (
         average_order_value: sales?.avg ?? 0
     };
 };
+
+// Obtener órdenes agrupadas por día (con filtro opcional por fecha específica)
+export const getOrdersGroupedByDay = async (
+    db: SQLite.SQLiteDatabase,
+    id_perfil: number,
+    date?: string
+): Promise<Array<{ day: string; order_count: number; total_sales: number }>> => {
+    let query = `
+      SELECT 
+        strftime('%Y-%m-%d', fecha) as day,
+        COUNT(*) as order_count,
+        COALESCE(SUM(total), 0) as total_sales
+      FROM Ordenes
+      WHERE id_perfil = ?
+    `;
+  
+    const params: (string | number)[] = [id_perfil];
+  
+    if (date) {
+      // Admite 'YYYY-MM-DD' o ISO; date() normaliza a solo la parte de fecha
+      query += ` AND date(fecha) = date(?)`;
+      params.push(date);
+    }
+  
+    query += ` GROUP BY day ORDER BY day DESC`;
+  
+    return await db.getAllAsync<{ day: string; order_count: number; total_sales: number }>(query, params);
+};
