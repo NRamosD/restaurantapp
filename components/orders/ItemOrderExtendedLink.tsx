@@ -3,10 +3,11 @@ import { CView } from "../CView";
 import { TouchableOpacity } from "react-native";
 import { CText } from "../CText";
 import { Ionicons } from "@expo/vector-icons";
-import { ItemOrderExtended } from "@/interfaces/orders";
+import { ItemOrderExtended, Orden } from "@/interfaces/orders";
+import dayjs from "dayjs";
 
 type Props = {
-  data:ItemOrderExtended
+  data:Orden
 };
 
 const ItemOrderExtendedLink = ({
@@ -20,14 +21,14 @@ const ItemOrderExtendedLink = ({
         style={{ flex: 1, flexDirection: "row", }}
       >
         <CView style={{ flex: 5 }}>
-          <CText type="title">Orden #{data.order_number}</CText>
+          <CText type="title">Orden #{data.id_orden}</CText>
           <CText
             type="default"
             style={{ overflow: "hidden", textOverflow: "ellipsis" }}
           >
-            {data.details.slice(0, 45).concat("...")}
+            {data.uuid}
           </CText>
-          <CText>`${data.date} - ${data.time}`</CText>
+          <CText>{dayjs(data.fecha).format("DD-MM-YYYY")} - {dayjs(data.fecha).format("HH:mm:ss")}</CText>
           {/* <CView style={{flex:1, flexDirection:"row"}}>
             <CText></CText>
           </CView> */}

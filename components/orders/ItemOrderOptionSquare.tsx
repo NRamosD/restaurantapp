@@ -17,7 +17,7 @@ const ItemOrderOptionSquare = ({
     <TouchableOpacity key={`item-${singleProduct.uuid}`} onPress={() => touchAction && touchAction(singleProduct)}>
         <CView style={styles.item}>
           <ImageBackground
-            source={{ uri: singleProduct.imagen || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" }}
+            source={{ uri: singleProduct.imagen_url || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" }}
             style={styles.imageBackground}
           >
             <CView style={styles.overlay} />
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     zIndex:1,
     fontWeight:"700",
-    textAlign:"center",backgroundColor:"black", padding:5
+    textAlign:"center",
   },
   imageBackground: { 
     width: "100%", 

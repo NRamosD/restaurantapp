@@ -84,7 +84,7 @@ const CreateOrder = ({
         />
       </CView>
 
-      <CView style={{flex:5, flexDirection:"row", gap:15,
+      <CView style={{flex: dataSelected?.length==productsList?.length ? 1 : 5, flexDirection:"row", gap:15,
         justifyContent:"flex-start", alignItems:"center", backgroundColor:"#1c1c1c"}}>
           <FlatList<Product>
             data={productsList.filter(x=>!dataSelected.find(y=>y.uuid==x.uuid))}

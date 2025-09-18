@@ -364,7 +364,7 @@ export const getOrderStatistics = async (
 };
 
 // Obtener órdenes agrupadas por día (con filtro opcional por fecha específica)
-export const getOrdersGroupedByDay = async (
+export const getOrdersGroupedByDayStats = async (
     db: SQLite.SQLiteDatabase,
     id_perfil: number,
     date?: string
@@ -377,6 +377,7 @@ export const getOrdersGroupedByDay = async (
       FROM Ordenes
       WHERE id_perfil = ?
     `;
+
   
     const params: (string | number)[] = [id_perfil];
   
@@ -388,5 +389,44 @@ export const getOrdersGroupedByDay = async (
   
     query += ` GROUP BY day ORDER BY day DESC`;
   
-    return await db.getAllAsync<{ day: string; order_count: number; total_sales: number }>(query, params);
+    return await db.getAllAsync<{ day: string; order_count: number; total_sales: number; orders: Orden[] }>(query, params);
+};
+
+
+
+// Obtener órdenes agrupadas por día (con filtro opcional por fecha específica)
+export const getOrdersByDate = async (
+    db: SQLite.SQLiteDatabase,
+    id_perfil: number,
+    type: 'day' | 'week' | 'month' | 'year',
+    date1: string,
+    date2?: string
+): Promise<Array<Orden[]>> => {
+    let query = '';
+    const params: (string | number)[] = [id_perfil];
+
+    if(type === 'day') {
+        query = `
+          SELECT 
+            *
+          FROM Ordenes
+          WHERE id_perfil = ?
+          AND date(fecha) = date(?)
+        `;
+        params.push(date1);
+    }else{
+        query = `
+          SELECT 
+            *
+          FROM Ordenes
+          WHERE id_perfil = ?
+          AND date(fecha) BETWEEN ? AND ?
+        `;
+        params.push(date1);
+        params.push(date2!);
+    }
+
+    // query += ` GROUP BY day ORDER BY day DESC`;
+
+    return await db.getAllAsync<Orden[]>(query, params);
 };
