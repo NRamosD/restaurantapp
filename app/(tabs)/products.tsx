@@ -14,6 +14,7 @@ import GenericModal from '@/components/ui/GenericModal';
 import { useSQLiteContext } from 'expo-sqlite';
 import { getProducts } from '@/database/product.operations';
 import { useEffect, useState } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 
 
 
@@ -24,6 +25,7 @@ import { useEffect, useState } from 'react';
 export default function TabTwoScreen() {
 
   const db = useSQLiteContext();
+  const isFocused = useIsFocused();
   const [products, setProducts] = useState<Product[]>([]);
 
   const fetchProducts = async () => {
@@ -33,7 +35,7 @@ export default function TabTwoScreen() {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [isFocused]);
 
   return (
     <CContainerView style={{

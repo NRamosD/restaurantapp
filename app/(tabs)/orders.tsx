@@ -22,6 +22,7 @@ import { Picker } from '@react-native-picker/picker';
 import CInputText from '@/components/CInputText';
 import { useSQLiteContext } from 'expo-sqlite';
 import { getOrdersByDate, getOrdersGroupedByDayStats } from '@/database/order.operations';
+import { useIsFocused } from '@react-navigation/native';
 
 
 
@@ -112,6 +113,7 @@ const mockOrders: ItemOrderExtended[] = [
 export default function TabTwoScreen() {
 
   const dbConnection  = useSQLiteContext();
+  const isFocused = useIsFocused();
 
   const [textFieldToShow, setTextFieldToShow] = useState(0);
   const [openModal2, setopenModal2] = useState(false);
@@ -199,7 +201,7 @@ export default function TabTwoScreen() {
   };
   useEffect(()=>{
     getOrdersByDay()
-  },[])
+  },[isFocused])
 
   return (
     <CContainerView withBottomPadding={false} style={{

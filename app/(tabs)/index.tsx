@@ -18,10 +18,12 @@ import { ItemOrderLink } from "@/components/orders";
 import { useSQLiteContext } from "expo-sqlite";
 import { Orden } from "@/interfaces";
 import { getAllOrders } from "@/database/order.operations";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function HomeScreen() {
   // const [nameProduct, setNameProduct] = useState<string>("");
   const dbConnection = useSQLiteContext()
+  const isFocused = useIsFocused();
   const [orderList, setOrderList] = useState<Orden[]>([])
   // const [profiles, setProfiles] = useState<Perfil[]>([])
   const insets = useSafeAreaInsets()
@@ -35,7 +37,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     getAllOrdersList()
-  }, []);
+  }, [isFocused]);
 
 
   return (

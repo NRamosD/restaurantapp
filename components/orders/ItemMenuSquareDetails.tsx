@@ -13,20 +13,15 @@ type Props = {
 const ItemMenuSquareDetails = ({
   data
 }: Props) => {
-  const fallBackImage = "https://www.tipos.co/wp-content/uploads/2015/02/La-sabana-es-un-paisaje.jpg"
 
   return (
     <CView style={styles.containerItem}>
       <TouchableOpacity
-        // onPress={() => alert("se fue al detalle del registro")}
-        // <Link href={"/inventory/:tomate"}>Veamos el tomate</Link>
-        onPress={() => router.navigate(`inventory/:${data?.nombre}`)}
-        style={{  }}
+        onPress={() => router.navigate(`inventory/:${data?.uuid}`)}
       >
         <CView style={styles.containerImgText}>
           <CView style={{width:"100%", height:100}}>
             <Image
-              // source={{ uri: data?.image || fallBackImage }}
                 source={{ uri: data?.imagen_url ||'https://reactnative.dev/img/tiny_logo.png' }}
               style={{ width: "100%", height: "100%", objectFit:"cover", borderRadius:5 }}
             />
