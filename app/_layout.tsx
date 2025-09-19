@@ -10,6 +10,11 @@ import * as SQLite from 'expo-sqlite';
 import { StartDatabase } from '@/database/index';
 import App from './App';
 import { Text } from 'react-native';
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
+
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

@@ -116,7 +116,9 @@ export default function TabTwoScreen() {
   const [textFieldToShow, setTextFieldToShow] = useState(0);
   const [openModal2, setopenModal2] = useState(false);
   const [textInField, setTextInField] = useState("");
-
+  const [appliedFilters, setAppliedFilters] = useState({
+    date: false,
+  });
   const [date, setDate] = useState(new Date());
 
 
@@ -129,6 +131,7 @@ export default function TabTwoScreen() {
   const [mode, setMode] = useState<any>('date');
   const [show, setShow] = useState(false);
   const [sectionListDataByDate, setSectionListDataByDate] = useState<any>([]);
+  const [auxSectionListDataByDate, setAuxSectionListDataByDate] = useState<any>([]);
 
   const onChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate;
@@ -141,9 +144,18 @@ export default function TabTwoScreen() {
       value: date,
       onChange: (event, date) => {
         setDate(date!);
+        const dateSelected = dayjs(date).format("dddd, D [de] MMMM [de] YYYY")?.toUpperCase()
+        const pickedOrders = sectionListDataByDate.filter((item: any) => item.title === dateSelected)
+        setAuxSectionListDataByDate(pickedOrders)
+        setAppliedFilters({
+          ...appliedFilters,
+          date: true,
+        })
       },
       mode: currentMode,
       is24Hour: true,
+      maximumDate: dayjs().toDate(),
+      minimumDate: dayjs().subtract(30, "day").toDate(),
     });
   };
 
@@ -156,27 +168,34 @@ export default function TabTwoScreen() {
   };
 
   const getOrdersByDay = async () => {
-    const startDate = dayjs().subtract(30, "day").format("YYYY-MM-DD")
+    // const startDate = dayjs().subtract(30, "day").format("YYYY-MM-DD")
+    
+    // const stats = await getOrdersGroupedByDayStats(dbConnection, 1);
+    // console.log({stats})
+    
+    // const orders = await getOrdersByDate(dbConnection, 1, "month", startDate, endDate);
+    
+    let startDate = dayjs().subtract(30, "day").format("YYYY-MM-DD")
     const endDate = dayjs().add(5, "hours").format("YYYY-MM-DD")
-    
-    const stats = await getOrdersGroupedByDayStats(dbConnection, 1);
-    console.log({stats})
-    
-    const orders = await getOrdersByDate(dbConnection, 1, "month", startDate, endDate);
-
-    let auxDate = dayjs().subtract(30, "day").format("YYYY-MM-DD")
     let contentSection = []
-    while (auxDate <= endDate) {
-      const ordersByDate = await getOrdersByDate(dbConnection, 1, "day", auxDate);
+    while (startDate <= endDate) {
+      const ordersByDate = await getOrdersByDate(dbConnection, 1, "day", startDate);
       if(ordersByDate.length > 0){
-        contentSection.push({title: dayjs(auxDate).format("dddd, D [de] MMMM [de] YYYY")?.toUpperCase()  , data: ordersByDate})
+        const dataWithLocalDate = ordersByDate.map((order: any) => {
+          return {
+            ...order,
+            fecha: dayjs.utc(order.fecha).local()
+          }
+        })
+        contentSection.push({title: dayjs.utc(startDate).local().format("dddd, D [de] MMMM [de] YYYY")?.toUpperCase()  , data: dataWithLocalDate})
       }
-      auxDate = dayjs(auxDate).add(1, "day").format("YYYY-MM-DD")
+      startDate = dayjs(startDate).add(1, "day").format("YYYY-MM-DD")
     }
-    console.log({contentSection})
+    // console.log({contentSection})
 
     setSectionListDataByDate(contentSection)
-    console.log({orders})
+    setAuxSectionListDataByDate(contentSection)
+    // console.log({orders})
   };
   useEffect(()=>{
     getOrdersByDay()
@@ -190,19 +209,21 @@ export default function TabTwoScreen() {
         <TopBarWithMenu title={"Ventas Realizadas"}/>
         <CView style={{flex:10}}>
           <SectionList
-            sections={sectionListDataByDate}
+            sections={auxSectionListDataByDate}
             keyExtractor={(item, index) => item.order_id+ "_"+ index}
             style={{paddingHorizontal:10}}
             renderItem={({item}) => (
               <ItemOrderExtendedLink data={item}/>
-              // <TouchableOpacity onPress={()=>alert(item.name+" " +item.url)} style={{padding:10, backgroundColor:"#1c1c1c", borderRadius:10, marginBottom:5}}>
-              //   <CText style={{color:"white"}}>{item.name}</CText>
-              // </TouchableOpacity>
             )}
             renderSectionHeader={({section: {title}}) => (<>
-              <CText style={{color:"black", paddingTop:20, paddingHorizontal:10, borderRadius:10, marginBottom:5}}>{title}</CText>
+              <CText style={{color:"black", paddingTop:20, paddingHorizontal:10, borderRadius:10, marginBottom:5}}>
+                {title}
+              </CText>
             </>
             )}
+            ListEmptyComponent={appliedFilters.date?
+            <CText style={{textAlign:"center", marginTop:20}}>No hay registros para el filtro aplicado</CText>:
+            <CText>No hay registros</CText>}
           />
           {/* <FlatList<ItemOrderExtended>
             data={mockOrders}
@@ -215,6 +236,20 @@ export default function TabTwoScreen() {
               <TouchableOpacity onPress={showDatepicker} style={styles.filtersBtnStyle}>
                   <Ionicons name="filter" size={25}/>
                   <CText type="default">Filtrar por fecha</CText>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={()=>{
+                setAuxSectionListDataByDate(sectionListDataByDate)
+                setAppliedFilters({
+                  ...appliedFilters,
+                  date: false,
+                })
+              }} style={{
+                  flex:1,
+                  justifyContent:"center",
+                  alignItems:"center",
+                  height:"100%",
+              }}>
+                  <Ionicons name="sync" size={25}/>
               </TouchableOpacity>
               <TouchableOpacity onPress={()=>setopenModal2(true)} style={styles.filtersBtnStyle}>
                 <Ionicons name="filter" size={25}/>
@@ -311,13 +346,13 @@ const styles = StyleSheet.create({
     flex:1,
     flexDirection:"row",
     justifyContent:"space-between",
-    gap:50,
+    gap:10,
     height:"100%",
     padding:5,
 
   },
   filtersBtnStyle: {
-    flex:1,
+    flex:7,
     gap:5,
     flexDirection:"row",
     borderWidth:2,
