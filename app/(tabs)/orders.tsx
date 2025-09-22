@@ -208,7 +208,9 @@ export default function TabTwoScreen() {
       flex: 1,
       flexDirection:"column",
     }}>
-        <TopBarWithMenu title={"Ventas Realizadas"}/>
+        <CView style={{flex:1}}>
+          <TopBarWithMenu title={"Ventas Realizadas"}/>
+        </CView>
         <CView style={{flex:10}}>
           <SectionList
             sections={auxSectionListDataByDate}
@@ -225,7 +227,7 @@ export default function TabTwoScreen() {
             )}
             ListEmptyComponent={appliedFilters.date?
             <CText style={{textAlign:"center", marginTop:20}}>No hay registros para el filtro aplicado</CText>:
-            <CText>No hay registros</CText>}
+            <CText style={{textAlign:"center", marginTop:20}}>No hay registros</CText>}
           />
           {/* <FlatList<ItemOrderExtended>
             data={mockOrders}

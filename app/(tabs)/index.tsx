@@ -17,7 +17,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { ItemOrderLink } from "@/components/orders";
 import { useSQLiteContext } from "expo-sqlite";
 import { Orden } from "@/interfaces";
-import { getAllOrders } from "@/database/order.operations";
+import { getAllOrders, getOrdersByStatus } from "@/database/order.operations";
 import { useIsFocused } from "@react-navigation/native";
 
 export default function HomeScreen() {
@@ -30,7 +30,7 @@ export default function HomeScreen() {
 
 
   const getAllOrdersList = async () => {
-    const result = await getAllOrders(dbConnection)
+    const result = await getOrdersByStatus(dbConnection, "pendiente")
     console.log(result)
     setOrderList(result)
   }

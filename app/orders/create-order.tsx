@@ -4,7 +4,7 @@ import CInputText from '@/components/CInputText'
 import FloatingButton from '@/components/FloatingButton'
 import { ItemOrderSelected } from '@/components/orders'
 import { Ionicons } from '@expo/vector-icons'
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from 'react'
 import { FlatList, StyleSheet, TouchableOpacity } from 'react-native'
 import { Product } from '@/interfaces'
@@ -12,6 +12,8 @@ import { v4 as uuidv4 } from 'uuid';
 import ItemOrderOptionSquare from '@/components/orders/ItemOrderOptionSquare'
 import { useSQLiteContext } from 'expo-sqlite'
 import { getAllProducts } from '@/database/product.operations'
+import useOrderStore from '@/hooks/useOrderStore'
+import useOrderOperations from '@/hooks/useOrderOperations'
 
 
 
@@ -29,22 +31,36 @@ type dataType = {id:string, name:string}
 const CreateOrder = ({
   
 }: Props) => {
+  const {id_orden} = useLocalSearchParams<{ id_orden: string }>()
   const dbConnection = useSQLiteContext()
 
   const [dataProducts, setDataProducts] = useState<Product[]>([]);
   const [productsList, setProductsList] = useState<Product[]>([]);
-  const [dataSelected, setDataSelected] = useState<Product[]>([]);
   const [textSearchedItem, setTextSearchedItem] = useState<string>("");
+
+  const {
+    items,
+    addItem,
+    removeItem,
+    clearOrder,
+    getTotal,
+  } = useOrderStore();
+
+  const {
+    createOrderProcess,
+    updateOrderProcess
+  } = useOrderOperations({})
   
 
-  const addProductToOrder = (item:Product) => {
-    setDataSelected([...dataSelected,item])
+  const addProductToOrder = (item:Product & {
+    quantity?:number
+  }) => {
+    addItem(item)
     setTextSearchedItem("")
   }
 
   const deleteItemSelected = (item:Product) => {
-    const auxFiltered = dataSelected.filter(x=>x.uuid!==item.uuid)
-    setDataSelected(auxFiltered)
+    removeItem(item.uuid)
   }
 
   useEffect(() => {
@@ -72,22 +88,23 @@ const CreateOrder = ({
 
   return (
     <CContainerView style={{flex:1}}>
-      <CView style={{flex:1.5, backgroundColor:"#acacac", justifyContent:"center", height:20 }}>
-        <CText type="title" style={{ textAlign:"center", color:"white"}}>Nuevo Pedido</CText>
+      <CView style={{flex:1.5, flexDirection:"row", backgroundColor:"#000000", justifyContent:"center", alignItems:"center", height:20 }}>
+        <CText type="subtitle" style={{flex:1, textAlign:"left", color:"white", paddingHorizontal:10}}>{id_orden ? "Editar" : "Nuevo"} Pedido</CText>
+        <CText type="subtitle" style={{flex:1, textAlign:"right", color:"white", paddingHorizontal:10}}>Total: ${getTotal().toFixed(2)}</CText>
       </CView>
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
         <FlatList<Product>
-          data={dataSelected}
+          data={items}
           renderItem={({item}) => <ItemOrderSelected singleProduct={item} removeItem={()=>deleteItemSelected(item)} /> }
           keyExtractor={item => item.uuid}
           style={{height:"100%", width:"100%"}}
         />
       </CView>
 
-      <CView style={{flex: dataSelected?.length==productsList?.length ? 1 : 5, flexDirection:"row", gap:15,
+      <CView style={{flex: items?.length==productsList?.length ? 1 : 5, flexDirection:"row", gap:15,
         justifyContent:"flex-start", alignItems:"center", backgroundColor:"#1c1c1c"}}>
           <FlatList<Product>
-            data={productsList.filter(x=>!dataSelected.find(y=>y.uuid==x.uuid))}
+            data={productsList.filter(x=>!items.find(y=>y.uuid==x.uuid))}
             horizontal={true}
             keyExtractor={item => item.uuid}
             showsHorizontalScrollIndicator={false}
@@ -96,24 +113,38 @@ const CreateOrder = ({
           />
 
       </CView>
-
-      <CView style={{flex:2, flexDirection:"row", gap:2,
-        justifyContent:"flex-start", alignItems:"center" }}>
-        <CView style={{flex:1, paddingHorizontal:5, justifyContent:"center", alignItems:"center"}}>
-          <FloatingButton onPress={()=>router.dismissTo({pathname:"/"})} nameIcon="save" 
-          floatProps={{backgroundColor:"#8c8c8c", padding:7, width:"auto", height:"auto"}}/>
-        </CView>
-
-        <CView style={{flex:6, paddingHorizontal:0}}>
-          <CInputText label={""} value={textSearchedItem} 
+      <CView style={{flex:2, paddingHorizontal:10, paddingVertical:5}}>
+        <CInputText label={""} value={textSearchedItem} 
           onChangeText={(val)=>setTextSearchedItem(val)} style={{}} />
-        </CView>
-        <CView style={{flex:1, paddingHorizontal:5, justifyContent:"center", alignItems:"center"}}>
-          <FloatingButton onPress={()=>router.push({pathname:"/orders/checkout"})} nameIcon="arrow-forward" 
-          floatProps={{backgroundColor:"#8c8c8c", padding:7, width:"auto", height:"auto"}}/>
-        </CView>
+      </CView>
 
-        
+      <CView style={{flex:1, flexDirection:"row", gap:10,
+        justifyContent:"space-between", paddingHorizontal:10, alignItems:"center" }}>
+          <TouchableOpacity style={styles.orderButton} onPress={()=>{
+            clearOrder()
+            router.dismissTo({pathname:"/"})
+          }}>
+            <CText type="subtitle">Cancelar</CText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.orderButton} onPress={async()=>{
+            if(id_orden){
+              await updateOrderProcess({
+                id_orden: Number(id_orden),
+                total:getTotal(),
+              })
+            }else{
+              await createOrderProcess({
+                total:getTotal(),
+              })
+            }
+            clearOrder()
+            router.dismissTo({pathname:"/"})
+          }}>
+            <CText type="subtitle">Guardar</CText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.orderButton} onPress={()=>router.push({pathname:"/orders/checkout"})}>
+            <CText type="subtitle">Ir a Pagar</CText>
+          </TouchableOpacity>
       </CView>
       
 
@@ -123,4 +154,17 @@ const CreateOrder = ({
 }
 
 export default CreateOrder
+
+
+const styles = StyleSheet.create({
+  orderButton:{
+    flex:1,
+    borderRadius:5,
+    height:40,
+    borderWidth:1,
+    borderColor:"#8c8c8c",
+    alignItems:"center",
+    justifyContent:"center"
+  }
+})
 

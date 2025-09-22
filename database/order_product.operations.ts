@@ -1,10 +1,12 @@
 import { uuid } from "@/assets/utils/uuid";
+import { Product } from "@/interfaces";
 import { OrdenProducto } from "@/interfaces/order_product";
 import * as SQLite from 'expo-sqlite';
 
 // Types
 type CreateOrderProductInput = Omit<OrdenProducto, 'id_orden_producto' | 'uuid'> & { uuid?: string };
 type UpdateOrderProductInput = Partial<OrdenProducto> & { id_orden: number; id_producto: number };
+type OrdenProductoJoinOrder = OrdenProducto & Product
 
 // Crear relación orden-producto
 export const createOrderProduct = async (
@@ -60,9 +62,11 @@ export const getOrderProduct = async (
 export const getProductsByOrderId = async (
     db: SQLite.SQLiteDatabase,
     id_orden: number
-): Promise<OrdenProducto[]> => {
-    const results = await db.getAllAsync<OrdenProducto>(
-        `SELECT * FROM Ordenes_Producto WHERE id_orden = ?`,
+): Promise<OrdenProductoJoinOrder[]> => {
+    const results = await db.getAllAsync<OrdenProductoJoinOrder>(
+        `SELECT * FROM Ordenes_Producto op
+        JOIN Producto p ON op.id_producto = p.id_producto
+        WHERE id_orden = ?`,
         [id_orden]
     );
     return results;

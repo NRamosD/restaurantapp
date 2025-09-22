@@ -1,10 +1,10 @@
 import { Product } from '@/interfaces'
-import React from 'react'
 import { CView } from '../CView'
 import { CText } from '../CText'
 import { StyleSheet, TouchableOpacity } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import AddReduceButton from '../ui/AddReduceButton'
+import useOrderStore from '@/hooks/useOrderStore'
 
 type Props = {
     singleProduct: Product
@@ -15,6 +15,8 @@ const ItemOrderSelected = ({
     singleProduct,
     removeItem
 }: Props) => {
+  const {getQuantity} = useOrderStore();
+
   return (
     <CView key={`singleProduct-selected-${singleProduct.uuid}`}
     style={style.container}>
@@ -23,8 +25,8 @@ const ItemOrderSelected = ({
           {singleProduct.nombre}
           </CText>
           <CView style={{flex:1}}>
-            <CText>Por unidad: $1.75</CText>
-            <CText style={{textAlign:"center"}}>Total: $1.75</CText>
+            <CText>Por unidad: ${singleProduct.precio}</CText>
+            <CText style={{textAlign:"center"}}>Total: ${(singleProduct.precio*getQuantity(singleProduct.uuid)).toFixed(2)}</CText>
           </CView>
         </CView>
         <CView style={{flex:3}}>
@@ -32,7 +34,7 @@ const ItemOrderSelected = ({
               <Ionicons name={"trash"} size={30} color={"red"} />
           </TouchableOpacity>
           <CView style={{flex:1}}>
-            <AddReduceButton/>
+            <AddReduceButton item={singleProduct}/>
           </CView>
 
         </CView>

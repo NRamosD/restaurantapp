@@ -136,9 +136,9 @@ const DetailedProductScreen = ({
 
     return (
         <CContainerView style={{flex:1}}>
-            <CView style={{flex:1, backgroundColor:"#acacac", justifyContent:"center", height:20 }}>
+            {/* <CView style={{flex:1, backgroundColor:"#acacac", justifyContent:"center", height:20 }}>
             <CText type="title" style={{ textAlign:"center", color:"white"}}>Nuevo Producto</CText>
-            </CView>
+            </CView> */}
             <CView style={{flex:9}}>
                 <ScrollView style={{padding:10}}>
                     

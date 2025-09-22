@@ -10,55 +10,28 @@ import { FlatList, StyleSheet, TouchableOpacity } from 'react-native'
 import { Product } from '@/interfaces'
 import { v4 as uuidv4 } from 'uuid';
 import ItemOrderOptionSquare from '@/components/orders/ItemOrderOptionSquare'
+import useOrderStore from '@/hooks/useOrderStore'
 
 
 
 type Props = {}
 type dataType = {id:string, name:string}
-const data:Product[] = Array.from({ length: 20 }, (_, i) => ({ 
-  id: i.toString(), 
-  uuid:uuidv4(),//"Producto #"+(i/2),
-  nombre:"Producto #"+i,
-  precio:(Math.random()*100)+ parseFloat(Math.random().toFixed(3)),
-  activo:true,
-  fechaCreacion:new Date(),
-}) as Product );
 
-const CheckoutOrder = (props: Props) => {
-  const [dataTest, setdataTest] = useState<Product[]>(data||[]);
-  const [dataSelected, setDataSelected] = useState<Product[]>([]);
-  const [textSearchedItem, setTextSearchedItem] = useState<string>("");
+const CheckoutOrder = ({
+  
+}: Props) => {
+
+  const {
+    items,
+    getTotal,
+    removeItem,
+    clearOrder,
+  } = useOrderStore();
   
 
-  const addProductToOrder = (item:Product) => {
-    setDataSelected([...dataSelected,item])
-    setTextSearchedItem("")
-  }
+  
 
-  const deleteItemSelected = (item:Product) => {
-    const auxFiltered = dataSelected.filter(x=>x.id!==item.id)
-    setDataSelected(auxFiltered)
-  }
 
-  useEffect(() => {
-    if(data){
-      setdataTest(data)
-    }
-  }, [data]);
-
-  useEffect(() => {
-    if(!!textSearchedItem){
-
-      const filteredSearched = data?.filter(x=>{
-        if(x.nombre.includes(textSearchedItem)){
-          return x
-        }
-      })
-      setdataTest(filteredSearched)
-    }else{
-      setdataTest(data)
-    }
-  }, [textSearchedItem]);
 
 
   return (
@@ -68,8 +41,8 @@ const CheckoutOrder = (props: Props) => {
       </CView>
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
         <FlatList<Product>
-          data={dataSelected}
-          renderItem={({item}) => <ItemOrderSelected singleProduct={item} removeItem={()=>deleteItemSelected(item)} /> }
+          data={items}
+          renderItem={({item}) => <ItemOrderSelected singleProduct={item} removeItem={()=>removeItem(item.uuid)} /> }
           keyExtractor={item => item.uuid}
           style={{height:"100%", width:"100%"}}
         />
@@ -78,13 +51,20 @@ const CheckoutOrder = (props: Props) => {
       <CView style={{flex:2, flexDirection:"row", gap:15,
         justifyContent:"flex-start", alignItems:"center", backgroundColor:"#1c1c1c"}}>
           <CText type="title" style={{color:"white"}}>Total</CText>
-          <CText type="title" style={{color:"white"}}>$55.25</CText>
+          <CText type="title" style={{color:"white"}}>${getTotal().toFixed(2)}</CText>
 
       </CView>
 
       <CView style={{flex:2, flexDirection:"row", gap:15,
         justifyContent:"flex-start", alignItems:"center", paddingHorizontal:10 }}>
-          <CButton onPress={()=>router.push({pathname:"/orders/final-status-checkout"})} title={"FACTURAR"} containerStyles={styles.touchableCreate}/>
+          <CButton onPress={()=>{
+            clearOrder()
+            router.push({pathname:"/orders/final-status-checkout"})
+          }} title={"Facturar"} containerStyles={styles.touchableCreate}/>
+          <CButton onPress={()=>{
+            clearOrder()
+            router.push({pathname:"/orders"})
+          }} title={"Regresar"} containerStyles={styles.touchableCreate}/>
         
       </CView>
       

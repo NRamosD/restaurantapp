@@ -5,7 +5,7 @@ export default function InventoryLayout() {
   const dProductName = productname?.toString()?.replace(/:/g, '')
   return <Stack>
     {/* <Stack.Screen name='(tabs)' options={{title:"Inventario"}}/> */}
-    <Stack.Screen name='[productname]' options={{title:`${dProductName}`}}/>
+    <Stack.Screen name='[productname]' options={{headerShadowVisible:false, headerTitle:"Regresar"}}/>
     <Stack.Screen name='create-product' options={{headerShown:false}}/>
     <Stack.Screen name='top-sellers' options={{ headerShown:false }}/>
   </Stack>;

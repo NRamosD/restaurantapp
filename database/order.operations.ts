@@ -12,14 +12,14 @@ export const createOrder = async (
             id_perfil, uuid, fecha, estado, total
         ) VALUES (?, ?, ?, ?, ?)`,
         [
-            order.id_perfil,
+            order.id_perfil || 1,
             uuid(),
             order.fecha || new Date().toISOString(),
             order.estado ?? 'pendiente',
             order.total
         ]
     );
-    return result.lastInsertRowId as number;
+    return result.lastInsertRowId;
 };
 
 // Obtener orden por ID
@@ -133,7 +133,7 @@ export const updateOrder = async (
             fecha = ?
         WHERE id_orden = ?`,
         [
-            order.id_perfil,
+            order.id_perfil || 1,
             order.estado ?? 'pendiente',
             order.total,
             order.fecha || new Date().toISOString(),
@@ -410,7 +410,7 @@ export const getOrdersByDate = async (
           SELECT 
             *
           FROM Ordenes
-          WHERE id_perfil = ?
+          WHERE id_perfil = ? AND estado = 'pagado'
           AND date(fecha) = date(?)
         `;
         params.push(date1);
@@ -419,14 +419,13 @@ export const getOrdersByDate = async (
           SELECT 
             *
           FROM Ordenes
-          WHERE id_perfil = ?
+          WHERE id_perfil = ? AND estado = 'pagado'
           AND date(fecha) BETWEEN ? AND ?
         `;
         params.push(date1);
         params.push(date2!);
     }
 
-    // query += ` GROUP BY day ORDER BY day DESC`;
 
     return await db.getAllAsync<Orden[]>(query, params);
 };
