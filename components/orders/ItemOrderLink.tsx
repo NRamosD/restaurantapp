@@ -30,11 +30,11 @@ const ItemOrderLink = ({
     addItem
   } = useOrderStore()
   
-  useEffect(()=>{
-    if(loadOrder && order?.id_orden){
-      loadOrderData()
-    }
-  },[])
+  // useEffect(()=>{
+  //   if(loadOrder && order?.id_orden){
+  //     loadOrderData()
+  //   }
+  // },[])
 
   const loadOrderData = async()=>{
     const resultOrder = await getProductsByOrderId(dbConnection, order?.id_orden!)

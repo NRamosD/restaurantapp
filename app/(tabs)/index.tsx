@@ -3,6 +3,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  RefreshControl,
 } from "react-native";
 
 
@@ -25,19 +26,28 @@ export default function HomeScreen() {
   const dbConnection = useSQLiteContext()
   const isFocused = useIsFocused();
   const [orderList, setOrderList] = useState<Orden[]>([])
+  const [refreshing, setRefreshing] = useState(false);
   // const [profiles, setProfiles] = useState<Perfil[]>([])
   const insets = useSafeAreaInsets()
 
-
+  useEffect(() => {
+    getAllOrdersList()
+  }, [isFocused]);
+  
   const getAllOrdersList = async () => {
     const result = await getOrdersByStatus(dbConnection, "pendiente")
     console.log(result)
     setOrderList(result)
   }
 
-  useEffect(() => {
-    getAllOrdersList()
-  }, [isFocused]);
+  const onRefresh = async () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      getAllOrdersList()
+      setRefreshing(false);
+    }, 1500);
+  };
+
 
 
   return (
@@ -60,7 +70,11 @@ export default function HomeScreen() {
           <CText type="title" style={{textAlign:"center", paddingVertical:5}}>
             Pendientes de Facturar
           </CText>
-          <ScrollView style={styles.scrollView}>
+          <ScrollView style={styles.scrollView}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
             {
               orderList.length === 0 ? (
                 <CText type="subtitle" style={{textAlign:"center", paddingVertical:5}}>
@@ -69,8 +83,7 @@ export default function HomeScreen() {
               ) : (
                 orderList.map((order, index) => (
                   <ItemOrderLink key={`pending-order-${index}`} 
-                  order={order}
-                  path={"/orders/create-order"}/>
+                  order={order}/>
                 ))
               )
             }

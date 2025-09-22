@@ -2,7 +2,8 @@ import { useSQLiteContext } from 'expo-sqlite'
 import React from 'react'
 import useOrderStore from './useOrderStore'
 import { createOrder, updateOrder } from '@/database/order.operations'
-import { createOrderProduct, updateOrderProduct } from '@/database/order_product.operations'
+import { createOrderProduct, getOrderProduct, getProductsByOrderId, updateOrderProduct } from '@/database/order_product.operations'
+import { Product } from '@/interfaces'
 
 type Props = {}
 
@@ -44,7 +45,7 @@ const useOrderOperations = ({
     const updateOrderProcess = async ({
         id_orden,
         total,
-        estado = "pendiente"
+        estado = "pendiente",
     }: {
         id_orden: number
         total: number
@@ -57,9 +58,17 @@ const useOrderOperations = ({
             fecha: new Date().toISOString(),
             estado
         })
+
+        const productsInDB = await getProductsByOrderId(dbConnection, id_orden)
+        const productsNotInDB = productsInDB.filter(a1 => !items.some(a2 => a2.id_producto === a1.id_producto));
+        const productsInDBNotInItems = items.filter(a1 => !productsInDB.some(a2 => a2.id_producto === a1.id_producto));
+
+
         //falta validar los que no existen y los que se eliminan porque ahorita solo se actualizan los que existen
         items.forEach(item => {
-            console.log({item})
+
+            
+
             updateOrderProduct(dbConnection, {
                 id_orden: id_orden,
                 id_producto: item.id_producto,
