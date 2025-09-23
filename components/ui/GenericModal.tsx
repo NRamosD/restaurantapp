@@ -70,11 +70,11 @@ const GenericModal = ({
                   <Button onPress={()=>{
                     onCancel &&onCancel()
                     hideDialog()
-                  }}>Cancel</Button>
+                  }}>{textCloseButton||"Cancelar"}</Button>
                   <Button onPress={ ()=>{
                     onConfirm && onConfirm()
                     hideDialog()
-                  }}>Ok</Button>
+                  }}>{textConfirmButton||"Ok"}</Button>
                 </Dialog.Actions>
               </Dialog>
             </Portal>

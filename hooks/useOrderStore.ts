@@ -9,7 +9,7 @@ export interface OrderItem extends Product {
 
 interface OrderState {
   items: OrderItem[];
-  addItem: (product: Product & { quantity?: number }) => void;
+  addItem: (product: Product & { quantity?: number, notes?: string }) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   updateNotes: (productId: string, notes: string) => void;
@@ -17,6 +17,7 @@ interface OrderState {
   getTotal: () => number;
   getItemCount: () => number;
   getQuantity: (productId: string) => number;
+  getItem: (productId:string) => OrderItem | undefined
 }
 
 const useOrderStore = create<OrderState>()(
@@ -61,6 +62,9 @@ const useOrderStore = create<OrderState>()(
             item.uuid === productId ? { ...item, notes } : item
           ),
         })),
+      
+      getItem: (productId:string) =>
+        get().items.find(item => item.uuid === productId),
       
       clearOrder: () => set({ items: [] }),
       

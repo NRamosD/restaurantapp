@@ -5,6 +5,6 @@ export interface OrdenProducto {
     cantidad: number;
     precio_unitario: number;
     subtotal?: number;
-    detalle?: string | null; // opcional
+    detalle?: string; // opcional
 }
   

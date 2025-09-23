@@ -43,7 +43,7 @@ export default function TabTwoScreen() {
       flexDirection:"column",
     }}>
         <TopBarWithMenu title={"Productos"}/>
-        <CView style={{flex:10, flexDirection:"row"}}>
+        <CView style={{flex:10, flexDirection:"row", width:"90%", margin:"auto", paddingHorizontal:10}}>
           <FlatList<Product>
             data={products}
             renderItem={({item}) => <ItemMenuSquareDetails data={item}/> }
@@ -51,7 +51,7 @@ export default function TabTwoScreen() {
             numColumns={2}
             keyExtractor={item => item.uuid}
             columnWrapperStyle={{
-              justifyContent:"space-evenly",
+              justifyContent:"space-between",
               gap:10,
               width:"100%"
             }}

@@ -45,6 +45,7 @@ const ItemOrderLink = ({
         addItem({
           ...currentProduct,
           quantity: item.cantidad,
+          notes: item.detalle || ""
         })
       }
     })

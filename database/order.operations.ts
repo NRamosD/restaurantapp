@@ -397,10 +397,11 @@ export const getOrdersGroupedByDayStats = async (
 // Obtener órdenes agrupadas por día (con filtro opcional por fecha específica)
 export const getOrdersByDate = async (
     db: SQLite.SQLiteDatabase,
-    id_perfil: number,
+    id_perfil: number = 1,
     type: 'day' | 'week' | 'month' | 'year',
     date1: string,
-    date2?: string
+    date2?: string,
+    estado: "pendiente" | "pagado" | "cancelado" = "pagado"
 ): Promise<Array<Orden[]>> => {
     let query = '';
     const params: (string | number)[] = [id_perfil];
@@ -410,18 +411,20 @@ export const getOrdersByDate = async (
           SELECT 
             *
           FROM Ordenes
-          WHERE id_perfil = ? AND estado = 'pagado'
+          WHERE id_perfil = ? AND estado = ?
           AND date(fecha) = date(?)
         `;
+        params.push(estado);
         params.push(date1);
     }else{
         query = `
           SELECT 
             *
           FROM Ordenes
-          WHERE id_perfil = ? AND estado = 'pagado'
+          WHERE id_perfil = ? AND estado = ?
           AND date(fecha) BETWEEN ? AND ?
         `;
+        params.push(estado);
         params.push(date1);
         params.push(date2!);
     }

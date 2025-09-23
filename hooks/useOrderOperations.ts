@@ -36,7 +36,8 @@ const useOrderOperations = ({
                 id_orden: orderCreated,
                 id_producto: item.id_producto,
                 cantidad: item.quantity,
-                precio_unitario: item.precio
+                precio_unitario: item.precio,
+                detalle: item.notes || ""
             })
         })
         
@@ -76,7 +77,8 @@ const useOrderOperations = ({
                 id_orden: id_orden,
                 id_producto: product.id_producto,
                 cantidad: product.quantity,
-                precio_unitario: product.precio
+                precio_unitario: product.precio,
+                detalle: product.notes || ""
             })
         })
         //a actualizar
@@ -87,7 +89,8 @@ const useOrderOperations = ({
                 id_orden: id_orden,
                 id_producto: product.id_producto,
                 cantidad: product.quantity,
-                precio_unitario: product.precio
+                precio_unitario: product.precio,
+                detalle: product.notes || ""
             })
         })
 

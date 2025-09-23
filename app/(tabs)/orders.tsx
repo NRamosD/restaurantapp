@@ -1,4 +1,4 @@
-import { StyleSheet, Image, Platform, FlatList, TouchableOpacity, View, SectionList, Button, ToastAndroid } from 'react-native';
+import { StyleSheet, Image, Platform, FlatList, TouchableOpacity, View, SectionList, Button, ToastAndroid, RefreshControl } from 'react-native';
 import dayjs from 'dayjs'
 import "dayjs/locale/es";
 dayjs.locale("es");
@@ -121,6 +121,7 @@ export default function TabTwoScreen() {
   const [appliedFilters, setAppliedFilters] = useState({
     date: false,
   });
+  const [refreshing, setRefreshing] = useState(false);
   const [date, setDate] = useState(new Date());
 
 
@@ -199,6 +200,14 @@ export default function TabTwoScreen() {
     setAuxSectionListDataByDate(contentSection)
     // console.log({orders})
   };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      getOrdersByDay()
+      setRefreshing(false);
+    }, 1500);
+  };
   useEffect(()=>{
     getOrdersByDay()
   },[isFocused])
@@ -216,6 +225,9 @@ export default function TabTwoScreen() {
             sections={auxSectionListDataByDate}
             keyExtractor={(item, index) => item.order_id+ "_"+ index}
             style={{paddingHorizontal:10}}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh}/>}
+            bounces={true}
+            alwaysBounceVertical={true}
             renderItem={({item}) => (
               <ItemOrderExtendedLink data={item}/>
             )}
@@ -277,19 +289,21 @@ export default function TabTwoScreen() {
           textConfirmButton='qweqw'
         /> */}
         <GenericModal
-          title='Otros filtros'
+          title='Seleccione un filtro'
           showModal={openModal2}
           setShowModal={setopenModal2}
+          textConfirmButton={'Buscar'}
           nodeContent={<>
             <CView style={{flex:2, width:"100%", gap:10}}>
-              <CView style={{flex:1}}>
+              {/* <CView style={{flex:1}}>
                 <CText>Seleccione una opción para filtrar</CText>
-              </CView>
+              </CView> */}
                 <TouchableOpacity 
                   onPress={()=>{
                     setTextFieldToShow(0)
                     setTextInField("")
-                    ToastAndroid.show("Ahora solo se muestran tus registros", ToastAndroid.SHORT)
+                    ToastAndroid.show("Ahora solo se muestran tus registros", ToastAndroid.LONG)
+                    setopenModal2(false)
                   }} 
                   style={styles.othersFiltersBtn}>
                     <CText style={{fontSize:20}} type="default">Ver solo mis registros</CText>
@@ -326,7 +340,6 @@ export default function TabTwoScreen() {
             </CView>
           </>
           }
-          textConfirmButton={'qweqw'}
         />
     </CContainerView>
   );

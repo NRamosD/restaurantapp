@@ -63,6 +63,19 @@ const CreateOrder = ({
     removeItem(item.uuid)
   }
 
+  const decideHowToProccess = async () => {
+    if(!!id_orden){
+      await updateOrderProcess({
+        id_orden: Number(id_orden),
+        total:getTotal(),
+      })
+    }else{
+      await createOrderProcess({
+        total:getTotal(),
+      })
+    }
+  }
+
   useEffect(() => {
     
     (async () => {
@@ -131,22 +144,18 @@ const CreateOrder = ({
             <CText type="subtitle">Cancelar</CText>
           </TouchableOpacity>
           <TouchableOpacity style={styles.orderButton} onPress={async()=>{
-            if(id_orden){
-              await updateOrderProcess({
-                id_orden: Number(id_orden),
-                total:getTotal(),
-              })
-            }else{
-              await createOrderProcess({
-                total:getTotal(),
-              })
-            }
+            await decideHowToProccess()
             clearOrder()
             router.dismissTo({pathname:"/"})
           }}>
             <CText type="subtitle">Guardar</CText>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.orderButton} onPress={()=>router.push({pathname:"/orders/checkout"})}>
+          <TouchableOpacity style={styles.orderButton} 
+            onPress={async()=>{
+              await decideHowToProccess()
+              router.push({pathname:"/orders/checkout", params:{id_orden:id_orden??""}})
+            }}
+          >
             <CText type="subtitle">Ir a Pagar</CText>
           </TouchableOpacity>
       </CView>

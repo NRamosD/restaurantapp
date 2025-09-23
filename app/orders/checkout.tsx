@@ -11,6 +11,9 @@ import { Product } from '@/interfaces'
 import { v4 as uuidv4 } from 'uuid';
 import ItemOrderOptionSquare from '@/components/orders/ItemOrderOptionSquare'
 import useOrderStore from '@/hooks/useOrderStore'
+import { useLocalSearchParams } from 'expo-router'
+import useOrderOperations from '@/hooks/useOrderOperations'
+import GenericModal from '@/components/ui/GenericModal'
 
 
 
@@ -20,6 +23,9 @@ type dataType = {id:string, name:string}
 const CheckoutOrder = ({
   
 }: Props) => {
+  const {id_orden} = useLocalSearchParams<{ id_orden: string }>()
+
+  const [opendModalTextualOrder, setOpendedModalTextualOrder] = useState(false)
 
   const {
     items,
@@ -27,7 +33,26 @@ const CheckoutOrder = ({
     removeItem,
     clearOrder,
   } = useOrderStore();
+
+  const {
+    createOrderProcess,
+    updateOrderProcess
+  } = useOrderOperations({})
   
+  const decideHowToProccess = async () => {
+    if(!!id_orden){
+      await updateOrderProcess({
+        id_orden: Number(id_orden),
+        total:getTotal(),
+        estado:"pagado"
+      })
+    }else{
+      await createOrderProcess({
+        total:getTotal(),
+        estado:"pagado"
+      })
+    }
+  }
 
   
 
@@ -49,25 +74,36 @@ const CheckoutOrder = ({
       </CView>
 
       <CView style={{flex:2, flexDirection:"row", gap:15,
-        justifyContent:"flex-start", alignItems:"center", backgroundColor:"#1c1c1c"}}>
+        justifyContent:"center", alignItems:"center", backgroundColor:"#1c1c1c"}}>
           <CText type="title" style={{color:"white"}}>Total</CText>
           <CText type="title" style={{color:"white"}}>${getTotal().toFixed(2)}</CText>
 
       </CView>
 
-      <CView style={{flex:2, flexDirection:"row", gap:15,
+      <CView style={{flex:3, gap:10, alignContent:"center", backgroundColor:"#1c1c1c",
         justifyContent:"flex-start", alignItems:"center", paddingHorizontal:10 }}>
-          <CButton onPress={()=>{
+          <CButton onPress={async()=>{
+            await decideHowToProccess()
             clearOrder()
             router.push({pathname:"/orders/final-status-checkout"})
           }} title={"Facturar"} containerStyles={styles.touchableCreate}/>
-          <CButton onPress={()=>{
-            clearOrder()
-            router.push({pathname:"/orders"})
-          }} title={"Regresar"} containerStyles={styles.touchableCreate}/>
-        
+          <CView style={{flex:1, flexDirection:"row", gap:10, backgroundColor:"#1c1c1c"}}>
+            <CButton onPress={()=>{
+              // clearOrder()
+              router.back()
+            }} title={"Regresar"} textStyles={{fontSize:20}} containerStyles={[styles.touchableCreate, {width:"49%"}]} />
+            <CButton onPress={()=>{
+              setOpendedModalTextualOrder(true)
+            }} title={"Orden Textual"} textStyles={{fontSize:20}} containerStyles={[styles.touchableCreate, {width:"49%"}]} />
+          </CView>
       </CView>
-      
+      <GenericModal
+        showModal={opendModalTextualOrder}
+        setShowModal={setOpendedModalTextualOrder}
+        title="Orden Textual"
+        nodeContent={<CText>Contenido del modal</CText>}
+        withButton={false}
+      />
 
 
     </CContainerView>

@@ -13,6 +13,9 @@ import { useSQLiteContext } from 'expo-sqlite'
 import { SegmentedButtons } from 'react-native-paper';
 import DetailTopSeller from '@/components/inventory/DetailTopSeller'
 import { getAllProducts } from '@/database/product.operations'
+import { getOrdersByDateRange } from '@/database/order.operations'
+import { getOrderProduct, getTopSellingProducts } from '@/database/order_product.operations'
+import dayjs from 'dayjs'
 
 type Props = {}
 
@@ -45,26 +48,24 @@ const CreateProductScreen = (props: Props) => {
     };
 
 
+    async function setup(
+        startDate = dayjs.utc().format("YYYY-MM-DD"),
+        endDate = dayjs.utc().format("YYYY-MM-DD")
+    ) {
+        const result = await getTopSellingProducts(db, 10, startDate, endDate);
+        setTodos(result);
+    }
 
     useEffect(() => {
         switch (segmentedButtonValue) {
             case 'today':
-                async function setup() {
-                const result = await getAllProducts(db);
-                    setTodos(result);
-                }
                 setup();
                 break;
             case 'week':
-                setTodos([]);
+                setup(dayjs.utc().subtract(7, "day").format("YYYY-MM-DD"), dayjs.utc().format("YYYY-MM-DD"));
                 break;
             case 'month':
-                setTodos([{
-                    nombre:"Producto 1",
-                    precio:10,
-                    stock:24,
-                    vendido:24
-                }]);
+                setup(dayjs.utc().subtract(30, "day").format("YYYY-MM-DD"), dayjs.utc().format("YYYY-MM-DD"));
                 break;
             default:
                 break;
@@ -99,7 +100,7 @@ const CreateProductScreen = (props: Props) => {
                             
                         })
                         :
-                        <CText>No hay resultados</CText>
+                        <CText style={{textAlign:"center"}}>No hay resultados</CText>
                     }
                 </ScrollView>    
             </CView>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleProp, StyleSheet, TextStyle } from 'react-native';
+import { StyleProp, StyleSheet } from 'react-native';
 import { CText } from './CText';
 import { TextInput, TextInputProps } from 'react-native-paper';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -7,15 +7,11 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 type Props =  TextInputProps & {
     label:string;
     optionText?: "text" | "number"
-    fontSize?:number
-    style?: StyleProp<TextStyle>
 }
 
-const CInputText = ({
+const CInputTextArea = ({
     label,
     optionText="text",
-    fontSize=15,
-    style,
     ...rest
 }: Props) => {
 
@@ -29,15 +25,16 @@ const CInputText = ({
         // ]}/>
         <TextInput
             {...rest}
-            style={[style,{ fontSize:fontSize||15, marginVertical:10}]}
+            style={styles.container}
             label={label}
-            mode="outlined"
             theme={{
                 colors: {
-                    // primary: '#ff7300ff', // Color del borde cuando tiene focus
-                    // outline: '#cacacaff', // Borde cuando no tiene focus
+                    primary: '#ff7300ff', // Color del borde cuando tiene focus
+                    outline: '#cacacaff', // Borde cuando no tiene focus
                 },
             }}
+            multiline={true}
+            numberOfLines={4}
             onKeyPress={(e:any)=>{
                 switch(optionText){
                     case "text":
@@ -59,6 +56,14 @@ const CInputText = ({
     )
 }
 
+const styles = StyleSheet.create({
+    container: {
+        borderWidth:1,
+        borderRadius:5,
+        borderColor:"#c1c1c1",
+        backgroundColor:"#ffffff",
+        fontSize: 15
+    },
+})
 
-
-export default CInputText;
+export default CInputTextArea;

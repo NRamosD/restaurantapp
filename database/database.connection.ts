@@ -136,6 +136,7 @@ const CreateAllTables = [
     id_orden INTEGER PRIMARY KEY AUTOINCREMENT,
     id_perfil INTEGER NOT NULL,
     uuid TEXT NOT NULL UNIQUE,
+    nota TEXT,
     fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
     estado TEXT DEFAULT 'pendiente', 
     total REAL NOT NULL,

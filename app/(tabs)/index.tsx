@@ -71,6 +71,8 @@ export default function HomeScreen() {
             Pendientes de Facturar
           </CText>
           <ScrollView style={styles.scrollView}
+            bounces={true}
+            alwaysBounceVertical={true}
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
