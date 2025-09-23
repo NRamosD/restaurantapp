@@ -64,11 +64,15 @@ const CreateOrder = ({
   }
 
   useEffect(() => {
+    
     (async () => {
       const result = await getAllProducts(dbConnection)
       setDataProducts(result)
       setProductsList(result)
     })()
+
+
+    console.log({items})
   }, []);
 
   useEffect(() => {

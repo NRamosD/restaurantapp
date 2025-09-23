@@ -2,7 +2,7 @@ import { useSQLiteContext } from 'expo-sqlite'
 import React from 'react'
 import useOrderStore from './useOrderStore'
 import { createOrder, updateOrder } from '@/database/order.operations'
-import { createOrderProduct, getOrderProduct, getProductsByOrderId, updateOrderProduct } from '@/database/order_product.operations'
+import { createOrderProduct, deleteOrderProduct, deleteOrderProductById, getOrderProduct, getProductsByOrderId, updateOrderProduct } from '@/database/order_product.operations'
 import { Product } from '@/interfaces'
 
 type Props = {}
@@ -60,22 +60,47 @@ const useOrderOperations = ({
         })
 
         const productsInDB = await getProductsByOrderId(dbConnection, id_orden)
+        //a crear
         const productsNotInDB = productsInDB.filter(a1 => !items.some(a2 => a2.id_producto === a1.id_producto));
+        productsNotInDB.forEach(product => {
+            deleteOrderProduct(
+                dbConnection,
+                id_orden,
+                product.id_producto
+            )
+        })
+        //a eliminar
         const productsInDBNotInItems = items.filter(a1 => !productsInDB.some(a2 => a2.id_producto === a1.id_producto));
+        productsInDBNotInItems.forEach(product => {
+            createOrderProduct(dbConnection, {
+                id_orden: id_orden,
+                id_producto: product.id_producto,
+                cantidad: product.quantity,
+                precio_unitario: product.precio
+            })
+        })
+        //a actualizar
+        const productsToUpdate = items.filter(a1 => productsInDB.some(a2 => a2.id_producto === a1.id_producto));
+        // console.log({productsToUpdate})
+        productsToUpdate.forEach(product => {
+            updateOrderProduct(dbConnection, {
+                id_orden: id_orden,
+                id_producto: product.id_producto,
+                cantidad: product.quantity,
+                precio_unitario: product.precio
+            })
+        })
 
 
         //falta validar los que no existen y los que se eliminan porque ahorita solo se actualizan los que existen
-        items.forEach(item => {
-
-            
-
-            updateOrderProduct(dbConnection, {
-                id_orden: id_orden,
-                id_producto: item.id_producto,
-                cantidad: item.quantity,
-                precio_unitario: item.precio
-            })
-        })
+        // items.forEach(item => {
+        //     updateOrderProduct(dbConnection, {
+        //         id_orden: id_orden,
+        //         id_producto: item.id_producto,
+        //         cantidad: item.quantity,
+        //         precio_unitario: item.precio
+        //     })
+        // })
     }
 
     return {

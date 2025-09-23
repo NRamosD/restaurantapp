@@ -16,6 +16,7 @@ const ItemOrderSelected = ({
     removeItem
 }: Props) => {
   const {getQuantity} = useOrderStore();
+  // console.log({singleProduct})
 
   return (
     <CView key={`singleProduct-selected-${singleProduct.uuid}`}

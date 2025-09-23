@@ -39,7 +39,7 @@ const useOrderStore = create<OrderState>()(
           }
           
           return {
-            items: [...state.items, { ...product, quantity: 1 }],
+            items: [...state.items, { ...product, quantity: product.quantity || 1 }],
           };
         }),
       

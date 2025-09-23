@@ -10,6 +10,7 @@ import useOrderOperations from "@/hooks/useOrderOperations";
 import { getOrderById } from "@/database/order.operations";
 import useOrderStore from "@/hooks/useOrderStore";
 import { getOrderProduct, getProductsByOrderId } from "@/database/order_product.operations";
+import { getProductById } from "@/database/product.operations";
 
 type Props = {
   path?:any
@@ -38,11 +39,14 @@ const ItemOrderLink = ({
 
   const loadOrderData = async()=>{
     const resultOrder = await getProductsByOrderId(dbConnection, order?.id_orden!)
-    resultOrder.forEach(item => {
-      addItem({
-        ...item,
-        quantity: item.cantidad
-      })
+    resultOrder.forEach(async (item) => {
+      const currentProduct =  await getProductById(dbConnection, item.id_producto)
+      if(currentProduct){
+        addItem({
+          ...currentProduct,
+          quantity: item.cantidad,
+        })
+      }
     })
     path? router.push({pathname:path, params:{id_orden:order?.id_orden}}):alert("No hay ruta")    
     // addItem(resultOrder)
