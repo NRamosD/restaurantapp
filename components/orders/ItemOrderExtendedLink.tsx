@@ -3,8 +3,10 @@ import { CView } from "../CView";
 import { TouchableOpacity } from "react-native";
 import { CText } from "../CText";
 import { Ionicons } from "@expo/vector-icons";
-import { ItemOrderExtended, Orden } from "@/interfaces/orders";
+import { Orden } from "@/interfaces/orders";
 import dayjs from "dayjs";
+import { router } from "expo-router";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 type Props = {
   data:Orden
@@ -13,11 +15,14 @@ type Props = {
 const ItemOrderExtendedLink = ({
   data
 }: Props) => {
+  const theme = useColorScheme()
 
   return (
     <CView style={{ padding: 10, marginVertical: 2, borderWidth:3, borderColor:"#cecece", borderRadius:10  }}>
       <TouchableOpacity
-        onPress={() => alert("se fue al detalle del registro")}
+        onPress={() => {
+          router.push({pathname:"/orders/checkout", params:{id_orden:data.id_orden, review_order:"1"}})
+        }}
         style={{ flex: 1, flexDirection: "row", }}
       >
         <CView style={{ flex: 5 }}>
@@ -40,7 +45,7 @@ const ItemOrderExtendedLink = ({
             alignItems: "flex-end",
           }}
         >
-          <Ionicons name="chevron-forward-outline" size={30} />
+          <Ionicons name="chevron-forward-outline" size={30} color={theme === "dark" ? "white" : "black"}/>
         </CView>
       </TouchableOpacity>
     </CView>

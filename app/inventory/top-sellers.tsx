@@ -19,11 +19,20 @@ import dayjs from 'dayjs'
 
 type Props = {}
 
+export type mostSellsProduct = {
+    id_producto: number;
+    nombre: string;
+    imagen_url: string;
+    veces_vendido: number;
+    cantidad_total: number;
+    ingreso_total: number;
+}
+
 const CreateProductScreen = (props: Props) => {
     const {productname} = useLocalSearchParams()
     const db = useSQLiteContext();
     
-    const [todos, setTodos] = useState<any[]>([]);
+    const [todos, setTodos] = useState<mostSellsProduct[]>([]);
     const [image, setImage] = useState<string | null>(null);
     const [switchEnvioGratis, setSwitchEnvioGratis] = useState(false);
     const [segmentedButtonValue, setSegmentedButtonValue] = useState('today');
@@ -49,8 +58,8 @@ const CreateProductScreen = (props: Props) => {
 
 
     async function setup(
-        startDate = dayjs.utc().format("YYYY-MM-DD"),
-        endDate = dayjs.utc().format("YYYY-MM-DD")
+        startDate = dayjs.utc().startOf("day").toISOString(),
+        endDate = dayjs.utc().endOf("day").toISOString()
     ) {
         const result = await getTopSellingProducts(db, 10, startDate, endDate);
         setTodos(result);
@@ -62,10 +71,10 @@ const CreateProductScreen = (props: Props) => {
                 setup();
                 break;
             case 'week':
-                setup(dayjs.utc().subtract(7, "day").format("YYYY-MM-DD"), dayjs.utc().format("YYYY-MM-DD"));
+                setup(dayjs.utc().startOf("day").subtract(7, "day").toISOString(), dayjs.utc().endOf("day").toISOString());
                 break;
             case 'month':
-                setup(dayjs.utc().subtract(30, "day").format("YYYY-MM-DD"), dayjs.utc().format("YYYY-MM-DD"));
+                setup(dayjs.utc().startOf("day").subtract(30, "day").toISOString(), dayjs.utc().endOf("day").toISOString());
                 break;
             default:
                 break;
@@ -87,7 +96,8 @@ const CreateProductScreen = (props: Props) => {
                             return (
                                 <DetailTopSeller
                                     product={item}
-                                    key={`${item.name||"item"}+${key}`}
+                                    position={key}
+                                    key={`${item.nombre||"item"}+${key}`}
                                 />
                             )
                             // <TouchableOpacity key={key} onPress={async()=>{
@@ -115,7 +125,7 @@ const CreateProductScreen = (props: Props) => {
                 ]}
             />
             <CView style={{flex:1, padding:10}}>
-                <CButton title="Volver Inicio" onPress={()=>router.dismissTo("/")}
+                <CButton title="Inicio" onPress={()=>router.dismissTo("/")}
                 textStyles={{fontSize:20}}
                 containerStyles={{paddingVertical: 2, borderRadius:10, borderWidth:5, borderStyle:"solid", borderColor:"#cecece"}}
                 />

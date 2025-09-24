@@ -23,7 +23,7 @@ type dataType = {id:string, name:string}
 const CheckoutOrder = ({
   
 }: Props) => {
-  const {id_orden} = useLocalSearchParams<{ id_orden: string }>()
+  const {id_orden, review_order} = useLocalSearchParams<{ id_orden: string, review_order: string }>()
 
   const [opendModalTextualOrder, setOpendedModalTextualOrder] = useState(false)
 
@@ -36,7 +36,8 @@ const CheckoutOrder = ({
 
   const {
     createOrderProcess,
-    updateOrderProcess
+    updateOrderProcess,
+    loadOrderData
   } = useOrderOperations({})
   
   const decideHowToProccess = async () => {
@@ -54,6 +55,12 @@ const CheckoutOrder = ({
     }
   }
 
+  useEffect(()=>{
+    if(review_order=="1"){
+      loadOrderData(Number(id_orden))
+    }
+  },[review_order])
+
   
 
 
@@ -61,8 +68,8 @@ const CheckoutOrder = ({
 
   return (
     <CContainerView style={{flex:1}}>
-      <CView style={{flex:1.5, backgroundColor:"#acacac", justifyContent:"center", height:20 }}>
-        <CText type="title" style={{ textAlign:"center", color:"white"}}>Resumen de la Orden</CText>
+      <CView style={{flex:1.5, justifyContent:"center", height:20 }}>
+        <CText type="title" style={{ textAlign:"center"}}>Resumen de la Orden</CText>
       </CView>
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
         <FlatList<Product>
@@ -82,26 +89,59 @@ const CheckoutOrder = ({
 
       <CView style={{flex:3, gap:10, alignContent:"center", backgroundColor:"#1c1c1c",
         justifyContent:"flex-start", alignItems:"center", paddingHorizontal:10 }}>
-          <CButton onPress={async()=>{
-            await decideHowToProccess()
-            clearOrder()
-            router.push({pathname:"/orders/final-status-checkout"})
-          }} title={"Facturar"} containerStyles={styles.touchableCreate}/>
-          <CView style={{flex:1, flexDirection:"row", gap:10, backgroundColor:"#1c1c1c"}}>
-            <CButton onPress={()=>{
-              // clearOrder()
-              router.back()
-            }} title={"Regresar"} textStyles={{fontSize:20}} containerStyles={[styles.touchableCreate, {width:"49%"}]} />
-            <CButton onPress={()=>{
-              setOpendedModalTextualOrder(true)
-            }} title={"Orden Textual"} textStyles={{fontSize:20}} containerStyles={[styles.touchableCreate, {width:"49%"}]} />
-          </CView>
+          {
+            review_order=="1"?
+            <CView style={{flex:1, flexDirection:"row", gap:10, backgroundColor:"#1c1c1c"}}>
+              <TouchableOpacity style={{padding:20}} onPress={()=>{
+                clearOrder()
+                router.back()
+              }}>
+                <Ionicons name="arrow-back-outline" size={50} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity style={{padding:20}} onPress={()=>{
+                alert("Compartir Comprobante")
+              }}>
+                <Ionicons name="share-social-outline" size={50} color="white" />
+              </TouchableOpacity>
+            </CView>
+            :
+            <>
+              <CButton onPress={async()=>{
+                await decideHowToProccess()
+                clearOrder()
+                router.push({pathname:"/orders/final-status-checkout"})
+              }} title={"Facturar"} containerStyles={styles.touchableCreate}/>
+              <CView style={{flex:1, flexDirection:"row", gap:10, backgroundColor:"#1c1c1c"}}>
+                <CButton onPress={()=>{
+                  // clearOrder()
+                  router.back()
+                }} title={"Regresar"} textStyles={{fontSize:20}} containerStyles={[styles.touchableCreate, {width:"49%"}]} />
+                <CButton onPress={()=>{
+                  setOpendedModalTextualOrder(true)
+                }} title={"Orden Textual"} textStyles={{fontSize:20}} containerStyles={[styles.touchableCreate, {width:"49%"}]} />
+              </CView>
+            </>
+          }
       </CView>
       <GenericModal
         showModal={opendModalTextualOrder}
         setShowModal={setOpendedModalTextualOrder}
+        showConfirmButton={false}
+        textCloseButton='Cerrar'
         title="Orden Textual"
-        nodeContent={<CText>Contenido del modal</CText>}
+        nodeContent={<>
+          <CText style={{fontSize:20}}>Su orden consta de:</CText>
+          {
+            items.map((item, index)=>{
+              return(
+                <CView key={index} style={{paddingVertical:10}}>
+                  <CText style={{fontSize:20}}>● {item.quantity} {item.nombre} 
+                    {item.notes?` considerando: ${item.notes}`:``}</CText>
+                </CView>
+              )
+            })
+          }
+        </>}
         withButton={false}
       />
 
@@ -114,7 +154,7 @@ export default CheckoutOrder
 
 const styles = StyleSheet.create({
   touchableCreate:{
-    backgroundColor:"#dedede",
+    // backgroundColor:"#dedede",
     padding:10,
     textAlign:"center",
     justifyContent:"center",

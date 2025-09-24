@@ -232,6 +232,7 @@ export const getTopSellingProducts = async (
     return await db.getAllAsync<{
         id_producto: number;
         nombre: string;
+        imagen_url: string;
         veces_vendido: number;
         cantidad_total: number;
         ingreso_total: number;

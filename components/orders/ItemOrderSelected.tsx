@@ -8,6 +8,7 @@ import useOrderStore from '@/hooks/useOrderStore'
 import GenericModal from '../ui/GenericModal'
 import { useState } from 'react'
 import CInputText from '../CInputText'
+import { useColorScheme } from '@/hooks/useColorScheme'
 
 type Props = {
     singleProduct: Product
@@ -19,6 +20,7 @@ const ItemOrderSelected = ({
     removeItem
 }: Props) => {
   const {getQuantity} = useOrderStore();
+  const theme = useColorScheme()
   
   const [openModal, setopenModal] = useState(false)
   const [detailProduct, setDetailProduct] = useState("")
@@ -47,7 +49,7 @@ const ItemOrderSelected = ({
                     setDetailProduct(getItem(singleProduct.uuid)?.notes||"")
                     setopenModal(true)
                   }}>
-                    <Ionicons name={"eye"} size={20} />
+                    <Ionicons name={"eye"} size={20} color={theme === "dark" ? "white" : "black"}/>
                     <CText style={{fontSize:17}}>{notes?.substring(0, 30)}{((notes && notes?.length>30)) && "..."}</CText>
                   </TouchableOpacity>
                 </CView>
@@ -58,7 +60,7 @@ const ItemOrderSelected = ({
                     setDetailProduct("")
                     setopenModal(true)
                   }}>
-                    <Ionicons name={"add"} size={20} />
+                    <Ionicons name={"add"} size={20} color={theme === "dark" ? "white" : "black"}/>
                     <CText style={{fontSize:17}}>Añadir nota</CText>
                   </TouchableOpacity>
                 </CView>
@@ -94,11 +96,11 @@ const ItemOrderSelected = ({
           setopenModal(false)
         }}
         nodeContent={<>
-          <CView style={{flex:2, width:"100%", gap:10}}>
-            <CView style={{flex:1}}>
+          <CView style={{flex:2, width:"100%", gap:10, padding:10}} darkColor="black">
+            <CView style={{flex:1}} darkColor="black">
               <CText>Ingrese los detalles del producto</CText>
             </CView>
-            <CView>
+            <CView darkColor="black">
               <CInputText label="Detalle" 
               fontSize={20}
               value={detailProduct}
@@ -129,7 +131,7 @@ const style = StyleSheet.create({
     borderColor:"gray",
     borderRadius: 10
   },
-  nameProduct: {flex:1,  color:"black", fontSize:25},
+  nameProduct: {flex:1,  fontSize:25},
 
 
 })

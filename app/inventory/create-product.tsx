@@ -13,14 +13,16 @@ import { useSQLiteContext } from 'expo-sqlite'
 import CImage from '@/components/CImage'
 import { createProduct } from '@/database/product.operations'
 import { Product } from '@/interfaces'
+import { useColorScheme } from '@/hooks/useColorScheme'
+import { Colors } from '@/constants/Colors'
 
 type Props = {}
 
 
 
 const CreateProductScreen = (props: Props) => {
-    const {productname} = useLocalSearchParams()
     const db = useSQLiteContext();
+    const color = useColorScheme()
     // State for form fields
     const [formData, setFormData] = useState<Omit<Product, 'id_producto' | 'uuid' | 'fecha_creacion'>>({
         id_perfil: 1, // You might want to get this from your auth context or props
@@ -112,7 +114,7 @@ const CreateProductScreen = (props: Props) => {
 
     return (
         <CContainerView style={{flex:1}}>
-            <CView style={{flex:1, backgroundColor:"#acacac", justifyContent:"center", height:20 }}>
+            <CView style={{flex:1, backgroundColor:Colors[color ?? 'light'].tint, justifyContent:"center", height:20 }}>
               <CText type="title" style={{ textAlign:"center", color:"white"}}>Nuevo Producto</CText>
             </CView>
             <CView style={{flex:9}}>
@@ -164,7 +166,7 @@ const CreateProductScreen = (props: Props) => {
                                 />
                             </CView>
                         </CView>
-                        <CView style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 8, backgroundColor: '#f5f5f5', borderRadius: 5}}>
+                        <CView style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderRadius: 5}}>
                             <CText>Ilimitado</CText>
                             <Switch 
                                 value={formData.ilimitado} 
@@ -181,6 +183,7 @@ const CreateProductScreen = (props: Props) => {
                                         setSelectedCategory(itemValue);
                                         // You might want to map this to a category ID in your actual implementation
                                     }}
+                                    style={{color: Colors[color ?? 'light'].text}}
                                 >
                                     <Picker.Item label="Seleccione una categoría" value="" />
                                     <Picker.Item label="Comida Rápida" value="comida_rapida" />
@@ -269,7 +272,7 @@ const CreateProductScreen = (props: Props) => {
                                 onChangeText={(text) => handleInputChange('tiempo_entrega', text)}
                             />
                         </CView>
-                        <CView style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 8, backgroundColor: '#f5f5f5', borderRadius: 5}}>
+                        <CView style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderRadius: 5}}>
                             <CText>Envío Gratis</CText>
                             <Switch 
                                 value={formData.envio_gratis} 
@@ -281,13 +284,13 @@ const CreateProductScreen = (props: Props) => {
             </CView>
             <CView style={{flex:1.5, gap:5, justifyContent:"center", padding:10, }}>
                 <CButton 
-                containerStyles={{ backgroundColor:"orange", borderRadius:10}} 
+                containerStyles={{borderRadius:10}} 
                 textStyles={{fontSize:24, paddingVertical:0}}
                 onPress={handleSaveProduct}
                 title='Guardar'/>
-                <CButton title="Volver Inicio" onPress={()=>router.dismissTo("/")}
+                <CButton title="Inicio" onPress={()=>router.dismissTo("/")}
                 textStyles={{fontSize:16, paddingVertical:0}}
-                containerStyles={{borderRadius:10, paddingVertical:0, borderWidth:5, borderStyle:"solid", borderColor:"#cecece"}}
+                containerStyles={{borderRadius:10, paddingVertical:0, borderWidth:5, borderStyle:"solid", borderColor:"#cecece", backgroundColor:"transparent"}}
                 />
             </CView>
 
@@ -309,7 +312,8 @@ const style = StyleSheet.create({
     },
     btnStyle: {
         padding:2,
-        backgroundColor:"gray",
-        borderRadius:5
+        borderRadius:5,
+        borderWidth:2,
+        borderColor:"gray"
     }
 })

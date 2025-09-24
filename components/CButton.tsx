@@ -1,6 +1,7 @@
 import React from 'react'
-import { StyleProp, StyleSheet, TouchableOpacity, type TouchableOpacityProps , ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, TouchableOpacity, type TouchableOpacityProps , useColorScheme, ViewStyle } from 'react-native';
 import { CText } from './CText';
+import { Colors } from '@/constants/Colors';
 
 type Props =  TouchableOpacityProps & {
     title?: string;
@@ -14,14 +15,16 @@ const CButton = ({
     textStyles,
     ...rest
 }: Props) => {
-  return (
+    const color = useColorScheme()
+    return (
     <TouchableOpacity 
     {...rest}
     style={[
         styles.container,
+        {backgroundColor: Colors[color ?? 'light'].tint},
         containerStyles,
     ]}>
-        <CText type={"title"} style={[styles.textBtn,textStyles]}>{title}</CText>
+        <CText type={"title"} style={[styles.textBtn,textStyles,{color: Colors[color ?? 'light'].text}]}>{title}</CText>
     </TouchableOpacity>
   )
 }

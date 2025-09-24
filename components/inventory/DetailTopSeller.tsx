@@ -5,20 +5,26 @@ import { Product } from '../../interfaces/'
 import { Image, StyleSheet } from 'react-native'
 import { Divider } from 'react-native-paper'
 import CImage from '../CImage'
+import { mostSellsProduct } from '@/app/inventory/top-sellers'
 
 type Props = {
-    product:Product;
+    product:mostSellsProduct;
+    position:number;
 }
 
 const DetailTopSeller = ({
-    product
+    product,
+    position
 }: Props) => {
 
   const [errorImage, setErrorImage] = useState(false);
 
   return (
     <CView style={style.container}>
-        <CView style={{flex:2}}>
+        <CView style={{flex:1, justifyContent:"center", alignItems:"center"}}>
+          <CText style={{fontSize:30, fontWeight:900, fontStyle:"italic"}}>{position+1}</CText>
+        </CView>
+        <CView style={{flex:4}}>
             <CImage style={style.imgProduct} 
               src={product.imagen_url}
             />
@@ -26,17 +32,17 @@ const DetailTopSeller = ({
         <CView style={style.containerDataProduct}>
             <CView>
                 <CText style={{fontWeight:"bold"}}>{product.nombre || "Nombre del producto"}</CText>
-                <CText>${product.precio || "Precio del producto"}</CText>
+                <CText style={{fontWeight:900, fontSize:20, paddingVertical:5}}>${product.ingreso_total.toFixed(2) || "Ingresos"}</CText>
             </CView>
             <Divider/>
             <CView style={style.containerStockSold}>
                 <CView style={style.containerStockSoldItem1}>
-                    <CText style={{fontWeight:"bold"}}>{product.stock || "28"}</CText>
-                    <CText style={{fontSize:12}}>En Stock</CText>
+                    <CText style={{fontWeight:"bold"}}>{product.cantidad_total || "28"}</CText>
+                    <CText style={{fontSize:12}}>Cantidad Vendida</CText>
                 </CView>
                 <CView style={style.containerStockSoldItem2}>
-                    <CText style={{fontWeight:"bold"}}>{28}</CText>
-                    <CText style={{fontSize:12}}>Vendido</CText>
+                    <CText style={{fontWeight:"bold"}}>{product.veces_vendido || "28"}</CText>
+                    <CText style={{fontSize:12}}>Órdenes</CText>
                 </CView>
             </CView>
             
@@ -65,7 +71,7 @@ const style = StyleSheet.create({
     objectFit:"cover",
   },
   containerDataProduct:{
-    flex:4,
+    flex:8,
   },
   containerStockSold:{
     flex:1,

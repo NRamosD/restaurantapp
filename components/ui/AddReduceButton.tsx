@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import { CView } from '../CView'
-import { TouchableOpacity } from 'react-native'
+import { ToastAndroid, TouchableOpacity } from 'react-native'
 import { IconSymbol } from './IconSymbol'
 import { CText } from '../CText'
 import useOrderStore from '@/hooks/useOrderStore'
 import { Product } from '@/interfaces'
+import { useColorScheme } from '@/hooks/useColorScheme'
 
 type Props = {
     item: Product
@@ -13,15 +14,9 @@ type Props = {
 const AddReduceButton = ({
     item
 }: Props) => {
+    const theme = useColorScheme()
     const {
-        items,
-        addItem,
-        removeItem,
         updateQuantity,
-        updateNotes,
-        clearOrder,
-        getTotal,
-        getItemCount,
         getQuantity
     } = useOrderStore();
     
@@ -32,15 +27,20 @@ const AddReduceButton = ({
                 updateQuantity(item.uuid, getQuantity(item.uuid)-1)
                 :null
             }}>
-                <IconSymbol size={30} name="minus" color={"#8c8c8c"}/>
+                <IconSymbol size={30} name="minus"  color={ theme === "dark" ? "white" : "#8c8c8c"}/>
             </TouchableOpacity>
             <CText style={{marginHorizontal:5, marginTop:5, fontSize:25}}>
                 {getQuantity(item.uuid)}
             </CText>
             <TouchableOpacity onPress={()=>{
-                updateQuantity(item.uuid, getQuantity(item.uuid)+1)
+                const currentQuantity = getQuantity(item.uuid)+1
+                if(!item.ilimitado && currentQuantity>item.stock){
+                    ToastAndroid.show("No hay suficiente stock", ToastAndroid.LONG)
+                    return
+                }
+                updateQuantity(item.uuid, currentQuantity)
             }}>
-                <IconSymbol size={30} name="plus" color={"black"}/>
+                <IconSymbol size={30} name="plus" color={ theme === "dark" ? "white" : "black"}/>
             </TouchableOpacity>
         </CView>
     )

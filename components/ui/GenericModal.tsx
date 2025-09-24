@@ -3,12 +3,14 @@ import { Modal, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nat
 import { CView } from '../CView';
 import { CText } from '../CText';
 import { Button, Dialog, Divider, Portal } from 'react-native-paper';
+import { useColorScheme } from '@/hooks/useColorScheme'
 type Props = {
     title?:string
     textContent?:string
     nodeContent?:React.ReactNode
     withButton?: boolean;
-    showConfirmCancel?: boolean;
+    showConfirmButton?: boolean;
+    showCancelButton?: boolean;
     textOpenButton?: string;
     textConfirmButton?: string;
     textCloseButton?: string;
@@ -28,7 +30,8 @@ const GenericModal = ({
     textContent,
     nodeContent,
     withButton=false,
-    showConfirmCancel=true,
+    showConfirmButton=true,
+    showCancelButton=true,
     textOpenButton,
     textConfirmButton,
     textCloseButton,
@@ -38,6 +41,7 @@ const GenericModal = ({
     setShowModal
 }: Props) => {
     const hideDialog = () => setShowModal(false)
+    const theme = useColorScheme()
 
     return (
         <CView style={styles.container}>
@@ -51,10 +55,10 @@ const GenericModal = ({
 
             {/* Modal personalizado */}
             <Portal>
-              <Dialog visible={showModal} onDismiss={hideDialog} style={{borderRadius:10, backgroundColor:"white"}}>
-                <Dialog.Title>{title||"Título del Modal"}</Dialog.Title>
-                <Dialog.ScrollArea style={{height:200, paddingHorizontal:0}}>
-                  <ScrollView contentContainerStyle={{padding:10}}>
+              <Dialog visible={showModal} onDismiss={hideDialog} style={{borderRadius:10, backgroundColor:theme === "dark" ? "black" : "white"}}>
+                <Dialog.Title style={{backgroundColor:theme === "dark" ? "black" : "white", color:theme === "dark" ? "white" : "black"}}>{title||"Título del Modal"}</Dialog.Title>
+                <Dialog.ScrollArea style={{height:200, paddingHorizontal:0, backgroundColor:theme === "dark" ? "black" : "white"}}>
+                  <ScrollView contentContainerStyle={{ backgroundColor:theme === "dark" ? "black" : "white"}}>
                     {
                       textContent &&
                       <Text style={styles.modalText}>{textContent}</Text>
@@ -66,58 +70,18 @@ const GenericModal = ({
                   </ScrollView>
                 </Dialog.ScrollArea>
                 <Divider/>
-                <Dialog.Actions>
-                  <Button onPress={()=>{
+                <Dialog.Actions style={{gap:10}}>
+                  {showCancelButton && <Button onPress={()=>{
                     onCancel &&onCancel()
                     hideDialog()
-                  }}>{textCloseButton||"Cancelar"}</Button>
-                  <Button onPress={ ()=>{
+                  }} labelStyle={{fontSize:20, color:theme === "dark" ? "white" : "black"}}>{textCloseButton||"Cancelar"}</Button>}
+                  {showConfirmButton && <Button onPress={ ()=>{
                     onConfirm && onConfirm()
                     hideDialog()
-                  }}>{textConfirmButton||"Ok"}</Button>
+                  }} labelStyle={{fontSize:20, color:theme === "dark" ? "white" : "black"}}>{textConfirmButton||"Ok"}</Button>}
                 </Dialog.Actions>
               </Dialog>
             </Portal>
-            {/* <Modal
-                transparent
-                animationType="fade"
-                visible={showModal}
-                onRequestClose={() => setShowModal(false)}
-            >
-                <CView style={styles.modalOverlay}>
-                <CView style={styles.modalContent}>
-                    <Text style={styles.modalTitle}>{title||"Título del Modal"}</Text>
-                    {
-                        textContent &&
-                        <Text style={styles.modalText}>{textContent}</Text>
-                    }
-                    {
-                        nodeContent &&
-                        <CView>
-                            {nodeContent}    
-                        </CView>
-                    }
-                    {
-                        showConfirmCancel?
-                        <CView style={styles.confirmCancelButtons}>
-                            <TouchableOpacity onPress={() => setShowModal(false)} style={styles.closeButton}>
-                                <Text style={styles.closeButtonText}>{textCloseButton||"Cerrar"}</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => {
-                                onConfirm && onConfirm()
-                                setShowModal(false)
-                            }} style={styles.confirmButton}>
-                                <Text style={styles.closeButtonText}>{textConfirmButton||"Confirmar"}</Text>
-                            </TouchableOpacity>
-                        </CView>
-                        :
-                        <TouchableOpacity onPress={() => setShowModal(false)} style={styles.closeButton}>
-                            <Text style={styles.closeButtonText}>{textCloseButton||"Cerrar"}</Text>
-                        </TouchableOpacity>
-                    }
-                </CView>
-                </CView>
-            </Modal> */}
         </CView>
     )
 }
@@ -135,7 +99,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   openButtonText: {
-    color: 'white',
+    // color: 'white',
     fontWeight: 'bold',
   },
   modalOverlay: {

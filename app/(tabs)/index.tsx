@@ -20,9 +20,13 @@ import { useSQLiteContext } from "expo-sqlite";
 import { Orden } from "@/interfaces";
 import { getAllOrders, getOrdersByStatus } from "@/database/order.operations";
 import { useIsFocused } from "@react-navigation/native";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Colors } from "@/constants/Colors";
 
 export default function HomeScreen() {
   // const [nameProduct, setNameProduct] = useState<string>("");
+
+  const colorScheme = useColorScheme()
   const dbConnection = useSQLiteContext()
   const isFocused = useIsFocused();
   const [orderList, setOrderList] = useState<Orden[]>([])
@@ -96,16 +100,16 @@ export default function HomeScreen() {
             Acceso Rápido
           </CText>
           <CView style={styles.easyAccessOptionsContainer}>
-            <TouchableOpacity onPress={()=>router.push({pathname:"/inventory/top-sellers"})} style={styles.easyAccessOption}>
-              <Ionicons name="heart-outline" size={70}/>
+            <TouchableOpacity onPress={()=>router.push({pathname:"/inventory/top-sellers"})} style={[styles.easyAccessOption,{boxShadow:`${colorScheme === "dark" ? "#000" : "#c1c1c1"} 0px 5px 5px 2px`}]}>
+              <Ionicons name="heart-outline" size={70} color={Colors[colorScheme ?? 'light'].tint}/>
               <CText type="subtitle" style={{fontSize:14}}>Más Vendidos</CText>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=>router.push({pathname:"/inventory/create-product"})} style={styles.easyAccessOption}>
-              <Ionicons name="storefront-outline" size={70}/>
+            <TouchableOpacity onPress={()=>router.push({pathname:"/inventory/create-product"})} style={[styles.easyAccessOption,{boxShadow:`${colorScheme === "dark" ? "#000" : "#c1c1c1"} 0px 5px 5px 2px`}]}>
+              <Ionicons name="storefront-outline" size={70} color={Colors[colorScheme ?? 'light'].tint}/>
               <CText type="subtitle" style={{fontSize:13}}>Nuevo Producto</CText>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=>router.push({pathname:"/settings"})} style={styles.easyAccessOption}>
-              <Ionicons name="settings-outline" size={70}/>
+            <TouchableOpacity onPress={()=>router.push({pathname:"/settings"})} style={[styles.easyAccessOption,{boxShadow:`${colorScheme === "dark" ? "#000" : "#c1c1c1"} 0px 5px 5px 2px`}]}>
+              <Ionicons name="settings-outline" size={70} color={Colors[colorScheme ?? 'light'].tint}/>
               <CText type="subtitle" style={{fontSize:14}}>Ajustes</CText>
             </TouchableOpacity>
           </CView>
@@ -143,7 +147,7 @@ const styles = StyleSheet.create({
   //   paddingTop: 20,
   // },
   touchableCreate:{
-    backgroundColor:"#dedede",
+    // backgroundColor:"#dedede",
     padding:10,
     textAlign:"center",
     justifyContent:"center",
@@ -172,7 +176,6 @@ const styles = StyleSheet.create({
     flex:1, 
     justifyContent:"center", 
     alignItems:"center",
-    boxShadow:"#cecece 0px 5px 5px 2px",
     borderRadius:5,
     marginHorizontal:5, 
     marginVertical:10,

@@ -1,16 +1,11 @@
 import React, { useEffect } from "react";
 import { CView } from "../CView";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, useColorScheme } from "react-native";
 import { CText } from "../CText";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Orden } from "@/interfaces";
-import { useSQLiteContext } from "expo-sqlite";
 import useOrderOperations from "@/hooks/useOrderOperations";
-import { getOrderById } from "@/database/order.operations";
-import useOrderStore from "@/hooks/useOrderStore";
-import { getOrderProduct, getProductsByOrderId } from "@/database/order_product.operations";
-import { getProductById } from "@/database/product.operations";
 
 type Props = {
   path?:any
@@ -23,13 +18,13 @@ const ItemOrderLink = ({
   order,
   loadOrder = true
 }: Props) => {
+  const theme = useColorScheme()
   const text1 = "Description of order in one line qioweu qoiwu e qwe qjweqw";
 
-  const dbConnection = useSQLiteContext()
 
   const {
-    addItem
-  } = useOrderStore()
+    loadOrderData
+  } = useOrderOperations({})
   
   // useEffect(()=>{
   //   if(loadOrder && order?.id_orden){
@@ -37,27 +32,16 @@ const ItemOrderLink = ({
   //   }
   // },[])
 
-  const loadOrderData = async()=>{
-    const resultOrder = await getProductsByOrderId(dbConnection, order?.id_orden!)
-    resultOrder.forEach(async (item) => {
-      const currentProduct =  await getProductById(dbConnection, item.id_producto)
-      if(currentProduct){
-        addItem({
-          ...currentProduct,
-          quantity: item.cantidad,
-          notes: item.detalle || ""
-        })
-      }
-    })
+  const loadCurrentOrderData = async()=>{
+    loadOrderData(order?.id_orden!)
     path? router.push({pathname:path, params:{id_orden:order?.id_orden}}):alert("No hay ruta")    
-    // addItem(resultOrder)
   }
 
 
   return (
     <CView style={{ padding: 10, marginVertical: 2, borderWidth:3, borderRadius:5, borderColor:"#cecece"  }}>
       <TouchableOpacity
-        onPress={() => loadOrderData()}
+        onPress={() => loadCurrentOrderData()}
         style={{ flex: 1, flexDirection: "row", }}
       >
         <CView style={{ flex: 5 }}>
@@ -76,7 +60,7 @@ const ItemOrderLink = ({
             alignItems: "flex-end",
           }}
         >
-          <Ionicons name="chevron-forward-outline" size={30} />
+          <Ionicons name="chevron-forward-outline" size={30} color={theme === "dark" ? "white" : "black"} />
         </CView>
       </TouchableOpacity>
     </CView>

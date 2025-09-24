@@ -3,6 +3,7 @@ import React from 'react'
 import useOrderStore from './useOrderStore'
 import { createOrder, updateOrder } from '@/database/order.operations'
 import { createOrderProduct, deleteOrderProduct, deleteOrderProductById, getOrderProduct, getProductsByOrderId, updateOrderProduct } from '@/database/order_product.operations'
+import { getProductById, updateProductStock } from '@/database/product.operations'
 import { Product } from '@/interfaces'
 
 type Props = {}
@@ -13,8 +14,32 @@ const useOrderOperations = ({
     const dbConnection = useSQLiteContext()
     const {
         items,
+        addItem
     } = useOrderStore()
 
+    const verifyStock = async (id_producto: number, quantity: number) => {
+        const product = await getProductById(dbConnection, id_producto)
+        if(!product || product?.ilimitado){
+            return
+        }
+        const currentStock = product.stock - quantity
+        updateProductStock(dbConnection, id_producto, currentStock, 'set')
+    }
+
+
+    const loadOrderData = async(id_orden:number)=>{
+        const resultOrder = await getProductsByOrderId(dbConnection, id_orden)
+        resultOrder.forEach(async (item) => {
+          const currentProduct =  await getProductById(dbConnection, item.id_producto)
+          if(currentProduct){
+            addItem({
+              ...currentProduct,
+              quantity: item.cantidad,
+              notes: item.detalle || ""
+            })
+          }
+        })
+    }
 
     const createOrderProcess = async ({
         estado = "pendiente",   
@@ -39,8 +64,9 @@ const useOrderOperations = ({
                 precio_unitario: item.precio,
                 detalle: item.notes || ""
             })
+            verifyStock(item.id_producto, item.quantity)
         })
-        
+        return orderCreated
     }
 
     const updateOrderProcess = async ({
@@ -108,7 +134,8 @@ const useOrderOperations = ({
 
     return {
         createOrderProcess,
-        updateOrderProcess
+        updateOrderProcess,
+        loadOrderData
     }
 }
 

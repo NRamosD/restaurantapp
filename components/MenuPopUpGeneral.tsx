@@ -33,17 +33,17 @@ const MenuPopUpGeneral = (props: Props) => {
       }} >
           <MenuOption onSelect={() => alert(`Save`)}>
             <Text style={{fontSize:18}}>
-              Option 1
-            </Text>
-          </MenuOption>
-          <MenuOption onSelect={() => alert(`Save 1`)}>
-            <Text style={{fontSize:18}}>
-              Option 2
+              Cambiar Rol
             </Text>
           </MenuOption>
           <MenuOption onSelect={() => router.push("/settings")}>
             <Text style={{fontSize:18}}>
               Ajustes
+            </Text>
+          </MenuOption>
+          <MenuOption onSelect={() => alert(`Save 1`)}>
+            <Text style={{fontSize:18}}>
+              Cerrar Sesión
             </Text>
           </MenuOption>
           {/* <MenuOption onSelect={() => alert(`Delete`)} >

@@ -427,7 +427,6 @@ const style = StyleSheet.create({
     },
     btnStyle: {
         padding:2,
-        backgroundColor:"gray",
         borderRadius:5
     }
 })

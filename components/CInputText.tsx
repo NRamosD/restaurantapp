@@ -1,8 +1,7 @@
 import React from 'react'
-import { StyleProp, StyleSheet, TextStyle } from 'react-native';
-import { CText } from './CText';
+import { StyleProp, StyleSheet, TextStyle, useColorScheme } from 'react-native';
 import { TextInput, TextInputProps } from 'react-native-paper';
-import { useThemeColor } from '@/hooks/useThemeColor';
+
 
 type Props =  TextInputProps & {
     label:string;
@@ -18,7 +17,7 @@ const CInputText = ({
     style,
     ...rest
 }: Props) => {
-
+    const theme = useColorScheme()
 
     return (
         // <TextInput 
@@ -34,8 +33,8 @@ const CInputText = ({
             mode="outlined"
             theme={{
                 colors: {
-                    // primary: '#ff7300ff', // Color del borde cuando tiene focus
-                    // outline: '#cacacaff', // Borde cuando no tiene focus
+                    primary: theme === "dark" ? "white" : "black", // Color del borde cuando tiene focus
+                    outline: "#CFAE70", // Borde cuando no tiene focus
                 },
             }}
             onKeyPress={(e:any)=>{

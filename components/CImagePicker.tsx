@@ -6,7 +6,9 @@ import CButton from './CButton';
 
 type Props = {}
 
-const CImagePicker = (props: Props) => {
+const CImagePicker = ({
+  
+}: Props) => {
     const [image, setImage] = useState<string|null>(null);
 
     const pickImage = async () => {

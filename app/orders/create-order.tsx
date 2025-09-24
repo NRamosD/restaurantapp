@@ -6,7 +6,7 @@ import { ItemOrderSelected } from '@/components/orders'
 import { Ionicons } from '@expo/vector-icons'
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from 'react'
-import { FlatList, StyleSheet, TouchableOpacity } from 'react-native'
+import { FlatList, StyleSheet, ToastAndroid, TouchableOpacity } from 'react-native'
 import { Product } from '@/interfaces'
 import { v4 as uuidv4 } from 'uuid';
 import ItemOrderOptionSquare from '@/components/orders/ItemOrderOptionSquare'
@@ -141,9 +141,13 @@ const CreateOrder = ({
             clearOrder()
             router.dismissTo({pathname:"/"})
           }}>
-            <CText type="subtitle">Cancelar</CText>
+            <CText type="subtitle">Inicio</CText>
           </TouchableOpacity>
           <TouchableOpacity style={styles.orderButton} onPress={async()=>{
+            if(items.length==0){
+              ToastAndroid.show("No hay productos", ToastAndroid.SHORT)
+              return
+            }
             await decideHowToProccess()
             clearOrder()
             router.dismissTo({pathname:"/"})
@@ -152,7 +156,10 @@ const CreateOrder = ({
           </TouchableOpacity>
           <TouchableOpacity style={styles.orderButton} 
             onPress={async()=>{
-              await decideHowToProccess()
+              if(items.length==0){
+                ToastAndroid.show("No hay productos", ToastAndroid.SHORT)
+                return
+              }
               router.push({pathname:"/orders/checkout", params:{id_orden:id_orden??""}})
             }}
           >
