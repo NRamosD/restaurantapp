@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Product } from '@/interfaces';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface OrderItem extends Product {
   quantity: number;
@@ -84,7 +85,7 @@ const useOrderStore = create<OrderState>()(
     {
       name: 'order-storage',
       // Uncomment and use with AsyncStorage for React Native
-      // storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => AsyncStorage),
     }
   )
 );
