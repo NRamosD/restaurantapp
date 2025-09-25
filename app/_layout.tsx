@@ -9,7 +9,7 @@ import { SQLiteProvider } from 'expo-sqlite';
 import * as SQLite from 'expo-sqlite';
 import { StartDatabase } from '@/database/index';
 import App from './App';
-import { Text } from 'react-native';
+import { KeyboardAvoidingView, Platform, Text } from 'react-native';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useAuthStore } from '@/hooks/useAuthStore';
@@ -50,7 +50,13 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Suspense fallback={<Text>Loading...</Text>}>
         <SQLiteProvider databaseName="rest-app.db" onInit={StartDatabase} useSuspense={true}>
-          {token ? <App/> : <LoginScreen/>}
+          <KeyboardAvoidingView style={{flex:1}} 
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}>
+            {token ? <App/> : 
+              <LoginScreen/>
+            }
+          </KeyboardAvoidingView>
         </SQLiteProvider>
       </Suspense>
     </ThemeProvider>

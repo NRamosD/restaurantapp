@@ -4,11 +4,15 @@ import { Menu, MenuOption, MenuOptions, MenuProvider, MenuTrigger } from 'react-
 import { IconSymbol } from './ui/IconSymbol'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import { usePopUpGeneralActions } from '@/hooks/usePopUpGeneralActions'
 
 type Props = {}
 
 const MenuPopUpGeneral = (props: Props) => {
   const colorScheme = useColorScheme();
+
+  const { changeRole, changeProfile, closeSession } = usePopUpGeneralActions({});
+
   return (
     <Menu>
       <MenuTrigger style={{ alignItems:"flex-end"}} >
@@ -32,18 +36,23 @@ const MenuPopUpGeneral = (props: Props) => {
         }
       }} >
           <MenuOption onSelect={() => alert(`Save`)}>
-            <Text style={{fontSize:18}}>
+            <Text style={{fontSize:18, textAlign:"right"}}>
               Cambiar Rol
             </Text>
           </MenuOption>
+          <MenuOption onSelect={() => alert(`Save`)}>
+            <Text style={{fontSize:18, textAlign:"right"}}>
+              Cambiar Perfil
+            </Text>
+          </MenuOption>
           <MenuOption onSelect={() => router.push("/settings")}>
-            <Text style={{fontSize:18}}>
+            <Text style={{fontSize:18, textAlign:"right"}}>
               Ajustes
             </Text>
           </MenuOption>
-          <MenuOption onSelect={() => alert(`Save 1`)}>
-            <Text style={{fontSize:18}}>
-              Cerrar Sesión
+          <MenuOption onSelect={() => closeSession()}>
+            <Text style={{fontSize:18, textAlign:"right"}}>
+              Salir
             </Text>
           </MenuOption>
           {/* <MenuOption onSelect={() => alert(`Delete`)} >

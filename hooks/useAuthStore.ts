@@ -2,6 +2,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
 interface User {
   id: string;
@@ -41,6 +42,9 @@ export const useAuthStore = create<AuthState>()(
           );
 
           set({ user: response.user, token: response.token, isLoading: false });
+          if(response.token){
+            router.dismissTo("/")
+          }
         } catch (error) {
           set({ isLoading: false });
           throw error;
