@@ -36,7 +36,6 @@ const LoginScreen = ({
             style={{width:300}}/>
           <CButton title="Iniciar" onPress={() => {
               login(user,pass)
-              router.dismissTo('/')
           }} containerStyles={{width:300, borderRadius:10, paddingVertical:10}}/>
         </CView>
       </CView>
