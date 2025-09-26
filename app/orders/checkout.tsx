@@ -74,7 +74,7 @@ const CheckoutOrder = ({
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
         <FlatList<Product>
           data={items}
-          renderItem={({item}) => <ItemOrderSelected singleProduct={item} removeItem={()=>removeItem(item.uuid)} /> }
+          renderItem={({item}) => <ItemOrderSelected singleProduct={item} removeItem={()=>removeItem(item.uuid)} justShow /> }
           keyExtractor={item => item.uuid}
           style={{height:"100%", width:"100%"}}
         />

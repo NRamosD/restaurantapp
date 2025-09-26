@@ -21,7 +21,7 @@ export const InitializeDatabase = async (dbConnection:SQLite.SQLiteDatabase) => 
       const tables = await dbConnection.getAllAsync<{ name: string }>(
         "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
       );
-      if(tables.length==0){
+      if(!tables || tables.length==0){
         // Execute create table queries sequentially
         console.log("Creating tables...");
         for (const query of CreateAllTables) {

@@ -186,8 +186,12 @@ const CreateProductScreen = (props: Props) => {
                                     style={{color: Colors[color ?? 'light'].text}}
                                 >
                                     <Picker.Item label="Seleccione una categoría" value="" />
+                                    <Picker.Item label="Comida" value="comida" />
+                                    <Picker.Item label="Entrada" value="entrada" />
+                                    <Picker.Item label="Plato Fuerte" value="plato_fuerte" />
                                     <Picker.Item label="Comida Rápida" value="comida_rapida" />
                                     <Picker.Item label="Bebidas" value="bebidas" />
+                                    <Picker.Item label="Adicionales" value="adicionales" />
                                     <Picker.Item label="Postres" value="postres" />
                                 </Picker>
                             </CView>
@@ -202,7 +206,7 @@ const CreateProductScreen = (props: Props) => {
                             />
                         </CView>
 
-                        <CView>
+                        {/* <CView>
                             <CInputText 
                                 label={"URL de la Imagen"} 
                                 placeholder='https://ejemplo.com/imagen.jpg'
@@ -212,9 +216,9 @@ const CreateProductScreen = (props: Props) => {
                                     setImage(text || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c");
                                 }}
                             />
-                        </CView>
+                        </CView> */}
 
-                        <CView>
+                        {/* <CView>
                             <CInputText 
                                 label={"Galería (URLs separadas por comas)"} 
                                 placeholder='https://ejemplo.com/img1.jpg, https://ejemplo.com/img2.jpg'
@@ -222,17 +226,17 @@ const CreateProductScreen = (props: Props) => {
                                 onChangeText={(text) => handleInputChange('galeria', text)}
                                 multiline
                             />
-                        </CView>
+                        </CView> */}
 
-                        <CView>
+                        {/* <CView>
                             <CInputText 
                                 label={"URL del Video"} 
                                 placeholder='https://ejemplo.com/video.mp4'
                                 value={formData.video_url}
                                 onChangeText={(text) => handleInputChange('video_url', text)}
                             />
-                        </CView>
-                        <CView>
+                        </CView> */}
+                        {/* <CView>
                             <CInputText 
                                 label={"IVA %"} 
                                 placeholder='Ej: 19'
@@ -240,27 +244,36 @@ const CreateProductScreen = (props: Props) => {
                                 value={formData.iva?.toString() || ''}
                                 onChangeText={(text) => handleInputChange('iva', text ? parseFloat(text) : null)}
                             />
-                        </CView>
+                        </CView> */}
                         
 
                         <CView style={{flexDirection: 'row', gap: 10}}>
-                            <CView style={{flex: 1}}>
+                            <CView style={{flex: 1, gap: 10}}>
                                 <CInputText 
                                     label={"Descuento %"} 
                                     placeholder='0'
                                     keyboardType="numeric"
+                                    maxLength={2}
                                     value={formData.descuento?.toString()}
                                     onChangeText={(text) => handleInputChange('descuento', parseInt(text) || 0)}
                                 />
                             </CView>
                             <CView style={{flex: 1}}>
                                 <CInputText 
+                                    label={"Nuevo Precio"} 
+                                    placeholder='0'
+                                    disabled
+                                    value={
+                                        ((formData.precio||0)-(formData.precio||0)*(formData.descuento||0)/100).toString()
+                                    }
+                                />
+                                {/* <CInputText 
                                     label={"Precio Anterior"} 
                                     placeholder='0.00'
                                     keyboardType="numeric"
                                     value={formData.precio_anterior?.toString()}
                                     onChangeText={(text) => handleInputChange('precio_anterior', parseFloat(text) || 0)}
-                                />
+                                /> */}
                             </CView>
                         </CView>
 

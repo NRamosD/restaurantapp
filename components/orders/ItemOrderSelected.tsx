@@ -12,12 +12,14 @@ import { useColorScheme } from '@/hooks/useColorScheme'
 
 type Props = {
     singleProduct: Product
-    removeItem?: (product:Product)=>void
+    removeItem?: (product:Product)=>void,
+    justShow?: boolean
 }
 
 const ItemOrderSelected = ({
     singleProduct,
-    removeItem
+    removeItem,
+    justShow = false
 }: Props) => {
   const {getQuantity} = useOrderStore();
   const theme = useColorScheme()
@@ -55,6 +57,7 @@ const ItemOrderSelected = ({
                 </CView>
                 :
                 <CView style={{flex:1, paddingVertical:10}}>
+                  {justShow ? null : 
                   <TouchableOpacity style={{flexDirection:"row", gap:5, alignItems:"center"}} 
                   onPress={()=>{
                     setDetailProduct("")
@@ -63,6 +66,7 @@ const ItemOrderSelected = ({
                     <Ionicons name={"add"} size={20} color={theme === "dark" ? "white" : "black"}/>
                     <CText style={{fontSize:17}}>Añadir nota</CText>
                   </TouchableOpacity>
+                  }
                 </CView>
               }
               <CView style={{flex:1}}>
@@ -71,12 +75,12 @@ const ItemOrderSelected = ({
               </CView>
             </CView>
             <CView style={{flex:3}}>
-              <TouchableOpacity style={{flex:1, alignItems:"flex-end"}} onPress={()=>{removeItem && removeItem(singleProduct)}}>
+              {justShow ? null : <TouchableOpacity style={{flex:1, alignItems:"flex-end"}} onPress={()=>{removeItem && removeItem(singleProduct)}}>
                   <Ionicons name={"trash"} size={30} color={"red"} />
-              </TouchableOpacity>
-              <CView style={{flex:1}}>
+              </TouchableOpacity>}
+              {justShow ? null : <CView style={{flex:1}}>
                 <AddReduceButton item={singleProduct}/>
-              </CView>
+              </CView>}
             </CView>
         </CView>
       </TouchableOpacity>
@@ -85,6 +89,7 @@ const ItemOrderSelected = ({
         title={singleProduct.nombre}
         showModal={openModal}
         setShowModal={setopenModal}
+        showConfirmButton={!justShow}
         textConfirmButton={'Guardar'}
         onCancel={()=>{
           setDetailProduct("")
@@ -105,7 +110,8 @@ const ItemOrderSelected = ({
               fontSize={20}
               value={detailProduct}
               onChangeText={(text)=>setDetailProduct(text)}
-              multiline={true} numberOfLines={6} />
+              multiline={true} numberOfLines={6} 
+              disabled={justShow}/>
             </CView>
           </CView>
         </>

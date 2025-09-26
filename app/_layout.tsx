@@ -29,12 +29,13 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  useEffect(() => {
-    (async () => {
+  // Habilitar cuando se añadan nuevos cambios en BD
+  // useEffect(() => {
+  //   (async () => {
       // console.log("Deleting database...");
       // await SQLite.deleteDatabaseAsync("rest-app.db");
-    })();
-  }, []);
+  //   })();
+  // }, []);
 
   useEffect(() => {
     if (loaded) {
