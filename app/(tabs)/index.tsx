@@ -154,7 +154,6 @@ const styles = StyleSheet.create({
     borderRadius:10,
     height:80,
     borderWidth:5,
-    borderColor:"#cecece"
   },
   scrollView:{
     flex:1,

@@ -11,5 +11,8 @@ export default function OrdersLayout() {
     <Stack.Screen name='final-status-checkout' options={{
       animation:"slide_from_bottom",
     }}/>
+    <Stack.Screen name='share-checkout' options={{
+      // animation:"slide_from_bottom",
+    }}/>
   </Stack>;
 }

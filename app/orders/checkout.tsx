@@ -14,6 +14,7 @@ import useOrderStore from '@/hooks/useOrderStore'
 import { useLocalSearchParams } from 'expo-router'
 import useOrderOperations from '@/hooks/useOrderOperations'
 import GenericModal from '@/components/ui/GenericModal'
+import ShareCheckout from './share-checkout'
 
 
 
@@ -26,6 +27,7 @@ const CheckoutOrder = ({
   const {id_orden, review_order} = useLocalSearchParams<{ id_orden: string, review_order: string }>()
 
   const [opendModalTextualOrder, setOpendedModalTextualOrder] = useState(false)
+  const [toShare, setToShare] = useState(false)
 
   const {
     items,
@@ -99,7 +101,7 @@ const CheckoutOrder = ({
                 <Ionicons name="arrow-back-outline" size={50} color="white" />
               </TouchableOpacity>
               <TouchableOpacity style={{padding:20}} onPress={()=>{
-                alert("Compartir Comprobante")
+                setToShare(true)
               }}>
                 <Ionicons name="share-social-outline" size={50} color="white" />
               </TouchableOpacity>
@@ -144,6 +146,11 @@ const CheckoutOrder = ({
         </>}
         withButton={false}
       />
+      {
+        toShare && (
+          <ShareCheckout toShare={toShare} setToShare={setToShare}/>
+        )
+      }
 
 
     </CContainerView>

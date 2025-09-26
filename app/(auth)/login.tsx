@@ -24,7 +24,7 @@ const LoginScreen = ({
           status && status!=="success" && <CText type="subtitle" style={{color:"red"}}>{status}</CText>
         }
         <CView style={{flex:1, gap:10}}>
-          <CInputText label="Usuario o Correo" fontSize={25} style={{width:300}} value={user} 
+          <CInputText label="Usuario o Correo" fontSize={25} style={{width:300, height:70}} value={user} 
           onChangeText={(value)=>{
             setUser(value);
             setStatus('');
@@ -42,7 +42,7 @@ const LoginScreen = ({
               onPress={() => setSecureTextEntry(!secureTextEntry)}
             />
           }
-          style={{width:300}}/>
+          style={{width:300, height:70}}/>
           <CButton title="Iniciar" onPress={() => {
             login(user,pass).then(res => {
               if(res.status !== "success"){

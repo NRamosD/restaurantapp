@@ -15,15 +15,7 @@ import CImagePicker from '@/components/CImagePicker'
 
 
 type Props = {}
-type dataType = {id:string, name:string}
-const data:Product[] = Array.from({ length: 20 }, (_, i) => ({ 
-  id: i.toString(), 
-  uuid:uuidv4(),//"Producto #"+(i/2),
-  nombre:"Producto #"+i,
-  precio:(Math.random()*100)+ parseFloat(Math.random().toFixed(3)),
-  activo:true,
-  fechaCreacion:new Date(),
-}) as Product );
+
 
 type itemSectionMenu = {
   id:string,
@@ -120,8 +112,8 @@ const SettingsIndex = (props: Props) => {
         <CView style={{justifyContent:"center", alignItems:"center", gap:5, padding:10}}>
           <Image source={{uri:URL_ME}} style={{width:100, height:100, borderRadius:50}} alt="user-image"/>
           <CView>
-            <CText type="title" style={{textAlign:"center", fontSize:20}}>Nombre Completo de la persona</CText>
-            <CText type="title" style={{textAlign:"center", fontSize:20}}>Mesero</CText>
+            <CText type="title" style={{textAlign:"center", fontSize:20}}>Usuario Prueba</CText>
+            <CText type="title" style={{textAlign:"center", fontSize:20}}>Rol de Usuario</CText>
           </CView>
         </CView>
         <SectionList
