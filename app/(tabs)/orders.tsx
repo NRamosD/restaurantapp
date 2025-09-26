@@ -212,7 +212,7 @@ export default function TabTwoScreen() {
           showModal={openModal2}
           setShowModal={setopenModal2}
           textConfirmButton={'Buscar'}
-          nodeContent={<>
+          nodeContent={
             <CView style={{flex:2, width:"100%", gap:10, padding:10}} darkColor="black" >
               {/* <CView style={{flex:1}}>
                 <CText>Seleccione una opción para filtrar</CText>
@@ -257,7 +257,7 @@ export default function TabTwoScreen() {
                 
 
             </CView>
-          </>
+          
           }
         />
     </CContainerView>

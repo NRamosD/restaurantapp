@@ -31,8 +31,8 @@ export default function RootLayout() {
 
   useEffect(() => {
     (async () => {
-      console.log("Deleting database...");
-      await SQLite.deleteDatabaseAsync("rest-app.db");
+      // console.log("Deleting database...");
+      // await SQLite.deleteDatabaseAsync("rest-app.db");
     })();
   }, []);
 

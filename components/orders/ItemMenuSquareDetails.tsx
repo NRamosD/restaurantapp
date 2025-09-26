@@ -50,7 +50,7 @@ export default ItemMenuSquareDetails;
 
 const styles = StyleSheet.create({
   containerItem : { padding: 10, marginVertical: 5, borderWidth:3, 
-    borderColor:"#cecece", borderRadius:5, width:180 },
+    borderColor:"#cecece", borderRadius:5, width:"45%" },
   containerImgText : { flex:1, alignItems:"center" },
 
 })
