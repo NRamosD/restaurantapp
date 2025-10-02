@@ -15,7 +15,7 @@ const LoginScreen = ({
   const [user, setUser] = useState('')
   const [pass, setPass] = useState('')
   const [secureTextEntry, setSecureTextEntry] = useState(true);
-  return (<>
+  return (
   <CContainerView style={{flex:1, alignContent:"center", justifyContent:"center"}}>
     <CView style={{ gap:10, margin:"auto", justifyContent:"center", alignItems:"center", height:300}}>
       <CView style={{flex:1, gap:10 }}>
@@ -55,7 +55,7 @@ const LoginScreen = ({
       </CView>
     </CView>
   </CContainerView>
-  </>)
+  )
 }
 
 export default LoginScreen
