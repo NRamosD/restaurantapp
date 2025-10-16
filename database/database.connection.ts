@@ -29,6 +29,11 @@ export const InitializeDatabase = async (dbConnection:SQLite.SQLiteDatabase) => 
           console.log(result);
         }
         
+        // Execute create config table
+        console.log("Creating config table...");
+        const result = dbConnection.execSync(CreateConfigTable);
+        console.log(result);
+        
         // Execute insert queries sequentially
         console.log("Inserting default data...");
         for (const query of InsertDefaultData) {
@@ -68,8 +73,8 @@ const CreateAllTables = [
   `PRAGMA foreign_keys = ON;`,
   `CREATE TABLE IF NOT EXISTS Perfil (
     id_perfil INTEGER PRIMARY KEY AUTOINCREMENT,
-    id_usuario INTEGER NOT NULL,
-    id_negocio INTEGER,
+    id_usuario TEXT NOT NULL,
+    id_negocio TEXT DEFAULT NULL,
     uuid TEXT NOT NULL UNIQUE,
     correo TEXT NOT NULL,
     telefono TEXT,
@@ -78,6 +83,7 @@ const CreateAllTables = [
     tipo_perfil TEXT NOT NULL, 
     tipo_negocio TEXT,
     estado TEXT DEFAULT 'activo',
+    roles TEXT NOT NULL DEFAULT 'administrador,',
     valores_configuraciones TEXT NOT NULL,
     auth TEXT NOT NULL,
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -179,6 +185,10 @@ const CreateAllTables = [
     FOREIGN KEY (id_perfil) REFERENCES Perfil(id_perfil)
   );`
 ];
+
+const CreateConfigTable =   `CREATE TABLE IF NOT EXISTS app_config_data (
+    current_user TEXT
+  );`
 
 const InsertDefaultData = [
     `INSERT INTO Perfil (
