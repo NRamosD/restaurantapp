@@ -4,6 +4,8 @@ import { persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { ToastAndroid } from "react-native";
+import { getAllProfiles } from "@/database/profile.operations";
+import { useSQLiteContext } from "expo-sqlite";
 
 interface User {
   id: string;
@@ -26,15 +28,23 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       isLoading: false,
       login: async (email: string, password: string) => {
+        const dbConnection = useSQLiteContext()
         set({ isLoading: true });
 
         try {
           // Simulación de API login
           // 🔑 Aquí debes reemplazar por tu fetch/axios al backend
-          const response = await new Promise<{ user: User|null; token: string|null }>((resolve) =>{
+          const allProfiles = await getAllProfiles(dbConnection);
+
+          const profile = allProfiles.find((profile) => profile.correo === email);
+          if(!profile){
+            return {user: null, token: null, status: "Credenciales incorrectas"};
+          }
+
+          const response = await  new Promise<{ user: User|null; token: string|null }>((resolve) =>{
             setTimeout(
               () =>{
-                if((email === "usuario@prueba.com" || email === "prueba") && password === "prueba123."){
+                if(profile.password_perfil === password){
                   resolve({ user: { id: "1", name: "Usuario Prueba", email }, token: "fake-jwt-token-123" });
                 }else{
                   resolve({ user: null, token: null });
@@ -43,6 +53,19 @@ export const useAuthStore = create<AuthState>()(
               1000
             );
           });
+
+          // const response = await new Promise<{ user: User|null; token: string|null }>((resolve) =>{
+          //   setTimeout(
+          //     () =>{
+          //       if((email === "usuario@prueba.com" || email === "prueba") && password === "prueba123."){
+          //         resolve({ user: { id: "1", name: "Usuario Prueba", email }, token: "fake-jwt-token-123" });
+          //       }else{
+          //         resolve({ user: null, token: null });
+          //       }
+          //     },
+          //     1000
+          //   );
+          // });
           if(!response.user || !response.token){
             return {status: "Credenciales incorrectas"};
           }
