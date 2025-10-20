@@ -1,3 +1,4 @@
+import { hashPassword } from '@/assets/utils/hash_pass';
 import * as SQLite from 'expo-sqlite';
 
 
@@ -196,6 +197,8 @@ const CreateConfigTable =   `CREATE TABLE IF NOT EXISTS app_config_data (
     current_user TEXT
   );`
 
+const passHashed = hashPassword("prueba123.")
+
 const InsertDefaultData = [
     `INSERT INTO Perfil (
         id_usuario, id_negocio, uuid, correo, telefono, 
@@ -205,10 +208,10 @@ const InsertDefaultData = [
         2, 
         2, 
         '550e8400-e29b-41d4-a716-4466554400003', 
-        'restaurante@ejemplo.com', 
+        'elpale@gmail.com', 
         '1234567890', 
-        'Restaurante Principal', 
-        'hashed_password_123', 
+        'Restaurante El Palé', 
+        ${passHashed}, 
         'admin', 
         'restaurante', 
         'activo', 
