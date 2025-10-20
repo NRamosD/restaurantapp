@@ -9,11 +9,12 @@ export const createComponent = async (
   ): Promise<number> => {
     const result = await dbConnection.runAsync(
       `INSERT INTO Componentes (
-        id_perfil, uuid, nombre, descripcion, tipo, material, peso, longitud,
+        id_perfil, id_negocio, uuid, nombre, descripcion, tipo, material, peso, longitud,
         ancho, alto, calorias, stock, porciones, color, fecha_creacion
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         componente.id_perfil, // 🔹 este es obligatorio
+        componente.id_negocio,
         uuid(),
         componente.nombre,
         componente.descripcion ?? null,

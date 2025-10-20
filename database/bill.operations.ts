@@ -9,11 +9,12 @@ export const createBill = async (
 ): Promise<number> => {
     const result = await dbConnection.runAsync(
         `INSERT INTO Facturas (
-            id_orden, uuid, valor_subtotal, valor_iva, 
+            id_orden, id_negocio, uuid, valor_subtotal, valor_iva, 
             valor_total, fecha_emision, estado
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
             factura.id_orden,
+            factura.id_negocio,
             uuid(),
             factura.valor_subtotal,
             factura.valor_iva ?? null,

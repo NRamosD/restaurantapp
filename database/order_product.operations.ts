@@ -17,11 +17,12 @@ export const createOrderProduct = async (
     
     const result = await db.runAsync(
         `INSERT INTO Ordenes_Producto (
-            id_orden, id_producto, uuid, cantidad, precio_unitario, subtotal, detalle
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            id_orden, id_producto, id_negocio, uuid, cantidad, precio_unitario, subtotal, detalle
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
             orderProduct.id_orden,
             orderProduct.id_producto,
+            orderProduct.id_negocio,
             orderProduct.uuid || uuid(),
             orderProduct.cantidad,
             orderProduct.precio_unitario,

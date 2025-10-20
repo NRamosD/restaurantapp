@@ -34,13 +34,14 @@ export const createProduct = async (
 
     const result = await db.runAsync(
         `INSERT INTO Producto (
-            uuid, id_perfil, nombre, descripcion, imagen, iva, precio, precio_total,
+            uuid, id_perfil, id_negocio, nombre, descripcion, imagen, iva, precio, precio_total,
             stock, estado, imagen_url, galeria, video_url, codigo_barras, slug,
             descuento, precio_anterior, envio_gratis, tiempo_entrega, ilimitado
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
             product.uuid || uuid(),
             product.id_perfil,
+            product.id_negocio,
             product.nombre,
             product.descripcion ?? null,
             product.imagen ?? null,

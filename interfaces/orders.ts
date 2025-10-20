@@ -10,6 +10,7 @@ export interface ItemOrderExtended {
 export interface Orden {
     id_orden?: number;       // autoincrement, opcional al crear
     id_perfil?: number;       // FK a Perfil
+    id_negocio?: string;
     uuid?:string;
     nota?:string;
     fecha?: string;          // DATETIME, default CURRENT_TIMESTAMP
