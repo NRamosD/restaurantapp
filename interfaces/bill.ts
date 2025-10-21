@@ -1,6 +1,7 @@
 export interface Factura {
     id_factura?: number;           // autoincremental, opcional al crear
     id_orden: number;              // FK a Ordenes
+    id_negocio: string;
     uuid: string;                  // único
     valor_subtotal: number;
     valor_iva?: number | null;     // puede ser NULL

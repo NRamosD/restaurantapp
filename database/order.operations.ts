@@ -9,10 +9,11 @@ export const createOrder = async (
 ): Promise<number> => {
     const result = await dbConnection.runAsync(
         `INSERT INTO Ordenes (
-            id_perfil, uuid, fecha, estado, total
-        ) VALUES (?, ?, ?, ?, ?)`,
+            id_perfil, id_negocio, uuid, fecha, estado, total
+        ) VALUES (?, ?, ?, ?, ?, ?)`,
         [
             order.id_perfil || 1,
+            order.id_negocio || 1,
             uuid(),
             order.fecha || new Date().toISOString(),
             order.estado ?? 'pendiente',

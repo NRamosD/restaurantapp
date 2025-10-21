@@ -19,11 +19,12 @@ export const createProductComponent = async (
 ): Promise<number> => {
     const result = await db.runAsync(
         `INSERT INTO Producto_Componentes (
-            id_producto, id_componente, uuid, cantidad
-        ) VALUES (?, ?, ?, ?)`,
+            id_producto, id_componente, id_negocio, uuid, cantidad
+        ) VALUES (?, ?, ?, ?, ?)`,
         [
             productComponent.id_producto,
             productComponent.id_componente,
+            productComponent.id_negocio,
             productComponent.uuid || uuid(),
             productComponent.cantidad ?? 1
         ]

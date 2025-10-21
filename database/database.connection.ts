@@ -1,3 +1,4 @@
+import { hashPassword } from '@/assets/utils/hash_pass';
 import * as SQLite from 'expo-sqlite';
 
 
@@ -28,6 +29,11 @@ export const InitializeDatabase = async (dbConnection:SQLite.SQLiteDatabase) => 
           const result = dbConnection.execSync(query);
           console.log(result);
         }
+        
+        // Execute create config table
+        console.log("Creating config table...");
+        const result = dbConnection.execSync(CreateConfigTable);
+        console.log(result);
         
         // Execute insert queries sequentially
         console.log("Inserting default data...");
@@ -68,8 +74,8 @@ const CreateAllTables = [
   `PRAGMA foreign_keys = ON;`,
   `CREATE TABLE IF NOT EXISTS Perfil (
     id_perfil INTEGER PRIMARY KEY AUTOINCREMENT,
-    id_usuario INTEGER NOT NULL,
-    id_negocio INTEGER,
+    id_usuario TEXT NOT NULL,
+    id_negocio TEXT DEFAULT NULL,
     uuid TEXT NOT NULL UNIQUE,
     correo TEXT NOT NULL,
     telefono TEXT,
@@ -78,6 +84,7 @@ const CreateAllTables = [
     tipo_perfil TEXT NOT NULL, 
     tipo_negocio TEXT,
     estado TEXT DEFAULT 'activo',
+    roles TEXT NOT NULL DEFAULT 'administrador,',
     valores_configuraciones TEXT NOT NULL,
     auth TEXT NOT NULL,
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -86,6 +93,7 @@ const CreateAllTables = [
     id_producto INTEGER PRIMARY KEY AUTOINCREMENT,
     uuid TEXT NOT NULL UNIQUE,
     id_perfil INTEGER NOT NULL,
+    id_negocio TEXT DEFAULT NULL,
     nombre TEXT NOT NULL,
     descripcion TEXT,
     imagen TEXT,
@@ -110,6 +118,7 @@ const CreateAllTables = [
     id_componente INTEGER PRIMARY KEY AUTOINCREMENT,
     id_perfil INTEGER NOT NULL,
     uuid TEXT NOT NULL UNIQUE,
+    id_negocio TEXT DEFAULT NULL,
     nombre TEXT NOT NULL,
     descripcion TEXT,
     tipo TEXT,
@@ -129,6 +138,7 @@ const CreateAllTables = [
     id_producto_componente INTEGER PRIMARY KEY AUTOINCREMENT,
     id_producto INTEGER NOT NULL,
     id_componente INTEGER NOT NULL,
+    id_negocio TEXT DEFAULT NULL,
     uuid TEXT NOT NULL UNIQUE,
     cantidad INTEGER DEFAULT 1,
     FOREIGN KEY (id_producto) REFERENCES Producto(id_producto),
@@ -137,6 +147,7 @@ const CreateAllTables = [
   `CREATE TABLE IF NOT EXISTS Ordenes (
     id_orden INTEGER PRIMARY KEY AUTOINCREMENT,
     id_perfil INTEGER NOT NULL,
+    id_negocio TEXT DEFAULT NULL,
     uuid TEXT NOT NULL UNIQUE,
     nota TEXT,
     fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -148,6 +159,7 @@ const CreateAllTables = [
     id_orden_producto INTEGER PRIMARY KEY AUTOINCREMENT,
     id_orden INTEGER NOT NULL,
     id_producto INTEGER NOT NULL,
+    id_negocio TEXT DEFAULT NULL,
     uuid TEXT NOT NULL UNIQUE,
     cantidad INTEGER NOT NULL,
     precio_unitario REAL NOT NULL,
@@ -159,6 +171,7 @@ const CreateAllTables = [
   `CREATE TABLE IF NOT EXISTS Facturas (
     id_factura INTEGER PRIMARY KEY AUTOINCREMENT,
     id_orden INTEGER NOT NULL,
+    id_negocio TEXT DEFAULT NULL,
     uuid TEXT NOT NULL UNIQUE,
     valor_subtotal REAL NOT NULL,
     valor_iva REAL,
@@ -180,6 +193,12 @@ const CreateAllTables = [
   );`
 ];
 
+const CreateConfigTable =   `CREATE TABLE IF NOT EXISTS app_config_data (
+    current_user TEXT
+  );`
+
+const passHashed = hashPassword("prueba123.")
+
 const InsertDefaultData = [
     `INSERT INTO Perfil (
         id_usuario, id_negocio, uuid, correo, telefono, 
@@ -189,10 +208,10 @@ const InsertDefaultData = [
         2, 
         2, 
         '550e8400-e29b-41d4-a716-4466554400003', 
-        'restaurante@ejemplo.com', 
+        'elpale@gmail.com', 
         '1234567890', 
-        'Restaurante Principal', 
-        'hashed_password_123', 
+        'Restaurante El Palé', 
+        ${passHashed}, 
         'admin', 
         'restaurante', 
         'activo', 
