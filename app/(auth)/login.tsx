@@ -52,7 +52,7 @@ const LoginScreen = ({
               }
             })
           }} containerStyles={{width:300, borderRadius:10, paddingVertical:10}}/>
-          <TouchableOpacity onPress={() => { router.push('/register')}} 
+          <TouchableOpacity onPress={() => { return router.push("/(auth)/register")}} 
           style={{width:300, borderRadius:10, paddingVertical:10, 
           justifyContent:"center", alignItems:"center"}}>
             <CText type="subtitle">Registrarse</CText>

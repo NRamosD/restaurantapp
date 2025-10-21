@@ -13,7 +13,6 @@ import { KeyboardAvoidingView, Platform, Text } from 'react-native';
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useAuthStore } from '@/hooks/useAuthStore';
-import LoginScreen from './(auth)/login';
 import AuthLayout from './(auth)/_layout';
 
 dayjs.extend(utc);
