@@ -3,7 +3,8 @@ import React, { useState } from 'react'
 import CInputText from '@/components/CInputText'
 import { useAuthStore } from '@/hooks/useAuthStore'
 import { TextInput } from 'react-native-paper'
-import { ToastAndroid } from 'react-native'
+import { ToastAndroid, TouchableOpacity } from 'react-native'
+import { router } from "expo-router";
 
 type Props = {}
 
@@ -51,6 +52,11 @@ const LoginScreen = ({
               }
             })
           }} containerStyles={{width:300, borderRadius:10, paddingVertical:10}}/>
+          <TouchableOpacity onPress={() => { router.push('/register')}} 
+          style={{width:300, borderRadius:10, paddingVertical:10, 
+          justifyContent:"center", alignItems:"center"}}>
+            <CText type="subtitle">Registrarse</CText>
+          </TouchableOpacity>
         </CView>
       </CView>
     </CView>

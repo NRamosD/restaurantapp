@@ -14,6 +14,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useAuthStore } from '@/hooks/useAuthStore';
 import LoginScreen from './(auth)/login';
+import AuthLayout from './(auth)/_layout';
 
 dayjs.extend(utc);
 
@@ -55,7 +56,8 @@ export default function RootLayout() {
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}>
             {token ? <App/> : 
-              <LoginScreen/>
+              <AuthLayout/>
+              // <LoginScreen/>
             }
           </KeyboardAvoidingView>
         </SQLiteProvider>
