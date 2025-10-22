@@ -14,6 +14,9 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useAuthStore } from '@/hooks/useAuthStore';
 import AuthLayout from './(auth)/_layout';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { MenuProvider } from 'react-native-popup-menu';
+import { PaperProvider } from 'react-native-paper';
 
 dayjs.extend(utc);
 
@@ -54,10 +57,16 @@ export default function RootLayout() {
           <KeyboardAvoidingView style={{flex:1}} 
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}>
+            <SafeAreaProvider>
+            <MenuProvider>
+            <PaperProvider>
             {token ? <App/> : 
               <AuthLayout/>
               // <LoginScreen/>
             }
+            </PaperProvider>
+            </MenuProvider>
+            </SafeAreaProvider>
           </KeyboardAvoidingView>
         </SQLiteProvider>
       </Suspense>

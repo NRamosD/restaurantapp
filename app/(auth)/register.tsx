@@ -41,6 +41,7 @@ const RegisterScreen = ({
     });
   };
   const handleSaveProduct = async() => {
+    console.log(formData);
     if(Object.values(formData).some(value => value === '')){
       ToastAndroid.show("Todos los campos son obligatorios", ToastAndroid.LONG);
       setFormStatus(true);
@@ -56,8 +57,10 @@ const RegisterScreen = ({
       uuid: uuid(),
       tipo_perfil: "admin",
       password_perfil: await hashPassword(formData.password_perfil!),
+    }).then(() => {
+      ToastAndroid.show("Usuario registrado exitosamente", ToastAndroid.LONG);
+      router.dismissTo("/(auth)/login")
     })
-    router.dismissTo("/(auth)/login")
   };
   return (
     <CContainerView style={{flex:1, alignContent:"center", justifyContent:"center"}}>
@@ -100,6 +103,12 @@ const RegisterScreen = ({
             />
           }
           style={{height:70}}/>
+        {
+          (
+            formStatus
+            || formData.password_perfil !== formData.password_perfil2
+          ) && <CText style={{color:"red", fontSize:15}} type="subtitle">Las contraseñas deben coincidir</CText>
+        }
         <CInputText label="Confirmar Contraseña" fontSize={25} 
           value={formData.password_perfil2}
           outlineColor={formStatus ? "red" : "#CFAE70"}
@@ -114,6 +123,7 @@ const RegisterScreen = ({
             />
           }
           style={{height:70}}/>
+        <CText style={{paddingHorizontal:2, marginBottom: 4}} type="subtitle">Tipo de negocio</CText>
         <Picker
           selectedValue={formData.tipo_negocio}
           onValueChange={(itemValue) => {

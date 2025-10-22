@@ -44,11 +44,11 @@ export const InitializeDatabase = async (dbConnection:SQLite.SQLiteDatabase) => 
       }else if(tables.length>0){
         console.log("Tables already exist");
       }
-      // console.log("Deleting data from tables...");
-      // for (const query of DeleteDataFromTables) {
-      //   const result = dbConnection.execSync(query);
-      //   console.log(result);
-      // }
+      console.log("Deleting data from tables...");
+      for (const query of DeleteDataFromTables) {
+        const result = dbConnection.execSync(query);
+        console.log(result);
+      }
       
       console.log('Database initialized successfully');
     } catch (error) {

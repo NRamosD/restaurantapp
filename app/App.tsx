@@ -11,20 +11,16 @@ const App = ({
     
 }: Props) => {
   return (
-    <SafeAreaProvider>
-        <MenuProvider>
-        <PaperProvider>
-            <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)"  />
-            <Stack.Screen name="inventory"  />
-            <Stack.Screen name="orders"  />
-            <Stack.Screen name="settings"  />
-            <Stack.Screen name="+not-found" />
-            </Stack>
-            <StatusBar style="auto" />
-        </PaperProvider>
-        </MenuProvider>
-    </SafeAreaProvider>
+    <PaperProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)"  />
+        <Stack.Screen name="inventory"  />
+        <Stack.Screen name="orders"  />
+        <Stack.Screen name="settings"  />
+        <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+    </PaperProvider>
   )
 }
 

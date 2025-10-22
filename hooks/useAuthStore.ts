@@ -5,7 +5,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { ToastAndroid } from "react-native";
 import { getAllProfiles } from "@/database/profile.operations";
-import { useSQLiteContext } from "expo-sqlite";
+// import { useSQLiteContext } from "expo-sqlite";
+import * as SQLite from 'expo-sqlite';
 import { verifyPassword } from "@/assets/utils/hash_pass";
 
 interface User {
@@ -30,13 +31,14 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       isLoading: false,
       login: async (email: string, password: string) => {
-        const dbConnection = useSQLiteContext()
+        const dbConnection = await SQLite.openDatabaseAsync('rest-app.db');
         set({ isLoading: true });
 
         try {
           // Simulación de API login
           // 🔑 Aquí debes reemplazar por tu fetch/axios al backend
           const allProfiles = await getAllProfiles(dbConnection);
+          console.log({"eoeo":allProfiles});
 
           const profile = allProfiles.find((profile) => profile.correo === email);
           if(!profile){

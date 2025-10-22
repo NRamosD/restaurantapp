@@ -27,11 +27,12 @@ const LoginScreen = ({
 
   useEffect(() => {
     getAllProfiles(db).then(res => {
+      console.log({resss: res});
       if(res.length > 0){
         setFreeUserCreated(true);
       }
     })
-  }, [])
+  }, [db])
 
   return (
   <CContainerView style={{flex:1, alignContent:"center", justifyContent:"center"}}>
