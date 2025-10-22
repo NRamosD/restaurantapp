@@ -36,11 +36,11 @@ export const InitializeDatabase = async (dbConnection:SQLite.SQLiteDatabase) => 
         console.log(result);
         
         // Execute insert queries sequentially
-        console.log("Inserting default data...");
-        for (const query of InsertDefaultData) {
-          const result = dbConnection.execSync(query);
-          console.log(result);
-        }
+        // console.log("Inserting default data...");
+        // for (const query of InsertDefaultData) {
+        //   const result = dbConnection.execSync(query);
+        //   console.log(result);
+        // }
       }else if(tables.length>0){
         console.log("Tables already exist");
       }
@@ -74,7 +74,7 @@ const CreateAllTables = [
   `PRAGMA foreign_keys = ON;`,
   `CREATE TABLE IF NOT EXISTS Perfil (
     id_perfil INTEGER PRIMARY KEY AUTOINCREMENT,
-    id_usuario TEXT NOT NULL,
+    id_usuario TEXT DEFAULT NULL,
     id_negocio TEXT DEFAULT NULL,
     uuid TEXT NOT NULL UNIQUE,
     correo TEXT NOT NULL,

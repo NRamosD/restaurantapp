@@ -20,11 +20,11 @@ type Props = {}
 
 
 
-const CreateProductScreen = (props: Props) => {
+const CreateProductScreen = ({}: Props) => {
     const db = useSQLiteContext();
     const color = useColorScheme()
     // State for form fields
-    const [formData, setFormData] = useState<Omit<Product, 'id_producto' | 'uuid' | 'fecha_creacion'>>({
+    const [formData, setFormData] = useState<Omit<Product, 'id_producto' | 'id_negocio' | 'uuid' | 'fecha_creacion'>>({
         id_perfil: 1, // You might want to get this from your auth context or props
         nombre: '',
         descripcion: '',
@@ -97,7 +97,7 @@ const CreateProductScreen = (props: Props) => {
     };
 
     const handleSaveProduct = async() => {
-        console.log(formData);
+        // console.log(formData);
         await createProduct(db, formData)
         router.dismissTo("/")
     };

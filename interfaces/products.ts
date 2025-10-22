@@ -68,7 +68,7 @@ export interface Product {
   id_producto: number;
   uuid: string;
   id_perfil: number;
-  id_negocio: string;
+  id_negocio?: string;
   nombre: string;
   descripcion?: string | null;
   imagen?: string | null;

@@ -41,7 +41,7 @@ export const createProduct = async (
         [
             product.uuid || uuid(),
             product.id_perfil,
-            product.id_negocio,
+            product.id_negocio||null,
             product.nombre,
             product.descripcion ?? null,
             product.imagen ?? null,

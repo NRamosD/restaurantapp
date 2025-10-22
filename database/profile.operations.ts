@@ -3,7 +3,7 @@ import { Perfil } from "@/interfaces/profile";
 import * as SQLite from 'expo-sqlite';
 
 // Types
-type CreateProfileInput = Omit<Perfil, 'id_perfil' | 'uuid' | 'fecha_creacion'> & {
+type CreateProfileInput = Partial<Omit<Perfil, 'id_perfil' | 'uuid' | 'fecha_creacion'>> & {
     uuid?: string;
 };
 
@@ -41,7 +41,7 @@ export const createProfile = async (
             valores_configuraciones, auth
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-            profile.id_usuario,
+            profile.id_usuario ?? null,
             profile.id_negocio ?? null,
             profile.uuid || uuid(),
             profile.correo.toLowerCase().trim(),
