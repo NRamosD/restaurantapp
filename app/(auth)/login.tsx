@@ -1,10 +1,10 @@
 import { CButton, CContainerView, CText, CView } from '@/components'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import CInputText from '@/components/CInputText'
 import { useAuthStore } from '@/hooks/useAuthStore'
 import { TextInput } from 'react-native-paper'
 import { ToastAndroid, TouchableOpacity } from 'react-native'
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { getAllProfiles } from '@/database/profile.operations'
 import { useSQLiteContext } from 'expo-sqlite'
 
@@ -25,14 +25,24 @@ const LoginScreen = ({
     router.push("/(auth)/register");
   }
 
-  useEffect(() => {
-    getAllProfiles(db).then(res => {
-      console.log({resss: res});
-      if(res.length > 0){
-        setFreeUserCreated(true);
-      }
-    })
-  }, [db])
+  useFocusEffect(
+    useCallback(() => {
+      getAllProfiles(db).then(res => {
+        console.log({resss: res});
+        if(res.length > 0){
+          setFreeUserCreated(true);
+        }
+      })
+    }, [db])
+  )
+  // useEffect(() => {
+  //   getAllProfiles(db).then(res => {
+  //     console.log({resss: res});
+  //     if(res.length > 0){
+  //       setFreeUserCreated(true);
+  //     }
+  //   })
+  // }, [db])
 
   return (
   <CContainerView style={{flex:1, alignContent:"center", justifyContent:"center"}}>

@@ -37,7 +37,7 @@ export const createProduct = async (
             uuid, id_perfil, id_negocio, nombre, descripcion, imagen, iva, precio, precio_total,
             stock, estado, imagen_url, galeria, video_url, codigo_barras, slug,
             descuento, precio_anterior, envio_gratis, tiempo_entrega, ilimitado
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
             product.uuid || uuid(),
             product.id_perfil,

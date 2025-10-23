@@ -8,6 +8,7 @@ import { getAllProfiles } from "@/database/profile.operations";
 // import { useSQLiteContext } from "expo-sqlite";
 import * as SQLite from 'expo-sqlite';
 import { verifyPassword } from "@/assets/utils/hash_pass";
+import useAuth from "./useAuth";
 
 interface User {
   id: string;
@@ -31,16 +32,17 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       isLoading: false,
       login: async (email: string, password: string) => {
-        const dbConnection = await SQLite.openDatabaseAsync('rest-app.db');
+        const {
+           searchProfile,
+           setCurrentProfile
+        } = useAuth({})
         set({ isLoading: true });
 
         try {
           // Simulación de API login
-          // 🔑 Aquí debes reemplazar por tu fetch/axios al backend
-          const allProfiles = await getAllProfiles(dbConnection);
-          console.log({"eoeo":allProfiles});
 
-          const profile = allProfiles.find((profile) => profile.correo === email);
+          const profile = await searchProfile(email);
+
           if(!profile){
             return {status: "Credenciales incorrectas"};
           }
@@ -88,7 +90,8 @@ export const useAuthStore = create<AuthState>()(
             router.replace("/")
           }
 
-          dbConnection.runSync(`INSERT INTO app_config_data (current_user) VALUES (?)`, [response.token]);
+          setCurrentProfile(response.token);
+          
 
           return {status: "success"};
         } catch (error) {
