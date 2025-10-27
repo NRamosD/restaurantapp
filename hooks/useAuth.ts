@@ -1,13 +1,16 @@
 import React from 'react'
 import { useSQLiteContext } from 'expo-sqlite'
 import { getAllProfiles } from '@/database/profile.operations';
+import * as SQLite from 'expo-sqlite';
 
-type Props = {}
+type Props = {
+    db: any
+}
 
 const useAuth = ({
-
+    db
 }: Props) => {
-    const db = useSQLiteContext();
+    // const db = db;
 
     const searchProfile = async (email: string) => {
         const allProfiles = await getAllProfiles(db);

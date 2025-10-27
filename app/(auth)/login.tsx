@@ -7,6 +7,8 @@ import { ToastAndroid, TouchableOpacity } from 'react-native'
 import { router, useFocusEffect } from "expo-router";
 import { getAllProfiles } from '@/database/profile.operations'
 import { useSQLiteContext } from 'expo-sqlite'
+import useAuth from '@/hooks/useAuth'
+import { verifyPassword } from '@/assets/utils/hash_pass'
 
 type Props = {}
 
@@ -15,6 +17,7 @@ const LoginScreen = ({
 }: Props) => {
   const db = useSQLiteContext();
   const {login} = useAuthStore()
+  const { searchProfile, setCurrentProfile } = useAuth({db})
   const [status, setStatus] = useState('');
   const [user, setUser] = useState('')
   const [pass, setPass] = useState('')
@@ -72,8 +75,16 @@ const LoginScreen = ({
             />
           }
           style={{width:"100%", height:70}}/>
-          <CButton title="Iniciar" onPress={() => {
-            login(user,pass).then(res => {
+          <CButton title="Iniciar" onPress={async () => {
+            const profile = await searchProfile(user)
+            if(!profile){
+              setStatus("Credenciales incorrectas");
+            }
+            const isMatch = await verifyPassword(pass, profile?.password_perfil || "");
+            if(!isMatch){
+              setStatus("Credenciales incorrectas");
+            }
+            login(profile).then(res => {
               if(res.status !== "success"){
                 ToastAndroid.show(res.status, ToastAndroid.LONG);
                 setStatus(res.status);

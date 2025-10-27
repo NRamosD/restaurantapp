@@ -21,7 +21,7 @@ interface AuthState {
   user: User | null;
   token: string | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<{status: string}>;
+  login: (userData: any) => Promise<{status: string}>;
   logout: () => void;
 }
 
@@ -31,35 +31,35 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       token: null,
       isLoading: false,
-      login: async (email: string, password: string) => {
-        const {
-           searchProfile,
-           setCurrentProfile
-        } = useAuth({})
+      login: async (userData: any) => {
+        // const {
+        //    searchProfile,
+        //    setCurrentProfile
+        // } = useAuth({})
         set({ isLoading: true });
 
         try {
           // Simulación de API login
 
-          const profile = await searchProfile(email);
+          // const profile = await searchProfile(email);
 
-          if(!profile){
-            return {status: "Credenciales incorrectas"};
-          }
-          const isMatch = await verifyPassword(password, profile.password_perfil);
-          if(!isMatch){
-            return {status: "Credenciales incorrectas"};
-          }
+          // if(!profile){
+          //   return {status: "Credenciales incorrectas"};
+          // }
+          // const isMatch = await verifyPassword(password, profile.password_perfil);
+          // if(!isMatch){
+          //   return {status: "Credenciales incorrectas"};
+          // }
           const response = await  new Promise<{ user: User|null; token: string|null }>((resolve) =>{
             setTimeout(
               () =>{
-                if(isMatch){
+                if(userData){
                   resolve({ user: { 
-                    id: profile.id_perfil?.toString() || "", 
-                    name: profile.nombre_perfil, 
-                    email: profile.correo || "",
-                    negocio_id: profile.id_negocio?.toString() || "" }, 
-                    token: profile.id_perfil?.toString() || "" });
+                    id: userData.id_perfil?.toString() || "", 
+                    name: userData.nombre_perfil, 
+                    email: userData.correo || "",
+                    negocio_id: userData.id_negocio?.toString() || "" }, 
+                    token: userData.id_perfil?.toString() || "" });
                 }else{
                   resolve({ user: null, token: null });
                 }
@@ -90,7 +90,7 @@ export const useAuthStore = create<AuthState>()(
             router.replace("/")
           }
 
-          setCurrentProfile(response.token);
+          // setCurrentProfile(response.token);
           
 
           return {status: "success"};
