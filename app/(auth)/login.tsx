@@ -78,11 +78,11 @@ const LoginScreen = ({
           <CButton title="Iniciar" onPress={async () => {
             const profile = await searchProfile(user)
             if(!profile){
-              setStatus("Credenciales incorrectas");
+              return setStatus("Credenciales incorrectas");
             }
             const isMatch = await verifyPassword(pass, profile?.password_perfil || "");
             if(!isMatch){
-              setStatus("Credenciales incorrectas");
+              return setStatus("Credenciales incorrectas");
             }
             login(profile).then(res => {
               if(res.status !== "success"){
