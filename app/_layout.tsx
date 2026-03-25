@@ -6,6 +6,8 @@ import { Suspense, useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { SQLiteProvider } from 'expo-sqlite';
+import 'dotenv/config';
+import { drizzle } from 'drizzle-orm/libsql';
 import * as SQLite from 'expo-sqlite';
 import { StartDatabase } from '@/database/index';
 import App from './App';
@@ -26,6 +28,8 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const DATABASE_NAME = process.env.EXPO_PUBLIC_DATABASE_NAME;
+  const db = drizzle({ connection: { url: process.env.DB_FILE_NAME! }});
 
   const token = useAuthStore((s) => s.token);
   const [loaded] = useFonts({
@@ -53,7 +57,7 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Suspense fallback={<Text>Loading...</Text>}>
-        <SQLiteProvider databaseName="rest-app.db" onInit={StartDatabase} useSuspense={true}>
+        <SQLiteProvider databaseName={`${DATABASE_NAME}.db`} onInit={StartDatabase} useSuspense={true}>
           <KeyboardAvoidingView style={{flex:1}} 
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}>
