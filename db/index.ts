@@ -1,8 +1,8 @@
 import * as SQLite from "expo-sqlite";
 import { SQLiteDatabase } from "expo-sqlite";
 import { InitializeDatabase } from "./database.connection";
-
-export const DB_NAME = "rest-app.db";
+const DATABASE_NAME = process.env.EXPO_PUBLIC_DATABASE_NAME ?? 'restaurant';
+export const DB_NAME = `${DATABASE_NAME}.db`;
 
 export type AppEnvironment = "PRUEBAS" | "PRODUCCION";
 

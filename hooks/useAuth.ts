@@ -1,6 +1,6 @@
 import React from 'react'
 import { useSQLiteContext } from 'expo-sqlite'
-import { getAllProfiles } from '@/database/profile.operations';
+import { getAllProfiles } from '@/db/profile.operations';
 import * as SQLite from 'expo-sqlite';
 
 type Props = {

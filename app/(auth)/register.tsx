@@ -7,7 +7,7 @@ import { Picker } from '@react-native-picker/picker'
 import { Colors } from '@/constants/Colors'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { router } from 'expo-router'
-import { createProfile } from '@/database/profile.operations'
+import { createProfile } from '@/db/profile.operations'
 import { useSQLiteContext } from 'expo-sqlite'
 import { uuid } from '@/assets/utils/uuid'
 import { hashPassword } from '@/assets/utils/hash_pass'
@@ -15,9 +15,9 @@ import { TextInput } from 'react-native-paper'
 import { ToastAndroid } from 'react-native'
 type Props = {}
 
-const RegisterScreen = ({
+export default function RegisterScreen({
     
-}: Props) => {
+}: Props) {
   const color = useColorScheme()
   const db = useSQLiteContext();
   const [formStatus, setFormStatus] = useState(false);
@@ -154,4 +154,3 @@ const RegisterScreen = ({
   )
 }
 
-export default RegisterScreen

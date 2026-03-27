@@ -1,9 +1,9 @@
 import { useSQLiteContext } from 'expo-sqlite'
 import React from 'react'
 import useOrderStore from './useOrderStore'
-import { createOrder, updateOrder } from '@/database/order.operations'
-import { createOrderProduct, deleteOrderProduct, deleteOrderProductById, getOrderProduct, getProductsByOrderId, updateOrderProduct } from '@/database/order_product.operations'
-import { getProductById, updateProductStock } from '@/database/product.operations'
+import { createOrder, updateOrder } from '@/db/order.operations'
+import { createOrderProduct, deleteOrderProduct, deleteOrderProductById, getOrderProduct, getProductsByOrderId, updateOrderProduct } from '@/db/order_product.operations'
+import { getProductById, updateProductStock } from '@/db/product.operations'
 import { Product } from '@/interfaces'
 
 type Props = {}

@@ -18,7 +18,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { ItemOrderLink } from "@/components/orders";
 import { useSQLiteContext } from "expo-sqlite";
 import { Orden } from "@/interfaces";
-import { getAllOrders, getOrdersByStatus } from "@/database/order.operations";
+import { getAllOrders, getOrdersByStatus } from "@/db/order.operations";
 import { useIsFocused } from "@react-navigation/native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors } from "@/constants/Colors";

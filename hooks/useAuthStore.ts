@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { ToastAndroid } from "react-native";
-import { getAllProfiles } from "@/database/profile.operations";
+import { getAllProfiles } from "@/db/profile.operations";
 // import { useSQLiteContext } from "expo-sqlite";
 import * as SQLite from 'expo-sqlite';
 import { verifyPassword } from "@/assets/utils/hash_pass";

@@ -5,7 +5,7 @@ import { PaperProvider } from 'react-native-paper'
 import { router, Stack, useSegments } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { useSQLiteContext } from 'expo-sqlite'
-import { getAllProfiles } from '@/database/profile.operations'
+import { getAllProfiles } from '@/db/profile.operations'
 import { Perfil } from '@/interfaces'
 
 type Props = {}

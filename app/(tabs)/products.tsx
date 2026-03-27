@@ -6,7 +6,7 @@ import { CText } from '@/components/CText';
 import { Product } from "@/interfaces/products";
 import ItemMenuSquareDetails from '@/components/orders/ItemMenuSquareDetails';
 import { useSQLiteContext } from 'expo-sqlite';
-import { getProducts } from '@/database/product.operations';
+import { getProducts } from '@/db/product.operations';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 

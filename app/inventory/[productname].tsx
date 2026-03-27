@@ -10,7 +10,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Switch, TextInput } from 'react-native-paper'
 import { Picker } from '@react-native-picker/picker'
 import { useSQLiteContext } from 'expo-sqlite'
-import { getProductByUuid, getProducts, updateProduct } from '@/database/product.operations'
+import { getProductByUuid, getProducts, updateProduct } from '@/db/product.operations'
 import { Product } from '@/interfaces'
 import CImage from '@/components/CImage'
 import { useIsFocused } from '@react-navigation/native';

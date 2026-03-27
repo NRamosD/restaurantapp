@@ -21,7 +21,7 @@ import { Divider } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import CInputText from '@/components/CInputText';
 import { useSQLiteContext } from 'expo-sqlite';
-import { getOrdersByDate, getOrdersGroupedByDayStats } from '@/database/order.operations';
+import { getOrdersByDate, getOrdersGroupedByDayStats } from '@/db/order.operations';
 import { useIsFocused } from '@react-navigation/native';
 
 

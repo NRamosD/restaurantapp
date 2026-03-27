@@ -11,7 +11,7 @@ import { Product } from '@/interfaces'
 import { v4 as uuidv4 } from 'uuid';
 import ItemOrderOptionSquare from '@/components/orders/ItemOrderOptionSquare'
 import { useSQLiteContext } from 'expo-sqlite'
-import { getAllProducts } from '@/database/product.operations'
+import { getAllProducts } from '@/db/product.operations'
 import useOrderStore from '@/hooks/useOrderStore'
 import useOrderOperations from '@/hooks/useOrderOperations'
 
