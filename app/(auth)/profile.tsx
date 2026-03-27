@@ -2,12 +2,10 @@ import React from 'react'
 
 type Props = {}
 
-const ProfileScreen = ({
+export default function ProfileScreen({
     
-}: Props) => {
+}: Props) {
   return (
     <div>LoginScreen</div>
   )
 }
-
-export default ProfileScreen
