@@ -237,7 +237,7 @@ export const Feature = sqliteTable('Feature', {
 
 export const AppConfig = sqliteTable('app_config', {
   clave: text('clave').primaryKey(),
-  valor: text('valor').notNull(),
+  valor: text('valor'),
 });
 
 export const PerfilNegocioRelations = relations(PerfilNegocio, ({ many }) => ({

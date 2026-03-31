@@ -2,11 +2,13 @@
 
 import journal from './meta/_journal.json';
 import m0000 from './0000_hard_professor_monster.sql';
+import m0001 from './0001_unique_living_tribunal.sql';
 
   export default {
     journal,
     migrations: {
-      m0000
+      m0000,
+      m0001
     }
   }
   

@@ -8,6 +8,13 @@
       "when": 1774554920309,
       "tag": "0000_hard_professor_monster",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1774927300445,
+      "tag": "0001_unique_living_tribunal",
+      "breakpoints": true
     }
   ]
 }
