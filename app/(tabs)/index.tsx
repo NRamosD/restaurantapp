@@ -21,7 +21,7 @@ import { Orden } from "@/interfaces";
 import { getAllOrders, getOrdersByStatus } from "@/db/order.operations";
 import { useIsFocused } from "@react-navigation/native";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Colors } from "@/constants/Colors";
+import { Colors, getColors } from "@/constants/Colors";
 
 export default function HomeScreen() {
   // const [nameProduct, setNameProduct] = useState<string>("");
@@ -101,15 +101,15 @@ export default function HomeScreen() {
           </CText>
           <CView style={styles.easyAccessOptionsContainer}>
             <TouchableOpacity onPress={()=>router.push({pathname:"/inventory/top-sellers"})} style={[styles.easyAccessOption,{boxShadow:`${colorScheme === "dark" ? "#000" : "#c1c1c1"} 0px 5px 5px 2px`}]}>
-              <Ionicons name="heart-outline" size={70} color={Colors[colorScheme ?? 'light'].tint}/>
+              <Ionicons name="heart-outline" size={70} color={getColors(colorScheme).tint}/>
               <CText type="subtitle" style={{fontSize:14}}>Más Vendidos</CText>
             </TouchableOpacity>
             <TouchableOpacity onPress={()=>router.push({pathname:"/inventory/create-product"})} style={[styles.easyAccessOption,{boxShadow:`${colorScheme === "dark" ? "#000" : "#c1c1c1"} 0px 5px 5px 2px`}]}>
-              <Ionicons name="storefront-outline" size={70} color={Colors[colorScheme ?? 'light'].tint}/>
+              <Ionicons name="storefront-outline" size={70} color={getColors(colorScheme).tint}/>
               <CText type="subtitle" style={{fontSize:13}}>Nuevo Producto</CText>
             </TouchableOpacity>
             <TouchableOpacity onPress={()=>router.push({pathname:"/settings"})} style={[styles.easyAccessOption,{boxShadow:`${colorScheme === "dark" ? "#000" : "#c1c1c1"} 0px 5px 5px 2px`}]}>
-              <Ionicons name="settings-outline" size={70} color={Colors[colorScheme ?? 'light'].tint}/>
+              <Ionicons name="settings-outline" size={70} color={getColors(colorScheme).tint}/>
               <CText type="subtitle" style={{fontSize:14}}>Ajustes</CText>
             </TouchableOpacity>
           </CView>

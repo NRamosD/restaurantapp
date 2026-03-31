@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/Colors';
+import { Colors, getColors } from '@/constants/Colors';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useColorScheme } from 'react-native';
 
@@ -9,8 +9,8 @@ export default function InventoryLayout() {
   return <Stack>
     {/* <Stack.Screen name='(tabs)' options={{title:"Inventario"}}/> */}
     <Stack.Screen name='[productname]' options={{headerShadowVisible:false, headerTitle:"Regresar", 
-      headerStyle:{backgroundColor:Colors[color ?? 'light'].tint,},
-      headerTitleStyle:{color:Colors[color ?? 'light'].text},
+      headerStyle:{backgroundColor:getColors(color).tint,},
+      headerTitleStyle:{color:getColors(color).text},
     }}/>
     <Stack.Screen name='create-product' options={{headerShown:false}}/>
     <Stack.Screen name='top-sellers' options={{ headerShown:false }}/>

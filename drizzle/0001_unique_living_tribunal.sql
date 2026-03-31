@@ -304,9 +304,9 @@ INSERT INTO PerfilNegocio (uuid, nombre_comercial, razon_social, ruc, direccion,
 ('perfil-003', 'Fast Food BurgerKing', 'BurgerKing Ecuador', '1234567890003', 'Av. Amazonas 789, Quito', '0976543210', 'burger@fastfood.com', 1, 1, 'PRODUCCION', 100, 50);
 --> statement-breakpoint
 INSERT INTO Usuario (uuid, nombre, email, password_hash, rol, perfil_negocio_id) VALUES
-('user-001', 'Juan Administrator', 'juan@elpale.com', '$2a$10$abcdefghijklmnopqrstuv', 'ADMIN', 1),
-('user-002', 'Maria Cajera', 'maria@elpale.com', '$2a$10$abcdefghijklmnopqrstuv', 'CAJERO', 1),
-('user-003', 'Pedro Mesero', 'pedro@elpale.com', '$2a$10$abcdefghijklmnopqrstuv', 'MESERO', 1);
+('user-001', 'Juan Administrator', 'juan@elpale.com', '$2b$10$D1ZAZJOsVNL70y3gNiQZ3.IkvswY.eoMsBL5OcD80vPZGzHGUGif.', 'ADMIN', 1),
+('user-002', 'Maria Cajera', 'maria@elpale.com', '$2b$10$D1ZAZJOsVNL70y3gNiQZ3.IkvswY.eoMsBL5OcD80vPZGzHGUGif.', 'CAJERO', 1),
+('user-003', 'Pedro Mesero', 'pedro@elpale.com', '$2b$10$D1ZAZJOsVNL70y3gNiQZ3.IkvswY.eoMsBL5OcD80vPZGzHGUGif.', 'MESERO', 1);
 --> statement-breakpoint
 INSERT INTO Sesion (uuid, usuario_id, token, expira_en, activo) VALUES
 ('sesion-001', 1, 'token-juan-001', datetime('now', '+7 days'), 1),

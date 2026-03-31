@@ -2,12 +2,11 @@ import 'react-native-get-random-values';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import { Suspense, useEffect } from 'react';
-// import 'react-native-reanimated';
+import { Suspense, useEffect, useState } from 'react';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { SQLiteProvider } from 'expo-sqlite';
+import { SQLiteProvider, deleteDatabaseAsync } from 'expo-sqlite';
 import { DrizzleProvider } from '@/db/DrizzleProvider';
-import { KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
+import { KeyboardAvoidingView, Platform, ActivityIndicator, View } from 'react-native';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { useAuthStore } from '@/hooks/useAuthStore';
@@ -21,29 +20,49 @@ dayjs.extend(utc);
 SplashScreen.preventAutoHideAsync();
 
 const DATABASE_NAME = process.env.EXPO_PUBLIC_DATABASE_NAME ?? 'restaurant';
+const IS_DEV = process.env.EXPO_PUBLIC_ENVIRONMENT === 'dev';
+
+async function resetDatabaseIfDev() {
+  if (IS_DEV) {
+    console.log('[DEV MODE] Eliminando base de datos para reiniciar migraciones...');
+    try {
+      await deleteDatabaseAsync(`${DATABASE_NAME}.db`);
+      console.log('[DEV MODE] Base de datos eliminada exitosamente');
+    } catch (error) {
+      console.log('[DEV MODE] No se pudo eliminar la base de datos:', error);
+    }
+  }
+}
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const token = useAuthStore((s) => s.token);
+  const [dbReady, setDbReady] = useState(!IS_DEV);
 
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
   useEffect(() => {
+    const init = async () => {
+      await resetDatabaseIfDev();
+      setDbReady(true);
+    };
+    init();
+  }, []);
+
+  useEffect(() => {
     if (loaded) SplashScreen.hideAsync();
   }, [loaded]);
 
-  if (!loaded) return null;
+  if (!loaded || !dbReady) return null;
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      {/* ✅ SQLiteProvider inicializa SQLite de forma segura antes que cualquier hijo */}
       <SQLiteProvider
         databaseName={`${DATABASE_NAME}.db`}
         useSuspense
       >
-        {/* ✅ DrizzleProvider puede usar useSQLiteContext de forma segura aquí */}
         <Suspense fallback={<ActivityIndicator />}>
           <DrizzleProvider>
             <KeyboardAvoidingView

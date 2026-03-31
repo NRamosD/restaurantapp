@@ -14,7 +14,7 @@ import { getProductByUuid, getProducts, updateProduct } from '@/db/product.opera
 import { Product } from '@/interfaces'
 import CImage from '@/components/CImage'
 import { useIsFocused } from '@react-navigation/native';
-import { Colors } from '@/constants/Colors'
+import { Colors, getColors } from '@/constants/Colors'
 
 type Props = {}
 
@@ -140,7 +140,7 @@ const DetailedProductScreen = ({
     return (
     // <CContainerView style={{flex:1}}>
     <>
-        <CView style={{flex:1, backgroundColor:Colors[color ?? 'light'].tint, justifyContent:"center", height:20 }}>
+        <CView style={{flex:1, backgroundColor:getColors(color).tint, justifyContent:"center", height:20 }}>
           <CText type="title" style={{ textAlign:"center", color:"white"}}>Editar Producto</CText>
         </CView>
         <CView style={{flex:9}}>
@@ -209,7 +209,7 @@ const DetailedProductScreen = ({
                                     setSelectedCategory(itemValue);
                                     // You might want to map this to a category ID in your actual implementation
                                 }}
-                                style={{color: Colors[color ?? 'light'].text}}
+                                style={{color: getColors(color).text}}
                             >
                                 <Picker.Item label="Seleccione una categoría" value="" />
                                 <Picker.Item label="Comida" value="comida" />

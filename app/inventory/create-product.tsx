@@ -14,7 +14,7 @@ import CImage from '@/components/CImage'
 import { createProduct } from '@/db/product.operations'
 import { Product } from '@/interfaces'
 import { useColorScheme } from '@/hooks/useColorScheme'
-import { Colors } from '@/constants/Colors'
+import { Colors, getColors } from '@/constants/Colors'
 
 type Props = {}
 
@@ -114,7 +114,7 @@ const CreateProductScreen = ({}: Props) => {
 
     return (
         <CContainerView style={{flex:1}}>
-            <CView style={{flex:1, backgroundColor:Colors[color ?? 'light'].tint, justifyContent:"center", height:20 }}>
+            <CView style={{flex:1, backgroundColor:getColors(color).tint, justifyContent:"center", height:20 }}>
               <CText type="title" style={{ textAlign:"center", color:"white"}}>Nuevo Producto</CText>
             </CView>
             <CView style={{flex:9}}>
@@ -183,7 +183,7 @@ const CreateProductScreen = ({}: Props) => {
                                         setSelectedCategory(itemValue);
                                         // You might want to map this to a category ID in your actual implementation
                                     }}
-                                    style={{color: Colors[color ?? 'light'].text}}
+                                    style={{color: getColors(color).text}}
                                 >
                                     <Picker.Item label="Seleccione una categoría" value="" />
                                     <Picker.Item label="Comida" value="comida" />
