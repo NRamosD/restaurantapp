@@ -1,4 +1,5 @@
 import 'react-native-get-random-values';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
@@ -6,7 +7,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { SQLiteProvider, deleteDatabaseAsync } from 'expo-sqlite';
 import { DrizzleProvider } from '@/db/DrizzleProvider';
-import { KeyboardAvoidingView, Platform, ActivityIndicator, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, ActivityIndicator, View, StyleSheet } from 'react-native';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { useAuthStore } from '@/hooks/useAuthStore';
@@ -21,6 +22,12 @@ SplashScreen.preventAutoHideAsync();
 
 const DATABASE_NAME = process.env.EXPO_PUBLIC_DATABASE_NAME ?? 'restaurant';
 const IS_DEV = process.env.EXPO_PUBLIC_ENVIRONMENT === 'dev';
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
 
 async function resetDatabaseIfDev() {
   if (IS_DEV) {
@@ -58,29 +65,31 @@ export default function RootLayout() {
   if (!loaded || !dbReady) return null;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <SQLiteProvider
-        databaseName={`${DATABASE_NAME}.db`}
-        useSuspense
-      >
-        <Suspense fallback={<ActivityIndicator />}>
-          <DrizzleProvider>
-            <KeyboardAvoidingView
-              style={{ flex: 1 }}
-              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
-            >
-              <SafeAreaProvider>
-                <MenuProvider>
-                  <PaperProvider>
-                    {token ? <App /> : <AuthLayout />}
-                  </PaperProvider>
-                </MenuProvider>
-              </SafeAreaProvider>
-            </KeyboardAvoidingView>
-          </DrizzleProvider>
-        </Suspense>
-      </SQLiteProvider>
-    </ThemeProvider>
+    <GestureHandlerRootView style={styles.container}>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <SQLiteProvider
+          databaseName={`${DATABASE_NAME}.db`}
+          useSuspense
+        >
+          <Suspense fallback={<ActivityIndicator />}>
+            <DrizzleProvider>
+              <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+              >
+                <SafeAreaProvider>
+                  <MenuProvider>
+                    <PaperProvider>
+                      {token ? <App /> : <AuthLayout />}
+                    </PaperProvider>
+                  </MenuProvider>
+                </SafeAreaProvider>
+              </KeyboardAvoidingView>
+            </DrizzleProvider>
+          </Suspense>
+        </SQLiteProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }
