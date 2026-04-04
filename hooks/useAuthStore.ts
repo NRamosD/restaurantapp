@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
 
 interface User {
   id: string;
@@ -36,8 +35,6 @@ export const useAuthStore = create<AuthState>()(
           };
 
           set({ user, token: userData.id, isLoading: false });
-          router.dismissAll();
-          router.replace("/(tabs)");
 
           return { status: "success" };
         } catch (error) {
@@ -47,7 +44,6 @@ export const useAuthStore = create<AuthState>()(
       },
       logout: () => {
         set({ user: null, token: null });
-        router.replace("/(auth)/login");
       },
     }),
     {
