@@ -4,8 +4,9 @@ import { TouchableOpacity, useColorScheme } from "react-native";
 import { CText } from "../CText";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { Orden } from "@/interfaces";
+// import { Orden } from "@/interfaces";
 import useOrderOperations from "@/hooks/useOrderOperations";
+import { Orden } from "@/interfaces/general.interface";
 
 type Props = {
   path?:any
@@ -33,8 +34,8 @@ const ItemOrderLink = ({
   // },[])
 
   const loadCurrentOrderData = async()=>{
-    loadOrderData(order?.id_orden!)
-    path? router.push({pathname:path, params:{id_orden:order?.id_orden}}):alert("No hay ruta")    
+    loadOrderData(order?.id!)
+    path? router.push({pathname:path, params:{id_orden:order?.id}}):alert("No hay ruta")    
   }
 
 
@@ -45,12 +46,12 @@ const ItemOrderLink = ({
         style={{ flex: 1, flexDirection: "row", }}
       >
         <CView style={{ flex: 5 }}>
-          <CText type="title">Orden #{order?.id_orden}</CText>
+          <CText type="title">Orden #{order?.numeroOrden?.toString() || "N/A"}</CText>
           <CText
             type="default"
             style={{ overflow: "hidden", textOverflow: "ellipsis" }}
           >
-            {text1.slice(0, 45).concat("...")}
+            {order?.observaciones? order?.observaciones.slice(0, 45).concat("...") : "Sin observaciones"}
           </CText>
         </CView>
         <CView

@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm';
 import { useDrizzle } from '@/db/db';
 import { Usuario } from '@/db/schema';
 import { v4 as uuidv4 } from 'uuid';
+import { verifyPassword } from '@/assets/utils/hash_pass';
 
 type UsuarioRol = 'ADMIN' | 'CAJERO' | 'MESERO' | 'COCINA';
 
@@ -62,18 +63,16 @@ export function useUsuarioService() {
     
     if (!usuario) return null;
     if (!usuario.activo) return null;
+    const isValidPassword = await verifyPassword(params.passwordHash, usuario.passwordHash);
+    if (!isValidPassword) console.log('Credenciales inválidas, no olvide hacer validacion en backend');
 
-    if (usuario.passwordHash === params.passwordHash) {
-      return {
-        id: usuario.id,
-        nombre: usuario.nombre,
-        email: usuario.email,
-        rol: usuario.rol,
-        perfilNegocioId: usuario.perfilNegocioId,
-      };
-    }
-
-    return null;
+    return {
+      id: usuario.id,
+      nombre: usuario.nombre,
+      email: usuario.email,
+      rol: usuario.rol,
+      perfilNegocioId: usuario.perfilNegocioId,
+    };
   };
 
   const cambiarPassword = async (usuarioId: number, passwordHash: string) => {

@@ -1,15 +1,23 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
 import { Platform } from 'react-native';
-
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors, getColors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useAuthStore } from '@/hooks/useAuthStore';
+import { useEffect } from 'react';
+import { router } from 'expo-router';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const user = useAuthStore((s) => s.user);
+
+  useEffect(() => {
+    if (!user) {
+      router.replace('/(auth)/login');
+    }
+  }, [user]);
 
   return (
     <Tabs
@@ -28,15 +36,14 @@ export default function TabLayout() {
             height: 80,
           },
         }),
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Inicio',
           tabBarIcon: ({ color }) => <IconSymbol size={30} name="house.fill" color={color} />,
-          tabBarLabelStyle: {
-            fontSize:20
-          }
+          tabBarLabelStyle: { fontSize: 20 },
         }}
       />
       <Tabs.Screen
@@ -44,9 +51,7 @@ export default function TabLayout() {
         options={{
           title: 'Ventas',
           tabBarIcon: ({ color }) => <IconSymbol size={30} name="archivebox.fill" color={color} />,
-          tabBarLabelStyle: {
-            fontSize:20
-          }
+          tabBarLabelStyle: { fontSize: 20 },
         }}
       />
       <Tabs.Screen
@@ -54,9 +59,7 @@ export default function TabLayout() {
         options={{
           title: 'Productos',
           tabBarIcon: ({ color }) => <IconSymbol size={30} name="list.clipboard" color={color} />,
-          tabBarLabelStyle: {
-            fontSize:20
-          }
+          tabBarLabelStyle: { fontSize: 20 },
         }}
       />
     </Tabs>

@@ -17,11 +17,13 @@ import CButton from "@/components/CButton";
 import { Ionicons } from "@expo/vector-icons";
 import { ItemOrderLink } from "@/components/orders";
 import { useSQLiteContext } from "expo-sqlite";
-import { Orden } from "@/interfaces";
+// import { Orden } from "@/interfaces";
 import { getAllOrders, getOrdersByStatus } from "@/db/order.operations";
 import { useIsFocused } from "@react-navigation/native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Colors, getColors } from "@/constants/Colors";
+import { useOrdenService } from "@/modules";
+import { Orden } from "@/interfaces/general.interface";
 
 export default function HomeScreen() {
   // const [nameProduct, setNameProduct] = useState<string>("");
@@ -29,20 +31,19 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme()
   const dbConnection = useSQLiteContext()
   const isFocused = useIsFocused();
-  const [orderList, setOrderList] = useState<Orden[]>([])
+  const [orderList, setOrderList] = useState<any[]>([])
   const [refreshing, setRefreshing] = useState(false);
+
+  const { obtenerOrdenesPorEstado } = useOrdenService()
   // const [profiles, setProfiles] = useState<Perfil[]>([])
   const insets = useSafeAreaInsets()
 
-  useEffect(() => {
-    getAllOrdersList()
-  }, [isFocused]);
-  
   const getAllOrdersList = async () => {
-    const result = await getOrdersByStatus(dbConnection, "pendiente")
-    console.log(result)
+    const result = await obtenerOrdenesPorEstado("PENDIENTE")
+    console.log("result", result)
     setOrderList(result)
   }
+  
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -52,6 +53,9 @@ export default function HomeScreen() {
     }, 1500);
   };
 
+  useEffect(() => {
+    getAllOrdersList()
+  }, [isFocused]);
 
 
   return (

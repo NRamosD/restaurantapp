@@ -1,12 +1,22 @@
 import { Stack } from 'expo-router';
+import { useAuthStore } from '@/hooks/useAuthStore';
+import { useEffect } from 'react';
+import { router } from 'expo-router';
 
 export default function AuthLayout() {
-  return (
+  const user = useAuthStore((s) => s.user);
 
-      <Stack screenOptions={{ headerShown:false }}>
-        <Stack.Screen name='login' options={{ headerShown:false }}/>
-        <Stack.Screen name='profile' options={{ headerShown:false }}/>
-        <Stack.Screen name='register' options={{ headerShown:false }}/>
-      </Stack>
+  useEffect(() => {
+    if (user) {
+      router.replace('/(tabs)');
+    }
+  }, [user]);
+
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="login" />
+      <Stack.Screen name="register" />
+      <Stack.Screen name="profile" />
+    </Stack>
   );
 }

@@ -44,57 +44,23 @@ export default function LoginScreen({}: Props) {
     setError('');
     
     try {
-
       const resultado = await validarCredenciales({
         email: user.toLowerCase().trim(),
         passwordHash: pass,
       });
-      console.log("Resultado de validar credenciales:", resultado);
-      // if (!resultado) {
-      //   setError('Credenciales incorrectas');
-      //   setLoading(false);
-      //   return;
-      // }
-      router.replace('/(tabs)');
-      
-      // const usuario = await db
-      //   .select()
-      //   .from(Usuario)
-      //   .where(eq(Usuario.email, user.toLowerCase().trim()))
-      //   .limit(1);
 
-      //   console.log("Usuario encontrado:", usuario);
-      // if (usuario.length === 0) {
-      //   setError('Credenciales incorrectas');
-      //   setLoading(false);
-      //   return;
-      // }
+      if (!resultado) {
+        setError('Credenciales incorrectas');
+        setLoading(false);
+        return;
+      }
 
-      // const userData = usuario[0];
-
-      // if (!userData.activo) {
-      //   setError('Usuario desactivado');
-      //   setLoading(false);
-      //   return;
-      // }
-
-      // const isValidPassword = await verifyPassword(pass, userData.passwordHash);
-      
-
-      // if (!isValidPassword) {
-      //   setError('Credenciales incorrectas');
-      //   setLoading(false);
-      //   return;
-      // }
-
-      // await login({
-      //   id_perfil: userData.id.toString(),
-      //   nombre_perfil: userData.nombre,
-      //   correo: userData.email,
-      //   id_negocio: userData.perfilNegocioId.toString(),
-      //   rol: userData.rol,
-      // });
-
+      await login({
+        id: resultado.id.toString(),
+        name: resultado.nombre,
+        email: resultado.email,
+        negocio_id: resultado.perfilNegocioId.toString(),
+      });
     } catch (err) {
       console.error('Error en login:', err);
       setError('Error al iniciar sesión');
