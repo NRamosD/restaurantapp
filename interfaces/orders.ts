@@ -1,6 +1,5 @@
 export interface ItemOrderExtended {
-    order_uui:string;
-    order_id:number;
+    order_uuid:string;
     order_number:number;
     details: string;
     time:string;//"12:28",
@@ -8,10 +7,9 @@ export interface ItemOrderExtended {
 }
 
 export interface Orden {
-    id_orden?: number;       // autoincrement, opcional al crear
-    id_perfil?: number;       // FK a Perfil
-    id_negocio?: string;
     uuid?:string;
+    perfilNegocioUuid?: string;
+    negocioUuid?: string;
     nota?:string;
     fecha?: string;          // DATETIME, default CURRENT_TIMESTAMP
     estado?: "pendiente" | "pagado" | "cancelado";  // default "pendiente"

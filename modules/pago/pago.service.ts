@@ -6,9 +6,9 @@ import { v4 as uuidv4 } from 'uuid';
 type PagoEstado = 'PENDIENTE' | 'COMPLETADO' | 'ANULADO';
 
 interface ProcesarPagoParams {
-  ordenId?: number;
-  facturaId?: number;
-  tipoPagoId: number;
+  ordenUuid?: string;
+  facturaUuid?: string;
+  tipoPagoUuid: string;
   monto: number;
   referencia?: string;
 }
@@ -22,9 +22,9 @@ export function usePagoService() {
 
     const result = await db.insert(Pago).values({
       uuid,
-      ordenId: params.ordenId,
-      facturaId: params.facturaId,
-      tipoPagoId: params.tipoPagoId,
+      ordenUuid: params.ordenUuid,
+      facturaUuid: params.facturaUuid,
+      tipoPagoUuid: params.tipoPagoUuid,
       monto: params.monto,
       referencia: params.referencia,
       estado: 'COMPLETADO',
@@ -36,28 +36,28 @@ export function usePagoService() {
     return result.lastInsertRowId;
   };
 
-  const obtenerPagosPorOrden = async (ordenId: number) => {
+  const obtenerPagosPorOrden = async (ordenUuid: string) => {
     return db
       .select()
       .from(Pago)
-      .where(eq(Pago.ordenId, ordenId))
+      .where(eq(Pago.ordenUuid, ordenUuid))
       .orderBy(asc(Pago.fechaPago));
   };
 
-  const obtenerPagosPorFactura = async (facturaId: number) => {
+  const obtenerPagosPorFactura = async (facturaUuid: string) => {
     return db
       .select()
       .from(Pago)
-      .where(eq(Pago.facturaId, facturaId))
+      .where(eq(Pago.facturaUuid, facturaUuid))
       .orderBy(asc(Pago.fechaPago));
   };
 
-  const actualizarEstadoPago = async (pagoId: number, estado: PagoEstado) => {
+  const actualizarEstadoPago = async (pagoUuid: string, estado: PagoEstado) => {
     const now = new Date().toISOString();
     await db
       .update(Pago)
       .set({ estado, updatedAt: now })
-      .where(eq(Pago.id, pagoId));
+      .where(eq(Pago.uuid, pagoUuid));
   };
 
   const obtenerTiposPago = async () => {
@@ -68,11 +68,11 @@ export function usePagoService() {
       .orderBy(asc(TipoPago.nombre));
   };
 
-  const obtenerTipoPagoPorId = async (tipoPagoId: number) => {
+  const obtenerTipoPagoPorUuid = async (tipoPagoUuid: string) => {
     const [tipoPago] = await db
       .select()
       .from(TipoPago)
-      .where(eq(TipoPago.id, tipoPagoId))
+      .where(eq(TipoPago.uuid, tipoPagoUuid))
       .limit(1);
     return tipoPago || null;
   };
@@ -98,7 +98,7 @@ export function usePagoService() {
     obtenerPagosPorFactura,
     actualizarEstadoPago,
     obtenerTiposPago,
-    obtenerTipoPagoPorId,
+    obtenerTipoPagoPorUuid,
     crearTipoPago,
   };
 }

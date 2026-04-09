@@ -3,14 +3,13 @@ import { Platform } from 'react-native';
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors, getColors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { useAuthStore } from '@/hooks/useAuthStore';
 import { useEffect } from 'react';
 import { router } from 'expo-router';
+import { useAppTheme } from '@/theme';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const theme = useAppTheme();
   const user = useAuthStore((s) => s.user);
 
   useEffect(() => {
@@ -22,7 +21,8 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: getColors(colorScheme).tint,
+        tabBarActiveTintColor: theme.components.tabBar.activeTintColor,
+        tabBarInactiveTintColor: theme.components.tabBar.inactiveTintColor,
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
@@ -31,9 +31,11 @@ export default function TabLayout() {
             position: 'absolute',
             height: 80,
             paddingBottom: 12,
+            backgroundColor: theme.components.tabBar.backgroundColor,
           },
           default: {
             height: 80,
+            backgroundColor: theme.components.tabBar.backgroundColor,
           },
         }),
       }}

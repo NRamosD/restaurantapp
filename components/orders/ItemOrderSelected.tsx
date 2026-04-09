@@ -1,4 +1,3 @@
-import { Product } from '@/interfaces'
 import { CView } from '../CView'
 import { CText } from '../CText'
 import { StyleSheet, TouchableOpacity } from 'react-native'
@@ -11,9 +10,11 @@ import CInputText from '../CInputText'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { OrdenProducto, Producto } from '@/interfaces/general.interface'
 
+type OrderProductItem = { producto: Producto } & OrdenProducto
+
 type Props = {
-    singleProduct: { producto: Producto } & OrdenProducto,
-    removeItem?: (producto:Product)=>void,
+    singleProduct: OrderProductItem,
+    removeItem?: (productoUuid: string)=>void,
     justShow?: boolean
 }
 
@@ -79,18 +80,18 @@ const ItemOrderSelected = ({
               </CView>
             </CView>
             <CView style={{flex:3}}>
-              {justShow ? null : <TouchableOpacity style={{flex:1, alignItems:"flex-end"}} onPress={()=>{removeItem && removeItem(singleProduct?.producto)}}>
+              {justShow ? null : <TouchableOpacity style={{flex:1, alignItems:"flex-end"}} onPress={()=>{removeItem && removeItem(singleProduct.producto.uuid)}}>
                   <Ionicons name={"trash"} size={30} color={"red"} />
               </TouchableOpacity>}
               {justShow ? null : <CView style={{flex:1}}>
-                <AddReduceButton item={singleProduct?.producto}/>
+                <AddReduceButton item={singleProduct.producto}/>
               </CView>}
             </CView>
         </CView>
       </TouchableOpacity>
 
       <GenericModal
-        title={singleProduct.nombre}
+        title={singleProduct.producto.nombre}
         showModal={openModal}
         setShowModal={setopenModal}
         showConfirmButton={!justShow}

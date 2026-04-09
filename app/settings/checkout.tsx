@@ -16,12 +16,13 @@ import ItemOrderOptionSquare from '@/components/orders/ItemOrderOptionSquare'
 type Props = {}
 type dataType = {id:string, name:string}
 const data:Product[] = Array.from({ length: 20 }, (_, i) => ({ 
-  id: i.toString(), 
   uuid:uuidv4(),//"Producto #"+(i/2),
+  perfilNegocioUuid: uuidv4(),
   nombre:"Producto #"+i,
   precio:(Math.random()*100)+ parseFloat(Math.random().toFixed(3)),
-  activo:true,
-  fechaCreacion:new Date(),
+  precio_total:(Math.random()*100)+ parseFloat(Math.random().toFixed(3)),
+  stock: 100,
+  estado:"disponible",
 }) as Product );
 
 const CheckoutOrder = (props: Props) => {
@@ -36,7 +37,7 @@ const CheckoutOrder = (props: Props) => {
   }
 
   const deleteItemSelected = (item:Product) => {
-    const auxFiltered = dataSelected.filter(x=>x.id!==item.id)
+    const auxFiltered = dataSelected.filter(x=>x.uuid!==item.uuid)
     setDataSelected(auxFiltered)
   }
 
@@ -67,9 +68,9 @@ const CheckoutOrder = (props: Props) => {
         <CText type="title" style={{ textAlign:"center", color:"white"}}>Resumen de la Orden</CText>
       </CView>
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
-        <FlatList<Product>
+        <FlatList
           data={dataSelected}
-          renderItem={({item}) => <ItemOrderSelected singleProduct={item} removeItem={()=>deleteItemSelected(item)} /> }
+          renderItem={({item}) => <ItemOrderSelected singleProduct={item as any} removeItem={()=>deleteItemSelected(item)} /> }
           keyExtractor={item => item.uuid}
           style={{height:"100%", width:"100%"}}
         />

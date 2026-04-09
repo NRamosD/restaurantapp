@@ -1,7 +1,7 @@
 export interface ProductoComponente {
-  id_producto: number;       // FK a Producto
-  id_componente: number;     // FK a Componente
-  id_negocio: string;
+  producto_uuid: string;
+  componente_uuid: string;
+  negocio_uuid: string;
   uuid: string;              // UNIQUE
   cantidad?: number;         // default 1
 }

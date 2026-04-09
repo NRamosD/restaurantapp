@@ -10,11 +10,7 @@ import {
 import { Text, TextInput, Button, Card, Avatar, HelperText } from 'react-native-paper';
 import { router } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { Colors, getColors } from '@/constants/Colors';
-import { useDrizzle } from '@/db/db';
-import { eq } from 'drizzle-orm';
-import { Usuario } from '@/db/schema';
-import { verifyPassword } from '@/assets/utils/hash_pass';
+import { getColors } from '@/constants/Colors';
 import { useAuthStore } from '@/hooks/useAuthStore';
 import { useUsuarioService } from '@/modules';
 
@@ -23,7 +19,6 @@ type Props = {};
 export default function LoginScreen({}: Props) {
   const colorScheme = useColorScheme();
   const colors = getColors(colorScheme);
-  const db = useDrizzle();
   const { login } = useAuthStore();
   
   const [user, setUser] = useState('');
@@ -56,10 +51,10 @@ export default function LoginScreen({}: Props) {
       }
 
       await login({
-        id: resultado.id.toString(),
+        uuid: resultado.uuid,
         name: resultado.nombre,
         email: resultado.email,
-        negocio_id: resultado.perfilNegocioId.toString(),
+        perfilNegocioUuid: resultado.perfilNegocioUuid,
       });
     } catch (err) {
       console.error('Error en login:', err);

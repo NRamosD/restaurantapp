@@ -14,11 +14,11 @@ interface CrearProductoParams {
   stock?: number;
   ilimitado?: boolean;
   imagenUrl?: string;
-  perfilNegocioId: number;
+  perfilNegocioUuid: string;
 }
 
 interface ActualizarProductoParams {
-  id: number;
+  uuid: string;
   nombre?: string;
   descripcion?: string;
   precio?: number;
@@ -33,21 +33,21 @@ interface ActualizarProductoParams {
 export function useProductoService() {
   const db = useDrizzle();
 
-  const obtenerProductos = async (perfilNegocioId?: number) => {
-    if (perfilNegocioId) {
+  const obtenerProductos = async (perfilNegocioUuid?: string) => {
+    if (perfilNegocioUuid) {
       return db
         .select()
         .from(Producto)
-        .where(eq(Producto.perfilNegocioId, perfilNegocioId))
+        .where(eq(Producto.perfilNegocioUuid, perfilNegocioUuid))
         .orderBy(asc(Producto.nombre));
     }
     return db.select().from(Producto).orderBy(asc(Producto.nombre));
   };
 
-  const obtenerProductosDisponibles = async (perfilNegocioId?: number) => {
+  const obtenerProductosDisponibles = async (perfilNegocioUuid?: string) => {
     const condiciones = [eq(Producto.estado, 'DISPONIBLE')];
-    if (perfilNegocioId) {
-      condiciones.push(eq(Producto.perfilNegocioId, perfilNegocioId));
+    if (perfilNegocioUuid) {
+      condiciones.push(eq(Producto.perfilNegocioUuid, perfilNegocioUuid));
     }
 
     return db
@@ -57,26 +57,26 @@ export function useProductoService() {
       .orderBy(asc(Producto.nombre));
   };
 
-  const obtenerProductoPorId = async (productoId: number) => {
+  const obtenerProductoPorUuid = async (productoUuid: string) => {
     const [producto] = await db
       .select()
       .from(Producto)
-      .where(eq(Producto.id, productoId))
+      .where(eq(Producto.uuid, productoUuid))
       .limit(1);
     return producto || null;
   };
 
-  const buscarProductos = async (termino: string, perfilNegocioId?: number) => {
+  const buscarProductos = async (termino: string, perfilNegocioUuid?: string) => {
     const condiciones = or(
       like(Producto.nombre, `%${termino}%`),
       like(Producto.descripcion, `%${termino}%`)
     );
 
-    if (perfilNegocioId) {
+    if (perfilNegocioUuid) {
       return db
         .select()
         .from(Producto)
-        .where(and(condiciones, eq(Producto.perfilNegocioId, perfilNegocioId)))
+        .where(and(condiciones, eq(Producto.perfilNegocioUuid, perfilNegocioUuid)))
         .orderBy(asc(Producto.nombre));
     }
 
@@ -102,7 +102,7 @@ export function useProductoService() {
       ilimitado: params.ilimitado ? 1 : 0,
       estado: 'DISPONIBLE',
       imagenUrl: params.imagenUrl,
-      perfilNegocioId: params.perfilNegocioId,
+      perfilNegocioUuid: params.perfilNegocioUuid,
       createdAt: now,
     });
 
@@ -123,19 +123,19 @@ export function useProductoService() {
     if (params.estado) updates.estado = params.estado;
     if (params.imagenUrl !== undefined) updates.imagenUrl = params.imagenUrl;
 
-    await db.update(Producto).set(updates).where(eq(Producto.id, params.id));
+    await db.update(Producto).set(updates).where(eq(Producto.uuid, params.uuid));
   };
 
-  const actualizarStock = async (productoId: number, nuevoStock: number) => {
+  const actualizarStock = async (productoUuid: string, nuevoStock: number) => {
     const now = new Date().toISOString();
     await db
       .update(Producto)
       .set({ stock: nuevoStock, updatedAt: now })
-      .where(eq(Producto.id, productoId));
+      .where(eq(Producto.uuid, productoUuid));
   };
 
-  const descontarStock = async (productoId: number, cantidad: number) => {
-    const producto = await obtenerProductoPorId(productoId);
+  const descontarStock = async (productoUuid: string, cantidad: number) => {
+    const producto = await obtenerProductoPorUuid(productoUuid);
     if (!producto) throw new Error('Producto no encontrado');
 
     if (!producto.ilimitado && producto.stock < cantidad) {
@@ -144,49 +144,49 @@ export function useProductoService() {
 
     if (!producto.ilimitado) {
       const nuevoStock = producto.stock - cantidad;
-      await actualizarStock(productoId, nuevoStock);
+      await actualizarStock(productoUuid, nuevoStock);
     }
   };
 
-  const obtenerComponentesPorProducto = async (productoId: number) => {
+  const obtenerComponentesPorProducto = async (productoUuid: string) => {
     const relaciones = await db
       .select()
       .from(ProductoComponente)
-      .where(eq(ProductoComponente.productoId, productoId));
+      .where(eq(ProductoComponente.productoUuid, productoUuid));
 
     return Promise.all(
       relaciones.map(async (rel) => {
         const [componente] = await db
           .select()
           .from(Componente)
-          .where(eq(Componente.id, rel.componenteId))
+          .where(eq(Componente.uuid, rel.componenteUuid))
           .limit(1);
         return { ...rel, componente };
       })
     );
   };
 
-  const obtenerTopProductos = async (limite: number = 10, perfilNegocioId?: number) => {
+  const obtenerTopProductos = async (limite: number = 10, perfilNegocioUuid?: string) => {
     return db
       .select()
       .from(Producto)
-      .where(perfilNegocioId ? eq(Producto.perfilNegocioId, perfilNegocioId) : undefined)
+      .where(perfilNegocioUuid ? eq(Producto.perfilNegocioUuid, perfilNegocioUuid) : undefined)
       .orderBy(desc(Producto.createdAt))
       .limit(limite);
   };
 
-  const cambiarEstado = async (productoId: number, estado: ProductoEstado) => {
+  const cambiarEstado = async (productoUuid: string, estado: ProductoEstado) => {
     const now = new Date().toISOString();
     await db
       .update(Producto)
       .set({ estado, updatedAt: now })
-      .where(eq(Producto.id, productoId));
+      .where(eq(Producto.uuid, productoUuid));
   };
 
   return {
     obtenerProductos,
     obtenerProductosDisponibles,
-    obtenerProductoPorId,
+    obtenerProductoPorUuid,
     buscarProductos,
     crearProducto,
     actualizarProducto,

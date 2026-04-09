@@ -32,7 +32,7 @@ export interface Usuario {
 
     rol: 'ADMIN' | 'CAJERO' | 'MESERO' | 'COCINA';
 
-    perfilNegocioId: number;
+    perfilNegocioUuid: string;
 
     activo: boolean;
     createdAt: Date;
@@ -43,7 +43,7 @@ export interface Sesion {
     id: number;
     uuid: string;
 
-    usuarioId: number;
+    usuarioUuid: string;
 
     token: string;
 
@@ -63,7 +63,7 @@ export interface Permiso {
     descripcion?: string;
     createdAt: Date;
     updatedAt: Date;
-    updatedBy?: number;
+    updatedByUuid?: string;
     deletedAt?: Date;
 }
 
@@ -71,8 +71,8 @@ export interface UsuarioPermiso {
     id: number;
     uuid: string;
 
-    usuarioId: number;
-    permisoId: number;
+    usuarioUuid: string;
+    permisoUuid: string;
     deletedAt?: Date;
 }
 
@@ -114,13 +114,13 @@ export interface Producto {
 
     estado: 'DISPONIBLE' | 'NO_DISPONIBLE';
 
-    perfilNegocioId: number;
+    perfilNegocioUuid: string;
 
     estadoSync: 'PENDIENTE' | 'SINCRONIZADO';
 
     createdAt: Date;
     updatedAt?: Date;
-    updatedBy?: number;
+    updatedByUuid?: string;
     deletedAt?: Date;
 }
 
@@ -135,7 +135,7 @@ export interface Componente {
     stockMinimo: number;
 
     costoUnitario: number;
-    perfilNegocioId: number;
+    perfilNegocioUuid: string;
 
     createdAt: Date;
     deletedAt?: Date;
@@ -144,14 +144,14 @@ export interface Componente {
 export interface ProductoComponente {
     id: number;
     uuid: string;
-    productoId: number;
-    componenteId: number;
+    productoUuid: string;
+    componenteUuid: string;
 
     cantidad: number;
     estadoSync?: 'PENDIENTE' | 'SINCRONIZADO';
     createdAt: Date;
     updatedAt: Date;
-    updatedBy?: number;
+    updatedByUuid?: string;
     deletedAt?: Date;
 }
 
@@ -161,8 +161,8 @@ export interface Orden {
     uuid: string;
     numeroOrden?: number;
 
-    clienteId?: number;
-    usuarioId: number;
+    clienteUuid?: string;
+    usuarioUuid: string;
 
     tipo: 'LOCAL' | 'LLEVAR' | 'DELIVERY';
 
@@ -177,7 +177,7 @@ export interface Orden {
 
     createdAt: Date;
     updatedAt: Date;
-    updatedBy?: number;
+    updatedByUuid?: string;
     deletedAt?: Date;
 }
 
@@ -186,8 +186,8 @@ export interface OrdenProducto {
     id: number;
     uuid: string;
 
-    ordenId: number;
-    productoId: number;
+    ordenUuid: string;
+    productoUuid: string;
 
     cantidad: number;
     precioUnitario: number;
@@ -201,7 +201,7 @@ export interface OrdenProducto {
     notas?: string;
     createdAt: Date;
     updatedAt: Date;
-    updatedBy?: number;
+    updatedByUuid?: string;
     deletedAt?: Date;
 }
 
@@ -213,8 +213,8 @@ export interface Factura {
     numeroFactura: string;
     claveAcceso: string;
 
-    clienteId: number;
-    ordenId?: number;
+    clienteUuid: string;
+    ordenUuid?: string;
 
     fechaEmision: Date;
 
@@ -241,10 +241,10 @@ export interface Pago {
     id: number;
     uuid: string;
 
-    ordenId?: number;
-    facturaId?: number;
+    ordenUuid?: string;
+    facturaUuid?: string;
 
-    tipoPagoId: number;
+    tipoPagoUuid: string;
 
     monto: number;
     referencia?: string;
@@ -255,7 +255,7 @@ export interface Pago {
     fechaPago: Date;
     createdAt: Date;
     updatedAt: Date;
-    updatedBy?: number;
+    updatedByUuid?: string;
     deletedAt?: Date;
 }
 
@@ -266,7 +266,7 @@ export interface TipoPago {
     activo: boolean;
     createdAt: Date;
     updatedAt: Date;
-    updatedBy?: number;
+    updatedByUuid?: string;
     deletedAt?: Date;
 }
 
@@ -278,7 +278,7 @@ export interface Plan {
     nombre: string;
 
     activo: boolean;
-    perfilNegocioId?: number;
+    perfilNegocioUuid?: string;
     updatedAt: Date;
     deletedAt?: Date;
 }
@@ -291,7 +291,7 @@ export interface Feature {
     nombre: string;
 
     habilitado: boolean;
-    perfilNegocioId?: number;
+    perfilNegocioUuid?: string;
     updatedAt: Date;
     deletedAt?: Date;
 }

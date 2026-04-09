@@ -108,7 +108,7 @@ export default function HomeScreen() {
               <Ionicons name="heart-outline" size={70} color={getColors(colorScheme).tint}/>
               <CText type="subtitle" style={{fontSize:14}}>Más Vendidos</CText>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=>router.push({pathname:"/inventory/create-producto"})} style={[styles.easyAccessOption,{boxShadow:`${colorScheme === "dark" ? "#000" : "#c1c1c1"} 0px 5px 5px 2px`}]}>
+            <TouchableOpacity onPress={()=>router.push({pathname:"/inventory/create-product"})} style={[styles.easyAccessOption,{boxShadow:`${colorScheme === "dark" ? "#000" : "#c1c1c1"} 0px 5px 5px 2px`}]}>
               <Ionicons name="storefront-outline" size={70} color={getColors(colorScheme).tint}/>
               <CText type="subtitle" style={{fontSize:13}}>Nuevo Producto</CText>
             </TouchableOpacity>

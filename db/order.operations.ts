@@ -2,10 +2,16 @@ import { uuid } from "@/assets/utils/uuid";
 import { Orden } from "@/interfaces/orders";
 import * as SQLite from 'expo-sqlite';
 
+type LegacyOrderInput = Omit<Orden, 'uuid'> & {
+    id_orden?: number;
+    id_perfil?: number;
+    id_negocio?: string | number;
+};
+
 // Crear una nueva orden
 export const createOrder = async (
     dbConnection: SQLite.SQLiteDatabase,
-    order: Omit<Orden, 'id_orden' | 'uuid' | 'fecha'> & { fecha?: string }
+    order: Omit<LegacyOrderInput, 'id_orden' | 'uuid' | 'fecha'> & { fecha?: string }
 ): Promise<number> => {
     const result = await dbConnection.runAsync(
         `INSERT INTO Ordenes (
@@ -120,7 +126,7 @@ export const getOrdersByDateRange = async (
 // Actualizar una orden
 export const updateOrder = async (
     db: SQLite.SQLiteDatabase,
-    order: Orden
+    order: LegacyOrderInput
 ): Promise<void> => {
     if (!order.id_orden) {
         throw new Error("❌ La orden debe tener un id_orden para actualizar");

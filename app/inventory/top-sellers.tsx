@@ -12,7 +12,6 @@ import { Picker } from '@react-native-picker/picker'
 import { useSQLiteContext } from 'expo-sqlite'
 import { SegmentedButtons } from 'react-native-paper';
 import DetailTopSeller from '@/components/inventory/DetailTopSeller'
-import { getAllProducts } from '@/db/producto.operations'
 import { getOrdersByDateRange } from '@/db/order.operations'
 import { getOrderProduct, getTopSellingProducts } from '@/db/order_product.operations'
 import dayjs from 'dayjs'

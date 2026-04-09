@@ -16,19 +16,19 @@ import ItemOrderOptionSquare from '@/components/orders/ItemOrderOptionSquare'
 type Props = {}
 type dataType = {id:string, name:string}
 const data:Product[] = Array.from({ length: 20 }, (_, i) => ({ 
-  id: i.toString(), 
   uuid:uuidv4(),//"Producto #"+(i/2),
+  perfilNegocioUuid: uuidv4(),
   nombre:"Producto #"+i,
   precio:(Math.random()*100)+ parseFloat(Math.random().toFixed(3)),
-  activo:true,
-  fechaCreacion:new Date(),
+  precio_total:(Math.random()*100)+ parseFloat(Math.random().toFixed(3)),
+  stock: 100,
+  estado:"disponible",
 }) as Product );
 
 const CreateOrder = (props: Props) => {
   const [dataTest, setdataTest] = useState<Product[]>(data||[]);
   const [dataSelected, setDataSelected] = useState<Product[]>([]);
   const [textSearchedItem, setTextSearchedItem] = useState<string>("");
-  
 
   const addProductToOrder = (item:Product) => {
     setDataSelected([...dataSelected,item])
@@ -36,7 +36,7 @@ const CreateOrder = (props: Props) => {
   }
 
   const deleteItemSelected = (item:Product) => {
-    const auxFiltered = dataSelected.filter(x=>x.id!==item.id)
+    const auxFiltered = dataSelected.filter(x=>x.uuid!==item.uuid)
     setDataSelected(auxFiltered)
   }
 
@@ -69,7 +69,7 @@ const CreateOrder = (props: Props) => {
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
         <FlatList<Product>
           data={dataSelected}
-          renderItem={({item}) => <ItemOrderSelected singleProduct={item} removeItem={()=>deleteItemSelected(item)} /> }
+          renderItem={({item}) => <ItemOrderSelected singleProduct={item as any} removeItem={()=>deleteItemSelected(item)} /> }
           keyExtractor={item => item.uuid}
           style={{height:"100%", width:"100%"}}
         />
@@ -78,7 +78,7 @@ const CreateOrder = (props: Props) => {
       <CView style={{flex:5, flexDirection:"row", gap:15,
         justifyContent:"flex-start", alignItems:"center", backgroundColor:"#1c1c1c"}}>
           <FlatList<Product>
-            data={dataTest.filter(x=>!dataSelected.find(y=>y.id==x.id))}
+            data={dataTest.filter(x=>!dataSelected.find(y=>y.uuid==x.uuid))}
             horizontal={true}
             keyExtractor={item => item.uuid}
             showsHorizontalScrollIndicator={false}

@@ -1,6 +1,6 @@
 import 'react-native-get-random-values';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { Suspense, useEffect, useState } from 'react';
@@ -14,6 +14,7 @@ import { MenuProvider } from 'react-native-popup-menu';
 import { PaperProvider } from 'react-native-paper';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import { getNavigationTheme, getPaperTheme } from '@/theme';
 
 dayjs.extend(utc);
 SplashScreen.preventAutoHideAsync();
@@ -39,6 +40,8 @@ async function resetDatabaseIfDev() {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [dbReady, setDbReady] = useState(!IS_DEV);
+  const navigationTheme = getNavigationTheme(colorScheme);
+  const paperTheme = getPaperTheme(colorScheme);
 
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -60,13 +63,13 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <ThemeProvider value={navigationTheme}>
         <SQLiteProvider databaseName={`${DATABASE_NAME}.db`} useSuspense>
           <Suspense fallback={<ActivityIndicator />}>
             <DrizzleProvider>
               <SafeAreaProvider>
                 <MenuProvider>
-                  <PaperProvider>
+                  <PaperProvider theme={paperTheme}>
                     <Stack screenOptions={{ headerShown: false }}>
                       <Stack.Screen name="(tabs)" />
                       <Stack.Screen name="(auth)" />

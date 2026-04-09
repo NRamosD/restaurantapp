@@ -4,11 +4,16 @@ import { ToastAndroid, TouchableOpacity } from 'react-native'
 import { IconSymbol } from './IconSymbol'
 import { CText } from '../CText'
 import useOrderStore from '@/hooks/useOrderStore'
-import { Product } from '@/interfaces'
 import { useColorScheme } from '@/hooks/useColorScheme'
 
+type AddReduceItem = {
+    uuid: string;
+    ilimitado?: boolean;
+    stock: number;
+}
+
 type Props = {
-    item: Product
+    item: AddReduceItem
 }
 
 const AddReduceButton = ({

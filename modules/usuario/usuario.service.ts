@@ -11,7 +11,7 @@ interface CrearUsuarioParams {
   email: string;
   passwordHash: string;
   rol: UsuarioRol;
-  perfilNegocioId: number;
+  perfilNegocioUuid: string;
 }
 
 interface ValidarCredencialesParams {
@@ -22,11 +22,11 @@ interface ValidarCredencialesParams {
 export function useUsuarioService() {
   const db = useDrizzle();
 
-  const obtenerUsuarioPorId = async (usuarioId: number) => {
+  const obtenerUsuarioPorUuid = async (usuarioUuid: string) => {
     const [usuario] = await db
       .select()
       .from(Usuario)
-      .where(eq(Usuario.id, usuarioId))
+      .where(eq(Usuario.uuid, usuarioUuid))
       .limit(1);
     return usuario || null;
   };
@@ -50,7 +50,7 @@ export function useUsuarioService() {
       email: params.email,
       passwordHash: params.passwordHash,
       rol: params.rol,
-      perfilNegocioId: params.perfilNegocioId,
+      perfilNegocioUuid: params.perfilNegocioUuid,
       activo: 1,
       createdAt: now,
     });
@@ -67,30 +67,30 @@ export function useUsuarioService() {
     if (!isValidPassword) console.log('Credenciales inválidas, no olvide hacer validacion en backend');
 
     return {
-      id: usuario.id,
+      uuid: usuario.uuid,
       nombre: usuario.nombre,
       email: usuario.email,
       rol: usuario.rol,
-      perfilNegocioId: usuario.perfilNegocioId,
+      perfilNegocioUuid: usuario.perfilNegocioUuid,
     };
   };
 
-  const cambiarPassword = async (usuarioId: number, passwordHash: string) => {
+  const cambiarPassword = async (usuarioUuid: string, passwordHash: string) => {
     await db
       .update(Usuario)
       .set({ passwordHash })
-      .where(eq(Usuario.id, usuarioId));
+      .where(eq(Usuario.uuid, usuarioUuid));
   };
 
-  const cambiarEstado = async (usuarioId: number, activo: boolean) => {
+  const cambiarEstado = async (usuarioUuid: string, activo: boolean) => {
     await db
       .update(Usuario)
       .set({ activo: activo ? 1 : 0 })
-      .where(eq(Usuario.id, usuarioId));
+      .where(eq(Usuario.uuid, usuarioUuid));
   };
 
   const actualizarUsuario = async (
-    usuarioId: number,
+    usuarioUuid: string,
     datos: { nombre?: string; email?: string; rol?: UsuarioRol }
   ) => {
     const updates: Record<string, unknown> = {};
@@ -99,18 +99,18 @@ export function useUsuarioService() {
     if (datos.email) updates.email = datos.email;
     if (datos.rol) updates.rol = datos.rol;
 
-    await db.update(Usuario).set(updates).where(eq(Usuario.id, usuarioId));
+    await db.update(Usuario).set(updates).where(eq(Usuario.uuid, usuarioUuid));
   };
 
-  const obtenerUsuariosPorPerfil = async (perfilNegocioId: number) => {
+  const obtenerUsuariosPorPerfil = async (perfilNegocioUuid: string) => {
     return db
       .select()
       .from(Usuario)
-      .where(eq(Usuario.perfilNegocioId, perfilNegocioId));
+      .where(eq(Usuario.perfilNegocioUuid, perfilNegocioUuid));
   };
 
   return {
-    obtenerUsuarioPorId,
+    obtenerUsuarioPorUuid,
     obtenerUsuarioPorEmail,
     crearUsuario,
     validarCredenciales,

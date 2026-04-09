@@ -24,8 +24,8 @@ const CreateProductScreen = ({}: Props) => {
     const db = useSQLiteContext();
     const color = useColorScheme()
     // State for form fields
-    const [formData, setFormData] = useState<Omit<Product, 'id_producto' | 'id_negocio' | 'uuid' | 'fecha_creacion'>>({
-        id_perfil: 1, // You might want to get this from your auth context or props
+    const [formData, setFormData] = useState<Omit<Product, 'id_producto' | 'negocioUuid' | 'uuid'>>({
+        perfilNegocioUuid: 'TEMP_PERFIL_NEGOCIO_UUID',
         nombre: '',
         descripcion: '',
         precio: 0,

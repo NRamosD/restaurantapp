@@ -58,8 +58,10 @@ const CheckoutOrder = ({
   // }
 
   useEffect(()=>{
-    loadOrderData(Number(id_orden))
-  },[])
+    if (id_orden) {
+      loadOrderData(id_orden)
+    }
+  },[id_orden, loadOrderData])
 
   useEffect(()=>{
     console.log({"items in checkout": items})

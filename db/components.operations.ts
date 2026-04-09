@@ -3,33 +3,50 @@ import { Componente } from "@/interfaces/components";
 import * as SQLite from 'expo-sqlite';
 
 // Crear un nuevo componente
+type CreateComponentInput = {
+    id_perfil: number;
+    id_negocio: string;
+    nombre: string;
+    descripcion?: string;
+    tipo?: string;
+    material?: string;
+    peso?: number;
+    longitud?: number;
+    ancho?: number;
+    alto?: number;
+    calorias?: number;
+    stock?: number;
+    porciones?: number;
+    color?: string;
+};
+
 export const createComponent = async (
     dbConnection: SQLite.SQLiteDatabase,
-    componente: Omit<Componente, 'id_componente' | 'uuid' | 'fecha_creacion'>
-  ): Promise<number> => {
+    componente: CreateComponentInput
+): Promise<number> => {
     const result = await dbConnection.runAsync(
-      `INSERT INTO Componentes (
-        id_perfil, id_negocio, uuid, nombre, descripcion, tipo, material, peso, longitud,
-        ancho, alto, calorias, stock, porciones, color, fecha_creacion
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        componente.id_perfil, // 🔹 este es obligatorio
-        componente.id_negocio,
-        uuid(),
-        componente.nombre,
-        componente.descripcion ?? null,
-        componente.tipo ?? null,
-        componente.material ?? null,
-        componente.peso ?? null,
-        componente.longitud ?? null,
-        componente.ancho ?? null,
-        componente.alto ?? null,
-        componente.calorias ?? null,
-        componente.stock ?? 0,
-        componente.porciones ?? null,
-        componente.color ?? null,
-        new Date().toISOString()
-      ]
+        `INSERT INTO Componentes (
+            id_perfil, id_negocio, uuid, nombre, descripcion, tipo, material, peso, longitud,
+            ancho, alto, calorias, stock, porciones, color, fecha_creacion
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+            componente.id_perfil, 
+            componente.id_negocio,
+            uuid(),
+            componente.nombre,
+            componente.descripcion ?? null,
+            componente.tipo ?? null,
+            componente.material ?? null,
+            componente.peso ?? null,
+            componente.longitud ?? null,
+            componente.ancho ?? null,
+            componente.alto ?? null,
+            componente.calorias ?? null,
+            componente.stock ?? 0,
+            componente.porciones ?? null,
+            componente.color ?? null,
+            new Date().toISOString()
+        ]
     );
   
     return result.lastInsertRowId as number;

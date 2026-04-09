@@ -34,8 +34,12 @@ const ItemOrderLink = ({
   // },[])
 
   const loadCurrentOrderData = async()=>{
-    loadOrderData(order?.id!)
-    path? router.push({pathname:path, params:{id_orden:order?.id}}):alert("No hay ruta")    
+    if (!order?.uuid) {
+      return;
+    }
+
+    loadOrderData(order.uuid)
+    path ? router.push({ pathname: path, params: { id_orden: order.uuid } }) : alert("No hay ruta")
   }
 
 

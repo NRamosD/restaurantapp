@@ -7,17 +7,19 @@ export const createBill = async (
     dbConnection: SQLite.SQLiteDatabase,
     factura: Omit<Factura, 'id_factura' | 'uuid' | 'fecha_creacion'>
 ): Promise<number> => {
+
     const result = await dbConnection.runAsync(
         `INSERT INTO Facturas (
             id_orden, id_negocio, uuid, valor_subtotal, valor_iva, 
             valor_total, fecha_emision, estado
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-            factura.id_orden,
-            factura.id_negocio,
+            factura.ordenUuid,
+            factura.negocioUuid,
             uuid(),
             factura.valor_subtotal,
             factura.valor_iva ?? null,
+
             factura.valor_total,
             factura.fecha_emision ?? null,
             factura.estado ?? 'pendiente'
@@ -66,15 +68,15 @@ export const getBillByUuid = async (
 };
 
 // Obtener facturas por orden
-export const getBillsByOrderId = async (
+export const getBillsByOrderUuid = async (
     db: SQLite.SQLiteDatabase,
-    id_orden: number
+    ordenUuid: string
 ): Promise<Factura[]> => {
     const results = await db.getAllAsync<Factura>(
         `SELECT * FROM Facturas 
          WHERE id_orden = ? 
          ORDER BY fecha_creacion DESC`,
-        [id_orden]
+        [ordenUuid]
     );
     return results;
 };

@@ -7,6 +7,8 @@ import { ToastAndroid } from "react-native";
 export type CreateProductInput = Omit<Product, 'id_producto' | 'uuid' | 'fecha_creacion'> & { 
     uuid?: string;
     galeria?: string | null;
+    id_perfil: number;
+    id_negocio?: string | null;
 };
 
 type UpdateProductInput = Partial<Omit<Product, 'id_producto' | 'uuid' | 'fecha_creacion'>> & {

@@ -7,15 +7,15 @@ type OrdenEstado = 'PENDIENTE' | 'EN_PREPARACION' | 'LISTO' | 'ENTREGADO' | 'CAN
 type OrdenTipo = 'LOCAL' | 'LLEVAR' | 'DELIVERY';
 
 interface CrearOrdenParams {
-  usuarioId: number;
-  clienteId?: number;
+  usuarioUuid: string;
+  clienteUuid?: string;
   tipo: OrdenTipo;
   observaciones?: string;
 }
 
 interface AgregarProductoParams {
-  ordenId: number;
-  productoId: number;
+  ordenUuid: string;
+  productoUuid: string;
   cantidad: number;
   notas?: string;
 }
@@ -35,8 +35,8 @@ export function useOrdenService() {
     const result = await db.insert(Orden).values({
       uuid,
       numeroOrden,
-      clienteId: params.clienteId,
-      usuarioId: params.usuarioId,
+      clienteUuid: params.clienteUuid,
+      usuarioUuid: params.usuarioUuid,
       tipo: params.tipo,
       estado: 'PENDIENTE',
       subtotal: 0,
@@ -54,7 +54,7 @@ export function useOrdenService() {
     const [producto] = await db
       .select()
       .from(Producto)
-      .where(eq(Producto.id, params.productoId))
+      .where(eq(Producto.uuid, params.productoUuid))
       .limit(1);
 
     if (!producto) throw new Error('Producto no encontrado');
@@ -75,8 +75,8 @@ export function useOrdenService() {
 
     await db.insert(OrdenProducto).values({
       uuid,
-      ordenId: params.ordenId,
-      productoId: params.productoId,
+      ordenUuid: params.ordenUuid,
+      productoUuid: params.productoUuid,
       cantidad,
       precioUnitario,
       descuento,
@@ -88,22 +88,22 @@ export function useOrdenService() {
       updatedAt: now,
     });
 
-    await recalcularOrden(params.ordenId);
+    await recalcularOrden(params.ordenUuid);
   };
 
-  const cambiarEstadoOrden = async (ordenId: number, estado: OrdenEstado) => {
+  const cambiarEstadoOrden = async (ordenUuid: string, estado: OrdenEstado) => {
     const now = new Date().toISOString();
     await db
       .update(Orden)
       .set({ estado, updatedAt: now })
-      .where(eq(Orden.id, ordenId));
+      .where(eq(Orden.uuid, ordenUuid));
   };
 
-  const recalcularOrden = async (ordenId: number) => {
+  const recalcularOrden = async (ordenUuid: string) => {
     const productos = await db
       .select()
       .from(OrdenProducto)
-      .where(eq(OrdenProducto.ordenId, ordenId));
+      .where(eq(OrdenProducto.ordenUuid, ordenUuid));
 
     const subtotal = productos.reduce((sum, p) => sum + p.subtotal, 0);
     const iva = productos.reduce((sum, p) => sum + p.iva, 0);
@@ -113,18 +113,18 @@ export function useOrdenService() {
     await db
       .update(Orden)
       .set({ subtotal, iva, total, updatedAt: now })
-      .where(eq(Orden.id, ordenId));
+      .where(eq(Orden.uuid, ordenUuid));
   };
 
-  const cerrarOrden = async (ordenId: number) => {
-    await cambiarEstadoOrden(ordenId, 'ENTREGADO');
+  const cerrarOrden = async (ordenUuid: string) => {
+    await cambiarEstadoOrden(ordenUuid, 'ENTREGADO');
   };
 
-  const obtenerOrdenPorId = async (ordenId: number) => {
+  const obtenerOrdenPorUuid = async (ordenUuid: string) => {
     const [orden] = await db
       .select()
       .from(Orden)
-      .where(eq(Orden.id, ordenId))
+      .where(eq(Orden.uuid, ordenUuid))
       .limit(1);
 
     if (!orden) return null;
@@ -132,20 +132,20 @@ export function useOrdenService() {
     const productos = await db
       .select()
       .from(OrdenProducto)
-      .where(eq(OrdenProducto.ordenId, ordenId));
+      .where(eq(OrdenProducto.ordenUuid, ordenUuid));
 
     const productosConDetalle = await Promise.all(
       productos.map(async (op) => {
         const [producto] = await db
           .select()
           .from(Producto)
-          .where(eq(Producto.id, op.productoId))
+          .where(eq(Producto.uuid, op.productoUuid))
           .limit(1);
         return { ...op, producto };
       })
     );
 
-    return { orden:orden, ordenProductos: productosConDetalle };
+    return { orden, ordenProductos: productosConDetalle };
   };
 
   const obtenerOrdenesPorEstado = async (estado?: OrdenEstado) => {
@@ -180,11 +180,11 @@ export function useOrdenService() {
     return db.select().from(Orden).orderBy(desc(Orden.createdAt));
   };
 
-  const obtenerOrdenConClienteYUsuario = async (ordenId: number) => {
+  const obtenerOrdenConClienteYUsuario = async (ordenUuid: string) => {
     const [orden] = await db
       .select()
       .from(Orden)
-      .where(eq(Orden.id, ordenId))
+      .where(eq(Orden.uuid, ordenUuid))
       .limit(1);
 
     if (!orden) return null;
@@ -192,41 +192,41 @@ export function useOrdenService() {
     let cliente = null;
     let usuario = null;
 
-    if (orden.clienteId) {
+    if (orden.clienteUuid) {
       [cliente] = await db
         .select()
         .from(Cliente)
-        .where(eq(Cliente.id, orden.clienteId))
+        .where(eq(Cliente.uuid, orden.clienteUuid))
         .limit(1);
     }
 
     [usuario] = await db
       .select()
       .from(Usuario)
-      .where(eq(Usuario.id, orden.usuarioId))
+      .where(eq(Usuario.uuid, orden.usuarioUuid))
       .limit(1);
 
     return { ...orden, cliente, usuario };
   };
 
-  const eliminarProductoDeOrden = async (ordenProductoId: number) => {
+  const eliminarProductoDeOrden = async (ordenProductoUuid: string) => {
     const [ordenProducto] = await db
       .select()
       .from(OrdenProducto)
-      .where(eq(OrdenProducto.id, ordenProductoId))
+      .where(eq(OrdenProducto.uuid, ordenProductoUuid))
       .limit(1);
 
     if (!ordenProducto) throw new Error('Producto en orden no encontrado');
 
     await db
       .delete(OrdenProducto)
-      .where(eq(OrdenProducto.id, ordenProductoId));
+      .where(eq(OrdenProducto.uuid, ordenProductoUuid));
 
-    await recalcularOrden(ordenProducto.ordenId);
+    await recalcularOrden(ordenProducto.ordenUuid);
   };
 
-  const cancelarOrden = async (ordenId: number) => {
-    await cambiarEstadoOrden(ordenId, 'CANCELADO');
+  const cancelarOrden = async (ordenUuid: string) => {
+    await cambiarEstadoOrden(ordenUuid, 'CANCELADO');
   };
 
   return {
@@ -235,7 +235,7 @@ export function useOrdenService() {
     cambiarEstadoOrden,
     recalcularOrden,
     cerrarOrden,
-    obtenerOrdenPorId,
+    obtenerOrdenPorUuid,
     obtenerOrdenesPorEstado,
     obtenerOrdenesPorFecha,
     obtenerOrdenConClienteYUsuario,

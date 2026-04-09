@@ -3,8 +3,11 @@ import { ProductoComponente } from "@/interfaces/product_component";
 import * as SQLite from 'expo-sqlite';
 
 // Types
-type CreateProductComponentInput = Omit<ProductoComponente, 'id_producto_componente' | 'uuid'> & {
+type CreateProductComponentInput = Omit<ProductoComponente, 'uuid'> & {
     uuid?: string;
+    id_producto: number;
+    id_componente: number;
+    id_negocio: string;
 };
 
 type UpdateProductComponentInput = Partial<Omit<ProductoComponente, 'id_producto_componente' | 'uuid'>> & {

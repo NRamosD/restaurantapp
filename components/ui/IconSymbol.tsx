@@ -5,6 +5,8 @@ import { SymbolWeight } from 'expo-symbols';
 import React from 'react';
 import { OpaqueColorValue, StyleProp, ViewStyle } from 'react-native';
 
+type MaterialIconName = React.ComponentProps<typeof MaterialIcons>['name'];
+
 // Add your SFSymbol to MaterialIcons mappings here.
 const MAPPING = {
   // See MaterialIcons here: https://icons.expo.fyi
@@ -21,12 +23,7 @@ const MAPPING = {
   'list.clipboard':'list-alt',
   'plus':'add-circle',
   'minus':'remove-circle',
-} as Partial<
-  Record<
-    import('expo-symbols').SymbolViewProps['name'],
-    React.ComponentProps<typeof MaterialIcons>['name']
-  >
->;
+} as const satisfies Record<string, MaterialIconName>;
 
 export type IconSymbolName = keyof typeof MAPPING;
 

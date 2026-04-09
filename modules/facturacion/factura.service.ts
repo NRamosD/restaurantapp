@@ -1,13 +1,13 @@
 import { eq, asc, sql } from 'drizzle-orm';
 import { useDrizzle } from '@/db/db';
-import { Factura, Orden, Cliente, OrdenProducto } from '@/db/schema';
+import { Factura, Orden, Cliente } from '@/db/schema';
 import { v4 as uuidv4 } from 'uuid';
 
 type EstadoSri = 'PENDIENTE' | 'AUTORIZADA' | 'RECHAZADA';
 
 interface CrearFacturaParams {
-  ordenId: number;
-  clienteId: number;
+  ordenUuid: string;
+  clienteUuid: string;
 }
 
 export function useFacturaService() {
@@ -17,7 +17,7 @@ export function useFacturaService() {
     const [orden] = await db
       .select()
       .from(Orden)
-      .where(eq(Orden.id, params.ordenId))
+      .where(eq(Orden.uuid, params.ordenUuid))
       .limit(1);
 
     if (!orden) throw new Error('Orden no encontrada');
@@ -25,7 +25,7 @@ export function useFacturaService() {
     const [cliente] = await db
       .select()
       .from(Cliente)
-      .where(eq(Cliente.id, params.clienteId))
+      .where(eq(Cliente.uuid, params.clienteUuid))
       .limit(1);
 
     if (!cliente) throw new Error('Cliente no encontrado');
@@ -39,8 +39,8 @@ export function useFacturaService() {
       uuid,
       numeroFactura,
       claveAcceso,
-      clienteId: params.clienteId,
-      ordenId: params.ordenId,
+      clienteUuid: params.clienteUuid,
+      ordenUuid: params.ordenUuid,
       fechaEmision: now,
       subtotal0: 0,
       subtotalIva: orden.subtotal,
@@ -56,36 +56,36 @@ export function useFacturaService() {
     return result.lastInsertRowId;
   };
 
-  const obtenerFacturaPorId = async (facturaId: number) => {
+  const obtenerFacturaPorUuid = async (facturaUuid: string) => {
     const [factura] = await db
       .select()
       .from(Factura)
-      .where(eq(Factura.id, facturaId))
+      .where(eq(Factura.uuid, facturaUuid))
       .limit(1);
     return factura || null;
   };
 
-  const obtenerFacturasPorOrden = async (ordenId: number) => {
+  const obtenerFacturasPorOrden = async (ordenUuid: string) => {
     return db
       .select()
       .from(Factura)
-      .where(eq(Factura.ordenId, ordenId));
+      .where(eq(Factura.ordenUuid, ordenUuid));
   };
 
-  const obtenerFacturasPorCliente = async (clienteId: number) => {
+  const obtenerFacturasPorCliente = async (clienteUuid: string) => {
     return db
       .select()
       .from(Factura)
-      .where(eq(Factura.clienteId, clienteId))
+      .where(eq(Factura.clienteUuid, clienteUuid))
       .orderBy(asc(Factura.fechaEmision));
   };
 
-  const actualizarEstadoSri = async (facturaId: number, estado: EstadoSri) => {
+  const actualizarEstadoSri = async (facturaUuid: string, estado: EstadoSri) => {
     const now = new Date().toISOString();
     await db
       .update(Factura)
       .set({ estadoSri: estado, updatedAt: now })
-      .where(eq(Factura.id, facturaId));
+      .where(eq(Factura.uuid, facturaUuid));
   };
 
   const generarNumeroFactura = async (): Promise<string> => {
@@ -115,7 +115,7 @@ export function useFacturaService() {
 
   return {
     crearFactura,
-    obtenerFacturaPorId,
+    obtenerFacturaPorUuid,
     obtenerFacturasPorOrden,
     obtenerFacturasPorCliente,
     actualizarEstadoSri,

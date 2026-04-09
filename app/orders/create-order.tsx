@@ -110,9 +110,9 @@ const CreateOrder = ({
         <CText type="subtitle" style={{flex:1, textAlign:"right", color:"white", paddingHorizontal:10}}>Total: ${getTotal().toFixed(2)}</CText>
       </CView>
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
-        <FlatList<Product>
-          data={[]}
-          renderItem={({item}) => <ItemOrderSelected singleProduct={item} removeItem={()=>deleteItemSelected(item)} /> }
+        <FlatList<any>
+          data={items || []}
+          renderItem={({item}) => <ItemOrderSelected singleProduct={item} removeItem={(productoUuid)=>removeItem(productoUuid)} /> }
           keyExtractor={item => item.uuid}
           style={{height:"100%", width:"100%"}}
         />

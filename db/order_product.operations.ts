@@ -4,7 +4,12 @@ import { OrdenProducto } from "@/interfaces/order_product";
 import * as SQLite from 'expo-sqlite';
 
 // Types
-type CreateOrderProductInput = Omit<OrdenProducto, 'id_orden_producto' | 'uuid'> & { uuid?: string };
+type CreateOrderProductInput = Omit<OrdenProducto, 'uuid'> & {
+    uuid?: string;
+    id_orden: number;
+    id_producto: number;
+    id_negocio?: string | null;
+};
 type UpdateOrderProductInput = Partial<OrdenProducto> & { id_orden: number; id_producto: number };
 type OrdenProductoJoinOrder = OrdenProducto & Product
 

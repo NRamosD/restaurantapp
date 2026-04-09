@@ -15,7 +15,7 @@ interface CrearClienteParams {
 }
 
 interface ActualizarClienteParams {
-  id: number;
+  uuid: string;
   nombre?: string;
   tipoIdentificacion?: TipoIdentificacion;
   identificacion?: string;
@@ -31,11 +31,11 @@ export function useClienteService() {
     return db.select().from(Cliente).orderBy(asc(Cliente.nombre));
   };
 
-  const obtenerClientePorId = async (clienteId: number) => {
+  const obtenerClientePorUuid = async (clienteUuid: string) => {
     const [cliente] = await db
       .select()
       .from(Cliente)
-      .where(eq(Cliente.id, clienteId))
+      .where(eq(Cliente.uuid, clienteUuid))
       .limit(1);
     return cliente || null;
   };
@@ -92,20 +92,20 @@ export function useClienteService() {
     if (params.telefono !== undefined) updates.telefono = params.telefono;
     if (params.email !== undefined) updates.email = params.email;
 
-    await db.update(Cliente).set(updates).where(eq(Cliente.id, params.id));
+    await db.update(Cliente).set(updates).where(eq(Cliente.uuid, params.uuid));
   };
 
-  const eliminarCliente = async (clienteId: number) => {
+  const eliminarCliente = async (clienteUuid: string) => {
     const now = new Date().toISOString();
     await db
       .update(Cliente)
       .set({ deletedAt: now })
-      .where(eq(Cliente.id, clienteId));
+      .where(eq(Cliente.uuid, clienteUuid));
   };
 
   return {
     obtenerClientes,
-    obtenerClientePorId,
+    obtenerClientePorUuid,
     buscarClientePorIdentificacion,
     buscarClientes,
     crearCliente,

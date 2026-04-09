@@ -7,7 +7,7 @@ export interface SyncResponse {
 
 export interface SyncPayload {
   table: string;
-  id: number;
+  id: string;
   data: Record<string, unknown>;
 }
 

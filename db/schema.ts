@@ -28,7 +28,7 @@ export const Usuario = sqliteTable('Usuario', {
   email: text('email').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
   rol: text('rol').notNull(),
-  perfilNegocioId: integer('perfil_negocio_id').notNull(),
+  perfilNegocioUuid: text('perfil_negocio_uuid').notNull(),
   activo: integer('activo').notNull().default(1),
   createdAt: text('created_at').notNull().default(new Date().toISOString()),
   deletedAt: text('deleted_at'),
@@ -37,7 +37,7 @@ export const Usuario = sqliteTable('Usuario', {
 export const Sesion = sqliteTable('Sesion', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   uuid: text('uuid').notNull().unique(),
-  usuarioId: integer('usuario_id').notNull(),
+  usuarioUuid: text('usuario_uuid').notNull(),
   token: text('token').notNull(),
   expiraEn: text('expira_en').notNull(),
   ultimoLogin: text('ultimo_login').notNull().default(new Date().toISOString()),
@@ -53,15 +53,15 @@ export const Permiso = sqliteTable('Permiso', {
   descripcion: text('descripcion'),
   createdAt: text('created_at').notNull().default(new Date().toISOString()),
   updatedAt: text('updated_at').notNull().default(new Date().toISOString()),
-  updatedBy: integer('updated_by'),
+  updatedByUuid: text('updated_by_uuid'),
   deletedAt: text('deleted_at'),
 });
 
 export const UsuarioPermiso = sqliteTable('UsuarioPermiso', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   uuid: text('uuid').notNull().unique(),
-  usuarioId: integer('usuario_id').notNull(),
-  permisoId: integer('permiso_id').notNull(),
+  usuarioUuid: text('usuario_uuid').notNull(),
+  permisoUuid: text('permiso_uuid').notNull(),
   deletedAt: text('deleted_at'),
 });
 
@@ -93,11 +93,11 @@ export const Producto = sqliteTable('Producto', {
   imagenUrl: text('imagen_url'),
   galeria: text('galeria'),
   estado: text('estado').notNull().default('DISPONIBLE'),
-  perfilNegocioId: integer('perfil_negocio_id').notNull(),
+  perfilNegocioUuid: text('perfil_negocio_uuid').notNull(),
   estadoSync: text('estado_sync').notNull().default('PENDIENTE'),
   createdAt: text('created_at').notNull().default(new Date().toISOString()),
   updatedAt: text('updated_at'),
-  updatedBy: integer('updated_by'),
+  updatedByUuid: text('updated_by_uuid'),
   deletedAt: text('deleted_at'),
 });
 
@@ -109,7 +109,7 @@ export const Componente = sqliteTable('Componente', {
   stockActual: real('stock_actual').notNull().default(0),
   stockMinimo: real('stock_minimo').notNull().default(0),
   costoUnitario: integer('costo_unitario').notNull().default(0),
-  perfilNegocioId: integer('perfil_negocio_id').notNull(),
+  perfilNegocioUuid: text('perfil_negocio_uuid').notNull(),
   createdAt: text('created_at').notNull().default(new Date().toISOString()),
   deletedAt: text('deleted_at'),
 });
@@ -117,13 +117,13 @@ export const Componente = sqliteTable('Componente', {
 export const ProductoComponente = sqliteTable('ProductoComponente', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   uuid: text('uuid').notNull().unique(),
-  productoId: integer('producto_id').notNull(),
-  componenteId: integer('componente_id').notNull(),
+  productoUuid: text('producto_uuid').notNull(),
+  componenteUuid: text('componente_uuid').notNull(),
   cantidad: real('cantidad').notNull().default(1),
   estadoSync: text('estado_sync').default('PENDIENTE'),
   createdAt: text('created_at').notNull().default(new Date().toISOString()),
   updatedAt: text('updated_at').notNull().default(new Date().toISOString()),
-  updatedBy: integer('updated_by'),
+  updatedByUuid: text('updated_by_uuid'),
   deletedAt: text('deleted_at'),
 });
 
@@ -131,8 +131,8 @@ export const Orden = sqliteTable('Orden', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   uuid: text('uuid').notNull().unique(),
   numeroOrden: integer('numero_orden'),
-  clienteId: integer('cliente_id'),
-  usuarioId: integer('usuario_id').notNull(),
+  clienteUuid: text('cliente_uuid'),
+  usuarioUuid: text('usuario_uuid').notNull(),
   tipo: text('tipo').notNull(),
   estado: text('estado').notNull().default('PENDIENTE'),
   estadoSync: text('estado_sync').notNull().default('PENDIENTE'),
@@ -142,15 +142,15 @@ export const Orden = sqliteTable('Orden', {
   observaciones: text('observaciones'),
   createdAt: text('created_at').notNull().default(new Date().toISOString()),
   updatedAt: text('updated_at').notNull().default(new Date().toISOString()),
-  updatedBy: integer('updated_by'),
+  updatedByUuid: text('updated_by_uuid'),
   deletedAt: text('deleted_at'),
 });
 
 export const OrdenProducto = sqliteTable('OrdenProducto', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   uuid: text('uuid').notNull().unique(),
-  ordenId: integer('orden_id').notNull(),
-  productoId: integer('producto_id').notNull(),
+  ordenUuid: text('orden_uuid').notNull(),
+  productoUuid: text('producto_uuid').notNull(),
   cantidad: integer('cantidad').notNull().default(1),
   precioUnitario: integer('precio_unitario').notNull().default(0),
   descuento: integer('descuento').notNull().default(0),
@@ -161,7 +161,7 @@ export const OrdenProducto = sqliteTable('OrdenProducto', {
   notas: text('notas'),
   createdAt: text('created_at').notNull().default(new Date().toISOString()),
   updatedAt: text('updated_at').notNull().default(new Date().toISOString()),
-  updatedBy: integer('updated_by'),
+  updatedByUuid: text('updated_by_uuid'),
   deletedAt: text('deleted_at'),
 });
 
@@ -170,8 +170,8 @@ export const Factura = sqliteTable('Factura', {
   uuid: text('uuid').notNull().unique(),
   numeroFactura: text('numero_factura').notNull().unique(),
   claveAcceso: text('clave_acceso').notNull(),
-  clienteId: integer('cliente_id').notNull(),
-  ordenId: integer('orden_id'),
+  clienteUuid: text('cliente_uuid').notNull(),
+  ordenUuid: text('orden_uuid'),
   fechaEmision: text('fecha_emision').notNull(),
   subtotal0: integer('subtotal_0').notNull().default(0),
   subtotalIva: integer('subtotal_iva').notNull().default(0),
@@ -194,16 +194,16 @@ export const TipoPago = sqliteTable('TipoPago', {
   activo: integer('activo').notNull().default(1),
   createdAt: text('created_at').notNull().default(new Date().toISOString()),
   updatedAt: text('updated_at').notNull().default(new Date().toISOString()),
-  updatedBy: integer('updated_by'),
+  updatedByUuid: text('updated_by_uuid'),
   deletedAt: text('deleted_at'),
 });
 
 export const Pago = sqliteTable('Pago', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   uuid: text('uuid').notNull().unique(),
-  ordenId: integer('orden_id'),
-  facturaId: integer('factura_id'),
-  tipoPagoId: integer('tipo_pago_id').notNull(),
+  ordenUuid: text('orden_uuid'),
+  facturaUuid: text('factura_uuid'),
+  tipoPagoUuid: text('tipo_pago_uuid').notNull(),
   monto: integer('monto').notNull().default(0),
   referencia: text('referencia'),
   estado: text('estado').notNull().default('PENDIENTE'),
@@ -211,7 +211,7 @@ export const Pago = sqliteTable('Pago', {
   fechaPago: text('fecha_pago').notNull().default(new Date().toISOString()),
   createdAt: text('created_at').notNull().default(new Date().toISOString()),
   updatedAt: text('updated_at').notNull().default(new Date().toISOString()),
-  updatedBy: integer('updated_by'),
+  updatedByUuid: text('updated_by_uuid'),
   deletedAt: text('deleted_at'),
 });
 
@@ -220,7 +220,7 @@ export const Plan = sqliteTable('Plan', {
   uuid: text('uuid').notNull().unique(),
   nombre: text('nombre').notNull(),
   activo: integer('activo').notNull().default(1),
-  perfilNegocioId: integer('perfil_negocio_id'),
+  perfilNegocioUuid: text('perfil_negocio_uuid'),
   updatedAt: text('updated_at').notNull().default(new Date().toISOString()),
   deletedAt: text('deleted_at'),
 });
@@ -230,7 +230,7 @@ export const Feature = sqliteTable('Feature', {
   uuid: text('uuid').notNull().unique(),
   nombre: text('nombre').notNull(),
   habilitado: integer('habilitado').notNull().default(1),
-  perfilNegocioId: integer('perfil_negocio_id'),
+  perfilNegocioUuid: text('perfil_negocio_uuid'),
   updatedAt: text('updated_at').notNull().default(new Date().toISOString()),
   deletedAt: text('deleted_at'),
 });
@@ -250,8 +250,8 @@ export const PerfilNegocioRelations = relations(PerfilNegocio, ({ many }) => ({
 
 export const UsuarioRelations = relations(Usuario, ({ one, many }) => ({
   perfilNegocio: one(PerfilNegocio, {
-    fields: [Usuario.perfilNegocioId],
-    references: [PerfilNegocio.id],
+    fields: [Usuario.perfilNegocioUuid],
+    references: [PerfilNegocio.uuid],
   }),
   sesiones: many(Sesion),
   usuarioPermisos: many(UsuarioPermiso),
@@ -260,8 +260,8 @@ export const UsuarioRelations = relations(Usuario, ({ one, many }) => ({
 
 export const SesionRelations = relations(Sesion, ({ one }) => ({
   usuario: one(Usuario, {
-    fields: [Sesion.usuarioId],
-    references: [Usuario.id],
+    fields: [Sesion.usuarioUuid],
+    references: [Usuario.uuid],
   }),
 }));
 
@@ -272,8 +272,8 @@ export const ClienteRelations = relations(Cliente, ({ many }) => ({
 
 export const ProductoRelations = relations(Producto, ({ one, many }) => ({
   perfilNegocio: one(PerfilNegocio, {
-    fields: [Producto.perfilNegocioId],
-    references: [PerfilNegocio.id],
+    fields: [Producto.perfilNegocioUuid],
+    references: [PerfilNegocio.uuid],
   }),
   productoComponentes: many(ProductoComponente),
   ordenProductos: many(OrdenProducto),
@@ -281,31 +281,31 @@ export const ProductoRelations = relations(Producto, ({ one, many }) => ({
 
 export const ComponenteRelations = relations(Componente, ({ one, many }) => ({
   perfilNegocio: one(PerfilNegocio, {
-    fields: [Componente.perfilNegocioId],
-    references: [PerfilNegocio.id],
+    fields: [Componente.perfilNegocioUuid],
+    references: [PerfilNegocio.uuid],
   }),
   productoComponentes: many(ProductoComponente),
 }));
 
 export const ProductoComponenteRelations = relations(ProductoComponente, ({ one }) => ({
   producto: one(Producto, {
-    fields: [ProductoComponente.productoId],
-    references: [Producto.id],
+    fields: [ProductoComponente.productoUuid],
+    references: [Producto.uuid],
   }),
   componente: one(Componente, {
-    fields: [ProductoComponente.componenteId],
-    references: [Componente.id],
+    fields: [ProductoComponente.componenteUuid],
+    references: [Componente.uuid],
   }),
 }));
 
 export const OrdenRelations = relations(Orden, ({ one, many }) => ({
   cliente: one(Cliente, {
-    fields: [Orden.clienteId],
-    references: [Cliente.id],
+    fields: [Orden.clienteUuid],
+    references: [Cliente.uuid],
   }),
   usuario: one(Usuario, {
-    fields: [Orden.usuarioId],
-    references: [Usuario.id],
+    fields: [Orden.usuarioUuid],
+    references: [Usuario.uuid],
   }),
   ordenProductos: many(OrdenProducto),
   facturas: many(Factura),
@@ -314,23 +314,23 @@ export const OrdenRelations = relations(Orden, ({ one, many }) => ({
 
 export const OrdenProductoRelations = relations(OrdenProducto, ({ one }) => ({
   orden: one(Orden, {
-    fields: [OrdenProducto.ordenId],
-    references: [Orden.id],
+    fields: [OrdenProducto.ordenUuid],
+    references: [Orden.uuid],
   }),
   producto: one(Producto, {
-    fields: [OrdenProducto.productoId],
-    references: [Producto.id],
+    fields: [OrdenProducto.productoUuid],
+    references: [Producto.uuid],
   }),
 }));
 
 export const FacturaRelations = relations(Factura, ({ one, many }) => ({
   cliente: one(Cliente, {
-    fields: [Factura.clienteId],
-    references: [Cliente.id],
+    fields: [Factura.clienteUuid],
+    references: [Cliente.uuid],
   }),
   orden: one(Orden, {
-    fields: [Factura.ordenId],
-    references: [Orden.id],
+    fields: [Factura.ordenUuid],
+    references: [Orden.uuid],
   }),
   pagos: many(Pago),
 }));
@@ -341,29 +341,29 @@ export const TipoPagoRelations = relations(TipoPago, ({ many }) => ({
 
 export const PagoRelations = relations(Pago, ({ one }) => ({
   orden: one(Orden, {
-    fields: [Pago.ordenId],
-    references: [Orden.id],
+    fields: [Pago.ordenUuid],
+    references: [Orden.uuid],
   }),
   factura: one(Factura, {
-    fields: [Pago.facturaId],
-    references: [Factura.id],
+    fields: [Pago.facturaUuid],
+    references: [Factura.uuid],
   }),
   tipoPago: one(TipoPago, {
-    fields: [Pago.tipoPagoId],
-    references: [TipoPago.id],
+    fields: [Pago.tipoPagoUuid],
+    references: [TipoPago.uuid],
   }),
 }));
 
 export const PlanRelations = relations(Plan, ({ one }) => ({
   perfilNegocio: one(PerfilNegocio, {
-    fields: [Plan.perfilNegocioId],
-    references: [PerfilNegocio.id],
+    fields: [Plan.perfilNegocioUuid],
+    references: [PerfilNegocio.uuid],
   }),
 }));
 
 export const FeatureRelations = relations(Feature, ({ one }) => ({
   perfilNegocio: one(PerfilNegocio, {
-    fields: [Feature.perfilNegocioId],
-    references: [PerfilNegocio.id],
+    fields: [Feature.perfilNegocioUuid],
+    references: [PerfilNegocio.uuid],
   }),
 }));

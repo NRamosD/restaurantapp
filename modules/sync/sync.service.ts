@@ -1,8 +1,7 @@
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { useDrizzle } from '@/db/db';
-import { Orden, Factura, Pago, Cliente, Producto, OrdenProducto } from '@/db/schema';
-import { mockSyncApi, mockSyncBatch, type SyncPayload } from './api.mock';
-import { syncQueue, type SyncQueueItem } from './syncQueue';
+import { Orden, Factura, Pago, Cliente, Producto } from '@/db/schema';
+import { mockSyncBatch, type SyncPayload } from './api.mock';
 import { useNetworkStatus } from './useNetworkStatus';
 
 export type TablaSincronizable = 'orden' | 'factura' | 'pago' | 'cliente' | 'producto' | 'orden_producto';
@@ -55,25 +54,25 @@ export function useSyncService() {
     };
   };
 
-  const marcarComoSincronizado = async (tabla: TablaSincronizable, ids: number[]) => {
+  const marcarComoSincronizado = async (tabla: TablaSincronizable, uuids: string[]) => {
     const now = new Date().toISOString();
 
-    for (const id of ids) {
+    for (const uuid of uuids) {
       switch (tabla) {
         case 'orden':
-          await db.update(Orden).set({ estadoSync: 'SINCRONIZADO', updatedAt: now }).where(eq(Orden.id, id));
+          await db.update(Orden).set({ estadoSync: 'SINCRONIZADO', updatedAt: now }).where(eq(Orden.uuid, uuid));
           break;
         case 'factura':
-          await db.update(Factura).set({ estadoSync: 'SINCRONIZADO', updatedAt: now }).where(eq(Factura.id, id));
+          await db.update(Factura).set({ estadoSync: 'SINCRONIZADO', updatedAt: now }).where(eq(Factura.uuid, uuid));
           break;
         case 'pago':
-          await db.update(Pago).set({ estadoSync: 'SINCRONIZADO', updatedAt: now }).where(eq(Pago.id, id));
+          await db.update(Pago).set({ estadoSync: 'SINCRONIZADO', updatedAt: now }).where(eq(Pago.uuid, uuid));
           break;
         case 'cliente':
-          await db.update(Cliente).set({ estadoSync: 'SINCRONIZADO', updatedAt: now }).where(eq(Cliente.id, id));
+          await db.update(Cliente).set({ estadoSync: 'SINCRONIZADO', updatedAt: now }).where(eq(Cliente.uuid, uuid));
           break;
         case 'producto':
-          await db.update(Producto).set({ estadoSync: 'SINCRONIZADO', updatedAt: now }).where(eq(Producto.id, id));
+          await db.update(Producto).set({ estadoSync: 'SINCRONIZADO', updatedAt: now }).where(eq(Producto.uuid, uuid));
           break;
       }
     }
@@ -94,7 +93,7 @@ export function useSyncService() {
 
     const payloads: SyncPayload[] = pendientes.map((record) => ({
       table: tabla,
-      id: (record as { id: number }).id,
+      id: (record as { uuid: string }).uuid,
       data: record as Record<string, unknown>,
     }));
 
@@ -102,10 +101,10 @@ export function useSyncService() {
       const response = await mockSyncBatch(payloads);
 
       if (response.success) {
-        const ids = pendientes.map((p) => (p as { id: number }).id);
-        await marcarComoSincronizado(tabla, ids);
-        console.log(`[Sync] ${tabla} sincronizados: ${ids.length}`);
-        return { success: true, sincronizados: ids.length, errores: 0 };
+        const uuids = pendientes.map((p) => (p as { uuid: string }).uuid);
+        await marcarComoSincronizado(tabla, uuids);
+        console.log(`[Sync] ${tabla} sincronizados: ${uuids.length}`);
+        return { success: true, sincronizados: uuids.length, errores: 0 };
       }
 
       return { success: false, sincronizados: 0, errores: pendientes.length };

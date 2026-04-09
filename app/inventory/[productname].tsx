@@ -31,8 +31,8 @@ const DetailedProductScreen = ({
     const [switchIlimitado, setSwitchIlimitado] = useState(false);
     const [image, setImage] = useState<string>("");
 
-    const [formData, setFormData] = useState<Omit<Product, 'id_producto' | 'uuid' | 'fecha_creacion'>>({
-        id_perfil: 1, 
+    const [formData, setFormData] = useState<Omit<Product, 'id_producto' | 'uuid'>>({
+        perfilNegocioUuid: 'TEMP_PERFIL_NEGOCIO_UUID', 
         nombre: '',
         descripcion: '',
         precio: 0,

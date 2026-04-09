@@ -1,6 +1,7 @@
 import { Text, type TextProps, StyleSheet, TextStyle } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { TYPE_CTEXT, enum_TYPETEXT } from '@/constants/const';
+import { useAppTheme } from '@/theme';
 
 const TEXT_STYLES: Record<string, TextStyle> = {
   default: {
@@ -26,7 +27,6 @@ const TEXT_STYLES: Record<string, TextStyle> = {
   link: {
     fontSize: 16,
     lineHeight: 24,
-    color: '#0a7ea4',
     textDecorationLine: 'underline',
   },
 };
@@ -44,13 +44,16 @@ export function CText({
   type = enum_TYPETEXT.default,
   ...rest
 }: CTextProps) {
+  const theme = useAppTheme();
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
-  const typeStyle = TEXT_STYLES[type] || TEXT_STYLES.default;
+  const typeStyle = type === enum_TYPETEXT.link
+    ? { ...TEXT_STYLES.link, color: theme.colors.text.link }
+    : TEXT_STYLES[type] || TEXT_STYLES.default;
 
   return (
     <Text
       style={[
-        { color },  // siempre puedes sobreescribir este con `style`
+        { color },
         typeStyle,
         style,
       ]}

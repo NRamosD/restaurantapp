@@ -1,30 +1,33 @@
 import React from 'react'
-import { StyleProp, StyleSheet, TouchableOpacity, type TouchableOpacityProps , useColorScheme, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, TextStyle, TouchableOpacity, type TouchableOpacityProps, ViewStyle } from 'react-native';
 import { CText } from './CText';
-import { Colors, getColors } from '@/constants/Colors';
+import { useAppTheme } from '@/theme';
 
 type Props =  TouchableOpacityProps & {
     title?: string;
     containerStyles?: StyleProp<ViewStyle>,
-    textStyles?: any,
+    textStyles?: StyleProp<TextStyle>,
+    variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
 }
 
 const CButton = ({
     title="Default Title",
     containerStyles,
     textStyles,
+    variant='primary',
     ...rest
 }: Props) => {
-    const color = useColorScheme()
+    const theme = useAppTheme()
+    const buttonTheme = theme.components.button[variant]
     return (
     <TouchableOpacity 
     {...rest}
     style={[
         styles.container,
-        {backgroundColor: getColors(color).tint},
+        { backgroundColor: buttonTheme.backgroundColor, borderColor: buttonTheme.borderColor },
         containerStyles,
     ]}>
-        <CText type={"title"} style={[styles.textBtn,textStyles,{color: getColors(color).text}]}>{title}</CText>
+        <CText type={"title"} style={[styles.textBtn, { color: buttonTheme.textColor }, textStyles]}>{title}</CText>
     </TouchableOpacity>
   )
 }
@@ -34,9 +37,9 @@ const styles = StyleSheet.create({
         width:"100%",
         paddingVertical: 5,
         paddingHorizontal: 5,
+        borderWidth: 1,
     },
     textBtn: {
-        color:"black",
         textAlign:"center"
     }
 })

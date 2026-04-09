@@ -1,10 +1,12 @@
 import React from 'react'
-import { StyleProp, StyleSheet, TextStyle, useColorScheme } from 'react-native';
+import { StyleProp, TextStyle } from 'react-native';
 import { TextInput, TextInputProps } from 'react-native-paper';
+import { useAppTheme } from '@/theme';
 
 
 type Props =  TextInputProps & {
     label:string;
+
     optionText?: "text" | "number"
     fontSize?:number
     style?: StyleProp<TextStyle>
@@ -17,24 +19,21 @@ const CInputText = ({
     style,
     ...rest
 }: Props) => {
-    const theme = useColorScheme()
+    const theme = useAppTheme()
 
     return (
-        // <TextInput 
-        // {...rest}
-        // style={[
-        //     styles.container,
-        //     containerStyles,
-        // ]}/>
         <TextInput
             {...rest}
-            style={[style,{ fontSize:fontSize||15, marginVertical:10}]}
+            style={[style,{ fontSize:fontSize||15, marginVertical:10, backgroundColor: theme.components.input.backgroundColor }]}
             label={label}
             mode="outlined"
             theme={{
                 colors: {
-                    primary: theme === "dark" ? "white" : "black", // Color del borde cuando tiene focus
-                    outline: "#CFAE70", // Borde cuando no tiene focus
+                    primary: theme.components.input.activeBorderColor,
+                    outline: theme.components.input.borderColor,
+                    onSurfaceVariant: theme.components.input.labelColor,
+                    onSurface: theme.components.input.textColor,
+                    surface: theme.components.input.backgroundColor,
                 },
             }}
             onKeyPress={(e:any)=>{

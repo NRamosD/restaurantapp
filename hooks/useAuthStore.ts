@@ -3,10 +3,10 @@ import { persist } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface User {
-  id: string;
+  uuid: string;
   name: string;
   email: string;
-  negocio_id: string;
+  perfilNegocioUuid: string;
 }
 
 interface AuthState {
@@ -28,13 +28,13 @@ export const useAuthStore = create<AuthState>()(
 
         try {
           const user: User = {
-            id: userData.id,
+            uuid: userData.uuid,
             name: userData.name,
             email: userData.email,
-            negocio_id: userData.negocio_id,
+            perfilNegocioUuid: userData.perfilNegocioUuid,
           };
 
-          set({ user, token: userData.id, isLoading: false });
+          set({ user, token: userData.uuid, isLoading: false });
 
           return { status: "success" };
         } catch (error) {

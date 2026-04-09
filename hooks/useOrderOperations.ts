@@ -12,7 +12,7 @@ type Props = {}
 const useOrderOperations = ({
     
 }: Props) => {
-    const { obtenerOrdenPorId } = useOrdenService()
+    const { obtenerOrdenPorUuid } = useOrdenService()
 
     const {
         items,
@@ -30,8 +30,8 @@ const useOrderOperations = ({
     // }
 
 
-    const loadOrderData = async(id_orden:number)=>{
-        const resultOrder = await obtenerOrdenPorId(id_orden)
+    const loadOrderData = async(ordenUuid: string)=>{
+        const resultOrder = await obtenerOrdenPorUuid(ordenUuid)
         console.log({resultOrder})
         console.log(resultOrder?.ordenProductos)
         resultOrder?.ordenProductos?.forEach((item) => {

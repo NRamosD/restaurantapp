@@ -47,7 +47,7 @@ export interface ProductOld {
   orden?: number;               // Para orden personalizado
   fechaCreacion: Date|string;
   fechaActualizacion?: Date|string;
-  usuarioCreadorId?: number;
+  usuarioCreadorUuid?: string;
 
   // Comerciales
   ivaIncluido?: boolean;
@@ -57,18 +57,16 @@ export interface ProductOld {
   envioGratis?: boolean;
   tiempoEntrega?: string;       // Ej: "3-5 días"
 
-
   // Relaciones
-  relacionados?: number[];      // IDs de productos relacionados
+  relacionados?: string[];
 }
 
 
-
 export interface Product {
-  id_producto: number;
+  id_producto?: number;
   uuid: string;
-  id_perfil: number;
-  id_negocio?: string;
+  perfilNegocioUuid: string;
+  negocioUuid?: string;
   nombre: string;
   descripcion?: string | null;
   imagen?: string | null;
