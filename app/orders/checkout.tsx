@@ -15,6 +15,7 @@ import { useLocalSearchParams } from 'expo-router'
 import useOrderOperations from '@/hooks/useOrderOperations'
 import GenericModal from '@/components/ui/GenericModal'
 import ShareCheckout from './share-checkout'
+import { useOrdenService } from '@/modules'
 
 
 
@@ -28,6 +29,7 @@ const CheckoutOrder = ({
 
   const [opendModalTextualOrder, setOpendedModalTextualOrder] = useState(false)
   const [toShare, setToShare] = useState(false)
+  
 
   const {
     items,
@@ -37,31 +39,31 @@ const CheckoutOrder = ({
   } = useOrderStore();
 
   const {
-    createOrderProcess,
-    updateOrderProcess,
     loadOrderData
   } = useOrderOperations({})
   
-  const decideHowToProccess = async () => {
-    if(!!id_orden){
-      await updateOrderProcess({
-        id_orden: Number(id_orden),
-        total:getTotal(),
-        estado:"pagado"
-      })
-    }else{
-      await createOrderProcess({
-        total:getTotal(),
-        estado:"pagado"
-      })
-    }
-  }
+  // const decideHowToProccess = async () => {
+  //   if(!!id_orden){
+  //     await updateOrderProcess({
+  //       id_orden: Number(id_orden),
+  //       total:getTotal(),
+  //       estado:"pagado"
+  //     })
+  //   }else{
+  //     await createOrderProcess({
+  //       total:getTotal(),
+  //       estado:"pagado"
+  //     })
+  //   }
+  // }
 
   useEffect(()=>{
-    if(review_order=="1"){
-      loadOrderData(Number(id_orden))
-    }
-  },[review_order])
+    loadOrderData(Number(id_orden))
+  },[])
+
+  useEffect(()=>{
+    console.log({"items in checkout": items})
+  },[items])
 
   
 
@@ -74,8 +76,8 @@ const CheckoutOrder = ({
         <CText type="title" style={{ textAlign:"center"}}>Resumen de la Orden</CText>
       </CView>
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
-        <FlatList<Product>
-          data={items}
+        <FlatList<any>
+          data={items as any || []}
           renderItem={({item}) => <ItemOrderSelected singleProduct={item} removeItem={()=>removeItem(item.uuid)} justShow /> }
           keyExtractor={item => item.uuid}
           style={{height:"100%", width:"100%"}}
@@ -108,11 +110,11 @@ const CheckoutOrder = ({
             </CView>
             :
             <>
-              <CButton onPress={async()=>{
+              {/* <CButton onPress={async()=>{
                 await decideHowToProccess()
                 clearOrder()
                 router.push({pathname:"/orders/final-status-checkout"})
-              }} title={"Facturar"} containerStyles={styles.touchableCreate}/>
+              }} title={"Facturar"} containerStyles={styles.touchableCreate}/> */}
               <CView style={{flex:1, flexDirection:"row", gap:10, backgroundColor:"#1c1c1c"}}>
                 <CButton onPress={()=>{
                   // clearOrder()
@@ -125,7 +127,7 @@ const CheckoutOrder = ({
             </>
           }
       </CView>
-      <GenericModal
+      {/* <GenericModal
         showModal={opendModalTextualOrder}
         setShowModal={setOpendedModalTextualOrder}
         showConfirmButton={false}
@@ -137,15 +139,15 @@ const CheckoutOrder = ({
             items.map((item, index)=>{
               return(
                 <CView key={index} style={{paddingVertical:10}}>
-                  <CText style={{fontSize:20}}>● {item.quantity} {item.nombre} 
-                    {item.notes?` considerando: ${item.notes}`:``}</CText>
+                  <CText style={{fontSize:20}}>● {item.cantidad} {item.nombre} 
+                    {item.observaciones?` considerando: ${item.observaciones}`:``}</CText>
                 </CView>
               )
             })
           }
         </>}
         withButton={false}
-      />
+      /> */}
       {
         toShare && (
           <ShareCheckout toShare={toShare} setToShare={setToShare}/>

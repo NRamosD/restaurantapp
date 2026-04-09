@@ -2,18 +2,23 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Product } from '@/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { OrdenProducto, Producto } from '@/interfaces/general.interface';
 
-export interface OrderItem extends Product {
-  quantity: number;
-  notes?: string;
+// export interface OrderItem extends Product {
+//   cantidad: number;
+//   observaciones?: string;
+//   ordenProductos?: OrdenProducto & { producto: Producto }; 
+// }
+export interface OrderItem extends OrdenProducto {
+  producto: Producto;
 }
 
 interface OrderState {
-  items: OrderItem[];
-  addItem: (product: Product & { quantity?: number, notes?: string }) => void;
+  items: any[];
+  addItem: (item: any) => void;
   removeItem: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
-  updateNotes: (productId: string, notes: string) => void;
+  updateQuantity: (productId: string, cantidad: number) => void;
+  updateNotes: (productId: string, observaciones: string) => void;
   clearOrder: () => void;
   getTotal: () => number;
   getItemCount: () => number;
@@ -26,22 +31,22 @@ const useOrderStore = create<OrderState>()(
     (set, get) => ({
       items: [],
       
-      addItem: (product) =>
+      addItem: (producto) =>
         set((state) => {
-          const existingItem = state.items.find(item => item.uuid === product.uuid);
+          const existingItem = state.items.find(item => item.uuid === producto.uuid);
           
           if (existingItem) {
             return {
               items: state.items.map(item =>
-                item.uuid === product.uuid
-                  ? { ...item, quantity: item.quantity + 1 }
+                item.uuid === producto.uuid
+                  ? { ...item, cantidad: item.cantidad + 1 }
                   : item
               ),
             };
           }
           
           return {
-            items: [...state.items, { ...product, quantity: product.quantity || 1 }],
+            items: [...state.items, { ...producto, cantidad: producto.cantidad || 1 }],
           };
         }),
       
@@ -50,17 +55,17 @@ const useOrderStore = create<OrderState>()(
           items: state.items.filter((item) => item.uuid !== productId),
         })),
       
-      updateQuantity: (productId, quantity) =>
+      updateQuantity: (productId, cantidad) =>
         set((state) => ({
           items: state.items.map((item) =>
-            item.uuid === productId ? { ...item, quantity } : item
+            item.uuid === productId ? { ...item, cantidad } : item
           ),
         })),
       
-      updateNotes: (productId, notes) =>
+      updateNotes: (productId, observaciones) =>
         set((state) => ({
           items: state.items.map((item) =>
-            item.uuid === productId ? { ...item, notes } : item
+            item.uuid === productId ? { ...item, observaciones } : item
           ),
         })),
       
@@ -69,18 +74,18 @@ const useOrderStore = create<OrderState>()(
       
       clearOrder: () => set({ items: [] }),
       
-      getTotal: () =>
-        get().items.reduce(
-          //se puede analizar si se usa el precio total con iva o el precio normal
-          (total, item) => total + item.precio * item.quantity,
-          0
-        ),
+      getTotal: () => 0,
+        // get().items.reduce(
+        //   //se puede analizar si se usa el precio total con iva o el precio normal
+        //   (total, item) => total + item.precio * item.cantidad,
+        //   0
+        // ),
       
       getItemCount: () =>
-        get().items.reduce((count, item) => count + item.quantity, 0),
+        get().items.reduce((count, item) => count + item.cantidad, 0),
 
       getQuantity: (productId) =>
-        get().items.find(item => item.uuid === productId)?.quantity || 0,
+        get().items.find(item => item.uuid === productId)?.cantidad || 0,
     }),
     {
       name: 'order-storage',

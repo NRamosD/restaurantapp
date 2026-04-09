@@ -6,7 +6,7 @@ import { Image, ImageBackground, StyleSheet, TouchableOpacity } from 'react-nati
 
 type Props = {
     singleProduct: Product
-    touchAction?: (product:Product)=>void
+    touchAction?: (producto:Product)=>void
 }
 
 const ItemOrderOptionSquare = ({

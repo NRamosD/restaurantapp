@@ -11,7 +11,7 @@ import { Product } from '@/interfaces'
 import { v4 as uuidv4 } from 'uuid';
 import ItemOrderOptionSquare from '@/components/orders/ItemOrderOptionSquare'
 import { useSQLiteContext } from 'expo-sqlite'
-import { getAllProducts } from '@/db/product.operations'
+// import { getAllProducts } from '@/db/producto.operations'
 import useOrderStore from '@/hooks/useOrderStore'
 import useOrderOperations from '@/hooks/useOrderOperations'
 
@@ -46,16 +46,16 @@ const CreateOrder = ({
     getTotal,
   } = useOrderStore();
 
-  const {
-    createOrderProcess,
-    updateOrderProcess
-  } = useOrderOperations({})
+  // const {
+  //   createOrderProcess,
+  //   updateOrderProcess
+  // } = useOrderOperations({})
   
 
   const addProductToOrder = (item:Product & {
-    quantity?:number
+    cantidad?:number
   }) => {
-    addItem(item)
+    // addItem([])
     setTextSearchedItem("")
   }
 
@@ -64,24 +64,24 @@ const CreateOrder = ({
   }
 
   const decideHowToProccess = async () => {
-    if(!!id_orden){
-      await updateOrderProcess({
-        id_orden: Number(id_orden),
-        total:getTotal(),
-      })
-    }else{
-      await createOrderProcess({
-        total:getTotal(),
-      })
-    }
+    // if(!!id_orden){
+    //   await updateOrderProcess({
+    //     id_orden: Number(id_orden),
+    //     total:getTotal(),
+    //   })
+    // }else{
+    //   await createOrderProcess({
+    //     total:getTotal(),
+    //   })
+    // }
   }
 
   useEffect(() => {
     
     (async () => {
-      const result = await getAllProducts(dbConnection)
-      setDataProducts(result)
-      setProductsList(result)
+      const result:any = []//await getAllProducts(dbConnection)
+      setDataProducts(result as any)
+      setProductsList(result as any)
     })()
 
 
@@ -111,7 +111,7 @@ const CreateOrder = ({
       </CView>
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
         <FlatList<Product>
-          data={items}
+          data={[]}
           renderItem={({item}) => <ItemOrderSelected singleProduct={item} removeItem={()=>deleteItemSelected(item)} /> }
           keyExtractor={item => item.uuid}
           style={{height:"100%", width:"100%"}}

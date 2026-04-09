@@ -23,6 +23,7 @@ import CInputText from '@/components/CInputText';
 import { useSQLiteContext } from 'expo-sqlite';
 import { getOrdersByDate, getOrdersGroupedByDayStats } from '@/db/order.operations';
 import { useIsFocused } from '@react-navigation/native';
+import { useOrdenService } from '@/modules';
 
 
 
@@ -40,7 +41,7 @@ export default function TabTwoScreen() {
     date: false,
   });
   const [refreshing, setRefreshing] = useState(false);
-  const [date, setDate] = useState(new Date());
+  const [dateFilter, setDateFilter] = useState(new Date());
 
 
   
@@ -57,14 +58,14 @@ export default function TabTwoScreen() {
   const onChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate;
     setShow(false);
-    setDate(currentDate);
+    setDateFilter(currentDate);
   };
 
   const showMode = (currentMode: any) => {
     DateTimePickerAndroid.open({
-      value: date,
-      onChange: (event, date) => {
-        setDate(date!);
+      value: dateFilter,
+      onChange: (_event, date) => {
+        setDateFilter(date!);
         const dateSelected = dayjs(date).format("dddd, D [de] MMMM [de] YYYY")?.toUpperCase()
         const pickedOrders = sectionListDataByDate.filter((item: any) => item.title === dateSelected)
         setAuxSectionListDataByDate(pickedOrders)
@@ -85,23 +86,19 @@ export default function TabTwoScreen() {
     showMode('date');
   };
 
-  const showTimepicker = () => {
-    showMode('time');
-  };
+  // const showTimepicker = () => {
+  //   showMode('time');
+  // };
+  const { obtenerOrdenesPorFecha } = useOrdenService();
 
   const getOrdersByDay = async () => {
-    // const startDate = dayjs().subtract(30, "day").format("YYYY-MM-DD")
-    
-    // const stats = await getOrdersGroupedByDayStats(dbConnection, 1);
-    // console.log({stats})
-    
-    // const orders = await getOrdersByDate(dbConnection, 1, "month", startDate, endDate);
-    
     let startDate = dayjs().subtract(30, "day").format("YYYY-MM-DD")
     const endDate = dayjs().add(5, "hours").format("YYYY-MM-DD")
     let contentSection = []
     while (startDate <= endDate) {
-      const ordersByDate = await getOrdersByDate(dbConnection, 1, "day", startDate);
+      console.log("startDate", startDate)
+      const ordersByDate = await obtenerOrdenesPorFecha(startDate);
+      console.log("ordersByDate", ordersByDate)
       if(ordersByDate.length > 0){
         const dataWithLocalDate = ordersByDate.map((order: any) => {
           return {
@@ -109,15 +106,13 @@ export default function TabTwoScreen() {
             fecha: dayjs.utc(order.fecha).local()
           }
         })
-        contentSection.push({title: dayjs.utc(startDate).local().format("dddd, D [de] MMMM [de] YYYY")?.toUpperCase()  , data: dataWithLocalDate})
+        contentSection.push({title: dayjs(startDate).local().format("dddd, D [de] MMMM [de] YYYY")?.toUpperCase()  , data: dataWithLocalDate})
       }
       startDate = dayjs(startDate).add(1, "day").format("YYYY-MM-DD")
     }
-    // console.log({contentSection})
-
+    console.log("contentSection",contentSection)
     setSectionListDataByDate(contentSection)
     setAuxSectionListDataByDate(contentSection)
-    // console.log({orders})
   };
 
   const onRefresh = async () => {

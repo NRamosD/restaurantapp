@@ -12,7 +12,7 @@ export default function InventoryLayout() {
       headerStyle:{backgroundColor:getColors(color).tint,},
       headerTitleStyle:{color:getColors(color).text},
     }}/>
-    <Stack.Screen name='create-product' options={{headerShown:false}}/>
+    <Stack.Screen name='create-producto' options={{headerShown:false}}/>
     <Stack.Screen name='top-sellers' options={{ headerShown:false }}/>
   </Stack>;
 }

@@ -6,13 +6,14 @@ import { Ionicons } from '@expo/vector-icons'
 import AddReduceButton from '../ui/AddReduceButton'
 import useOrderStore from '@/hooks/useOrderStore'
 import GenericModal from '../ui/GenericModal'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import CInputText from '../CInputText'
 import { useColorScheme } from '@/hooks/useColorScheme'
+import { OrdenProducto, Producto } from '@/interfaces/general.interface'
 
 type Props = {
-    singleProduct: Product
-    removeItem?: (product:Product)=>void,
+    singleProduct: { producto: Producto } & OrdenProducto,
+    removeItem?: (producto:Product)=>void,
     justShow?: boolean
 }
 
@@ -31,8 +32,11 @@ const ItemOrderSelected = ({
     updateNotes,
     getItem
   } = useOrderStore()
-  let notes = getItem(singleProduct.uuid)?.notes
+  let notas = getItem(singleProduct.uuid)?.notas || ""
   // console.log({singleProduct})
+  useEffect(()=>{
+    console.log({singleProduct})
+  },[])
 
   return (
     <>
@@ -41,18 +45,18 @@ const ItemOrderSelected = ({
         style={style.container}>
             <CView style={{flex:8}}>
               <CText style={style.nameProduct}>
-              {singleProduct.nombre}
+              {singleProduct?.producto.nombre}
               </CText>
               {
-                getItem(singleProduct.uuid)?.notes ?
+                getItem(singleProduct.uuid)?.notas ?
                 <CView style={{flex:1, paddingVertical:10}}>
                   <TouchableOpacity style={{flexDirection:"row", gap:5, alignItems:"center"}} 
                   onPress={()=>{
-                    setDetailProduct(getItem(singleProduct.uuid)?.notes||"")
+                    setDetailProduct(getItem(singleProduct.uuid)?.notas||"")
                     setopenModal(true)
                   }}>
                     <Ionicons name={"eye"} size={20} color={theme === "dark" ? "white" : "black"}/>
-                    <CText style={{fontSize:17}}>{notes?.substring(0, 30)}{((notes && notes?.length>30)) && "..."}</CText>
+                    <CText style={{fontSize:17}}>{notas?.substring(0, 30)}{((notas && notas?.length>30)) && "..."}</CText>
                   </TouchableOpacity>
                 </CView>
                 :
@@ -70,16 +74,16 @@ const ItemOrderSelected = ({
                 </CView>
               }
               <CView style={{flex:1}}>
-                <CText>Por unidad: <CText style={{fontWeight:900, fontSize:17}}>${singleProduct.precio?.toFixed(2)}</CText></CText>
-                <CText style={{textAlign:"left"}}>Subtotal: <CText style={{fontWeight:900, fontSize:17}}>${(singleProduct.precio*getQuantity(singleProduct.uuid)).toFixed(2)}</CText></CText>
+                <CText>Por unidad: <CText style={{fontWeight:900, fontSize:17}}>${singleProduct?.producto.precio?.toFixed(2)}</CText></CText>
+                <CText style={{textAlign:"left"}}>Subtotal: <CText style={{fontWeight:900, fontSize:17}}>${(singleProduct?.producto.precio*getQuantity(singleProduct?.producto.uuid)).toFixed(2)}</CText></CText>
               </CView>
             </CView>
             <CView style={{flex:3}}>
-              {justShow ? null : <TouchableOpacity style={{flex:1, alignItems:"flex-end"}} onPress={()=>{removeItem && removeItem(singleProduct)}}>
+              {justShow ? null : <TouchableOpacity style={{flex:1, alignItems:"flex-end"}} onPress={()=>{removeItem && removeItem(singleProduct?.producto)}}>
                   <Ionicons name={"trash"} size={30} color={"red"} />
               </TouchableOpacity>}
               {justShow ? null : <CView style={{flex:1}}>
-                <AddReduceButton item={singleProduct}/>
+                <AddReduceButton item={singleProduct?.producto}/>
               </CView>}
             </CView>
         </CView>

@@ -8,12 +8,12 @@ import CImage from '../CImage'
 import { mostSellsProduct } from '@/app/inventory/top-sellers'
 
 type Props = {
-    product:mostSellsProduct;
+    producto:mostSellsProduct;
     position:number;
 }
 
 const DetailTopSeller = ({
-    product,
+    producto,
     position
 }: Props) => {
 
@@ -26,22 +26,22 @@ const DetailTopSeller = ({
         </CView>
         <CView style={{flex:4}}>
             <CImage style={style.imgProduct} 
-              src={product.imagen_url}
+              src={producto.imagen_url}
             />
         </CView>
         <CView style={style.containerDataProduct}>
             <CView>
-                <CText style={{fontWeight:"bold"}}>{product.nombre || "Nombre del producto"}</CText>
-                <CText style={{fontWeight:900, fontSize:20, paddingVertical:5}}>${product.ingreso_total.toFixed(2) || "Ingresos"}</CText>
+                <CText style={{fontWeight:"bold"}}>{producto.nombre || "Nombre del producto"}</CText>
+                <CText style={{fontWeight:900, fontSize:20, paddingVertical:5}}>${producto.ingreso_total.toFixed(2) || "Ingresos"}</CText>
             </CView>
             <Divider/>
             <CView style={style.containerStockSold}>
                 <CView style={style.containerStockSoldItem1}>
-                    <CText style={{fontWeight:"bold"}}>{product.cantidad_total || "28"}</CText>
+                    <CText style={{fontWeight:"bold"}}>{producto.cantidad_total || "28"}</CText>
                     <CText style={{fontSize:12}}>Cantidad Vendida</CText>
                 </CView>
                 <CView style={style.containerStockSoldItem2}>
-                    <CText style={{fontWeight:"bold"}}>{product.veces_vendido || "28"}</CText>
+                    <CText style={{fontWeight:"bold"}}>{producto.veces_vendido || "28"}</CText>
                     <CText style={{fontSize:12}}>Órdenes</CText>
                 </CView>
             </CView>

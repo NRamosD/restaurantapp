@@ -10,7 +10,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Switch, TextInput } from 'react-native-paper'
 import { Picker } from '@react-native-picker/picker'
 import { useSQLiteContext } from 'expo-sqlite'
-import { getProductByUuid, getProducts, updateProduct } from '@/db/product.operations'
+// import { getProductByUuid, getProducts, updateProduct } from '@/db/producto.operations'
 import { Product } from '@/interfaces'
 import CImage from '@/components/CImage'
 import { useIsFocused } from '@react-navigation/native';
@@ -101,10 +101,10 @@ const DetailedProductScreen = ({
     };
 
     const handleSaveProduct = async() => {
-        await updateProduct(db, {
-            ...formData,
-            id_producto: currentProduct?.id_producto || 0
-        })
+        // await updateProduct(db, {
+        //     ...formData,
+        //     id_producto: currentProduct?.id_producto || 0
+        // })
         router.dismissTo("/")
     };
     
@@ -118,16 +118,16 @@ const DetailedProductScreen = ({
     }, [formData.precio, formData.descuento]);
 
     async function setup() {
-        const result = await getProductByUuid(
-            db, 
-            productname?.toString()?.slice(1, productname?.length)
-        );
-        console.log(result);
-        if(result){
-            setCurrentProduct(result);
-            setImage(result?.imagen_url || "");
-            setFormData(result);
-        }
+        // const result = await getProductByUuid(
+        //     db, 
+        //     productname?.toString()?.slice(1, productname?.length)
+        // );
+        // console.log(result);
+        // if(result){
+        //     setCurrentProduct(result);
+        //     setImage(result?.imagen_url || "");
+        //     setFormData(result);
+        // }
     }
     useEffect(() => {
         setup();

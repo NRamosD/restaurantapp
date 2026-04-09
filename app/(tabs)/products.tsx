@@ -6,7 +6,7 @@ import { CText } from '@/components/CText';
 import { Product } from "@/interfaces/products";
 import ItemMenuSquareDetails from '@/components/orders/ItemMenuSquareDetails';
 import { useSQLiteContext } from 'expo-sqlite';
-import { getProducts } from '@/db/product.operations';
+// import { getProducts } from '@/db/producto.operations';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -23,8 +23,8 @@ export default function TabTwoScreen() {
   const [products, setProducts] = useState<Product[]>([]);
 
   const fetchProducts = async () => {
-    const products = await getProducts(db);
-    setProducts(products);
+    const products = {}//await getProducts(db);
+    setProducts(products as any);
   };
 
   useEffect(() => {

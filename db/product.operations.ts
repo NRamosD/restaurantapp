@@ -25,12 +25,12 @@ type ProductFilter = {
 // Crear un nuevo producto
 export const createProduct = async (
     db: SQLite.SQLiteDatabase,
-    product: CreateProductInput
+    producto: CreateProductInput
 ): Promise<number> => {
-    const precio_total = product.precio_total ?? 
-        (product.precio && product.iva ? 
-            product.precio * (1 + (product.iva / 100)) : 
-            product.precio);
+    const precio_total = producto.precio_total ?? 
+        (producto.precio && producto.iva ? 
+            producto.precio * (1 + (producto.iva / 100)) : 
+            producto.precio);
 
     const result = await db.runAsync(
         `INSERT INTO Producto (
@@ -39,30 +39,30 @@ export const createProduct = async (
             descuento, precio_anterior, envio_gratis, tiempo_entrega, ilimitado
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-            product.uuid || uuid(),
-            product.id_perfil,
-            product.id_negocio||null,
-            product.nombre,
-            product.descripcion ?? null,
-            product.imagen ?? null,
-            product.iva ?? null,
-            product.precio,
+            producto.uuid || uuid(),
+            producto.id_perfil,
+            producto.id_negocio||null,
+            producto.nombre,
+            producto.descripcion ?? null,
+            producto.imagen ?? null,
+            producto.iva ?? null,
+            producto.precio,
             precio_total,
-            product.stock ?? 0,
-            product.estado ?? 'disponible',
-            product.imagen_url ?? null,
-            product.galeria ?? null,
-            product.video_url ?? null,
-            product.codigo_barras ?? null,
-            product.slug ?? null,
-            product.descuento ?? null,
-            product.precio_anterior ?? null,
-            product.envio_gratis ?? 0,
-            product.tiempo_entrega ?? null,
-            product.ilimitado ?? 1
+            producto.stock ?? 0,
+            producto.estado ?? 'disponible',
+            producto.imagen_url ?? null,
+            producto.galeria ?? null,
+            producto.video_url ?? null,
+            producto.codigo_barras ?? null,
+            producto.slug ?? null,
+            producto.descuento ?? null,
+            producto.precio_anterior ?? null,
+            producto.envio_gratis ?? 0,
+            producto.tiempo_entrega ?? null,
+            producto.ilimitado ?? 1
         ]
     );
-    ToastAndroid.show(`${product.nombre} creado exitosamente`, ToastAndroid.LONG);
+    ToastAndroid.show(`${producto.nombre} creado exitosamente`, ToastAndroid.LONG);
     
     return result.lastInsertRowId as number;
 };
@@ -162,39 +162,39 @@ export const getAllProducts = async (
 // Actualizar producto
 export const updateProduct = async (
     db: SQLite.SQLiteDatabase,
-    product: UpdateProductInput
+    producto: UpdateProductInput
 ): Promise<void> => {
-    if (!product.id_producto) {
+    if (!producto.id_producto) {
         throw new Error("❌ El producto debe tener id_producto para actualizar");
     }
 
-    const existingProduct = await getProductById(db, product.id_producto);
+    const existingProduct = await getProductById(db, producto.id_producto);
     if (!existingProduct) {
         throw new Error("❌ No se encontró el producto especificado");
     }
 
     // Recalcular precio_total si se actualiza precio o iva
-    let precio_total = product.precio_total;
-    if (product.precio !== undefined || product.iva !== undefined) {
-        const precio = product.precio ?? existingProduct.precio;
-        const iva = product.iva ?? existingProduct.iva;
+    let precio_total = producto.precio_total;
+    if (producto.precio !== undefined || producto.iva !== undefined) {
+        const precio = producto.precio ?? existingProduct.precio;
+        const iva = producto.iva ?? existingProduct.iva;
         precio_total = iva ? precio * (1 + (iva / 100)) : precio;
     }
 
     const updates: string[] = [];
     const params: (string | number | null)[] = [];
 
-    const fields: Array<keyof typeof product> = [
+    const fields: Array<keyof typeof producto> = [
         'nombre', 'descripcion', 'imagen', 'iva', 'precio', 'precio_total',
         'stock', 'estado', 'imagen_url', 'galeria', 'video_url', 'codigo_barras',
         'slug', 'descuento', 'precio_anterior', 'envio_gratis', 'tiempo_entrega', 'ilimitado'
     ];
 
     fields.forEach(field => {
-        if (field in product && product[field] !== undefined) {
+        if (field in producto && producto[field] !== undefined) {
             updates.push(`${field} = ?`);
             // Ensure we only push string, number, or null values
-            const value = product[field];
+            const value = producto[field];
             if (typeof value === 'string' || typeof value === 'number' || value === null) {
                 params.push(value);
             } else if (typeof value === 'boolean') {
@@ -217,7 +217,7 @@ export const updateProduct = async (
         params.push(precio_total);
     }
 
-    params.push(product.id_producto);
+    params.push(producto.id_producto);
 
     await db.runAsync(
         `UPDATE Producto 
@@ -231,7 +231,7 @@ export const updateProduct = async (
 export const updateProductStock = async (
     db: SQLite.SQLiteDatabase,
     id_producto: number,
-    quantity: number, // Puede ser negativo para reducir el stock
+    cantidad: number, // Puede ser negativo para reducir el stock
     operation: 'add' | 'set' = 'add'
 ): Promise<void> => {
     if (operation === 'add') {
@@ -239,14 +239,14 @@ export const updateProductStock = async (
             `UPDATE Producto 
              SET stock = stock + ? 
              WHERE id_producto = ?`,
-            [quantity, id_producto]
+            [cantidad, id_producto]
         );
     } else {
         await db.runAsync(
             `UPDATE Producto 
              SET stock = ? 
              WHERE id_producto = ?`,
-            [quantity, id_producto]
+            [cantidad, id_producto]
         );
     }
 };

@@ -11,7 +11,7 @@ import { Switch, TextInput } from 'react-native-paper'
 import { Picker } from '@react-native-picker/picker'
 import { useSQLiteContext } from 'expo-sqlite'
 import CImage from '@/components/CImage'
-import { createProduct } from '@/db/product.operations'
+// import { createProduct } from '@/db/producto.operations'
 import { Product } from '@/interfaces'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { Colors, getColors } from '@/constants/Colors'
@@ -98,7 +98,7 @@ const CreateProductScreen = ({}: Props) => {
 
     const handleSaveProduct = async() => {
         // console.log(formData);
-        await createProduct(db, formData)
+        // await createProduct(db, formData)
         router.dismissTo("/")
     };
 

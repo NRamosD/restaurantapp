@@ -1,4 +1,4 @@
-import { eq, asc, desc, and, sql } from 'drizzle-orm';
+import { eq, asc, desc, and, sql, gte, lt } from 'drizzle-orm';
 import { useDrizzle } from '@/db/db';
 import { Orden, OrdenProducto, Producto, Cliente, Usuario } from '@/db/schema';
 import { v4 as uuidv4 } from 'uuid';
@@ -145,7 +145,7 @@ export function useOrdenService() {
       })
     );
 
-    return { ...orden, ordenProductos: productosConDetalle };
+    return { orden:orden, ordenProductos: productosConDetalle };
   };
 
   const obtenerOrdenesPorEstado = async (estado?: OrdenEstado) => {
@@ -156,6 +156,27 @@ export function useOrdenService() {
         .where(eq(Orden.estado, estado))
         .orderBy(desc(Orden.createdAt));
     }
+    return db.select().from(Orden).orderBy(desc(Orden.createdAt));
+  };
+
+  const obtenerOrdenesPorFecha = async (fecha: string) => {
+    if (fecha) {
+      const inicio = new Date(fecha);
+      const fin = new Date(fecha);
+      fin.setDate(fin.getDate() + 1);
+
+      return db
+        .select()
+        .from(Orden)
+        .where(
+          and(
+            gte(Orden.createdAt, inicio.toISOString()),
+            lt(Orden.createdAt, fin.toISOString())
+          )
+        )
+        .orderBy(desc(Orden.createdAt));
+    }
+
     return db.select().from(Orden).orderBy(desc(Orden.createdAt));
   };
 
@@ -216,6 +237,7 @@ export function useOrdenService() {
     cerrarOrden,
     obtenerOrdenPorId,
     obtenerOrdenesPorEstado,
+    obtenerOrdenesPorFecha,
     obtenerOrdenConClienteYUsuario,
     eliminarProductoDeOrden,
     cancelarOrden,
