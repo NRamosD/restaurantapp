@@ -127,12 +127,14 @@ export function useOrdenService() {
       .where(eq(Orden.uuid, ordenUuid))
       .limit(1);
 
-    if (!orden) return null;
+    if (!orden?.uuid) return null;
 
     const productos = await db
       .select()
       .from(OrdenProducto)
       .where(eq(OrdenProducto.ordenUuid, ordenUuid));
+
+    console.log('productos aqui', productos);
 
     const productosConDetalle = await Promise.all(
       productos.map(async (op) => {

@@ -22,7 +22,7 @@ const ItemOrderExtendedLink = ({
     <CView style={{ padding: 10, marginVertical: 2, borderWidth:3, borderColor:"#cecece", borderRadius:10  }}>
       <TouchableOpacity
         onPress={() => {
-          router.push({pathname:"/orders/checkout", params:{id_orden:data.id}})
+          router.push({pathname:"/orders/checkout", params:{uuid_orden:data.uuid}})
         }}
         style={{ flex: 1, flexDirection: "row", }}
       >

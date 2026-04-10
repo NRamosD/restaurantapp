@@ -25,7 +25,7 @@ type dataType = {id:string, name:string}
 const CheckoutOrder = ({
   
 }: Props) => {
-  const {id_orden, review_order} = useLocalSearchParams<{ id_orden: string, review_order: string }>()
+  const {uuid_orden, review_order} = useLocalSearchParams<{ uuid_orden: string, review_order: string }>()
 
   const [opendModalTextualOrder, setOpendedModalTextualOrder] = useState(false)
   const [toShare, setToShare] = useState(false)
@@ -43,9 +43,9 @@ const CheckoutOrder = ({
   } = useOrderOperations({})
   
   // const decideHowToProccess = async () => {
-  //   if(!!id_orden){
+  //   if(!!uuid_orden){
   //     await updateOrderProcess({
-  //       id_orden: Number(id_orden),
+  //       uuid_orden: Number(uuid_orden),
   //       total:getTotal(),
   //       estado:"pagado"
   //     })
@@ -58,10 +58,11 @@ const CheckoutOrder = ({
   // }
 
   useEffect(()=>{
-    if (id_orden) {
-      loadOrderData(id_orden)
+    console.log("CheckoutOrder useEffect", uuid_orden)
+    if (uuid_orden) {
+      loadOrderData(uuid_orden)
     }
-  },[id_orden, loadOrderData])
+  },[uuid_orden])
 
   useEffect(()=>{
     console.log({"items in checkout": items})

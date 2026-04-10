@@ -31,6 +31,7 @@ const useOrderOperations = ({
 
 
     const loadOrderData = async(ordenUuid: string)=>{
+        console.log("loadOrderData", ordenUuid)
         const resultOrder = await obtenerOrdenPorUuid(ordenUuid)
         console.log({resultOrder})
         console.log(resultOrder?.ordenProductos)
