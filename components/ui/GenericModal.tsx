@@ -1,9 +1,10 @@
 import React from 'react'
-import { Modal, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { CView } from '../CView';
 import { CText } from '../CText';
 import { Button, Dialog, Divider, Portal } from 'react-native-paper';
-import { useColorScheme } from '@/hooks/useColorScheme'
+import { useAppTheme } from '@/theme';
+
 type Props = {
     title?:string
     textContent?:string
@@ -16,10 +17,10 @@ type Props = {
     textCloseButton?: string;
     showModal: boolean;
     setShowModal:  React.Dispatch<React.SetStateAction<boolean>>
-
     onConfirm?: () => void
     onCancel?: () => void
 }
+
 /**
  * Title: Modal genérico
  * @param { withButton?: boolean, textOpenButton?: string, showModal?: boolean, setShowModal:  React.Dispatch<React.SetStateAction<boolean>> } 
@@ -41,27 +42,72 @@ const GenericModal = ({
     setShowModal
 }: Props) => {
     const hideDialog = () => setShowModal(false)
-    const theme = useColorScheme()
+    const theme = useAppTheme()
 
     return (
         <CView style={styles.container}>
             {/* Botón para abrir el modal */}
             {
                 withButton && setShowModal &&
-                <TouchableOpacity onPress={() => setShowModal(true)} style={styles.openButton}>
-                    <CText style={styles.openButtonText}>{textOpenButton||"Abrir Modal"}</CText>
+                <TouchableOpacity
+                  onPress={() => setShowModal(true)}
+                  style={[
+                    styles.openButton,
+                    {
+                      backgroundColor: theme.components.button.primary.backgroundColor,
+                      borderColor: theme.components.button.primary.borderColor,
+                    },
+                  ]}
+                >
+                    <CText style={[styles.openButtonText, { color: theme.components.button.primary.textColor }]}>{textOpenButton||"Abrir Modal"}</CText>
                 </TouchableOpacity>
             }
 
             {/* Modal personalizado */}
             <Portal>
-              <Dialog visible={showModal} onDismiss={hideDialog} style={{borderRadius:10, backgroundColor:theme === "dark" ? "black" : "white"}}>
-                <Dialog.Title style={{backgroundColor:theme === "dark" ? "black" : "white", color:theme === "dark" ? "white" : "black"}}>{title||"Título del Modal"}</Dialog.Title>
-                <Dialog.ScrollArea style={{height:200, paddingHorizontal:0, backgroundColor:theme === "dark" ? "black" : "white"}}>
-                  <ScrollView contentContainerStyle={{ backgroundColor:theme === "dark" ? "black" : "white"}}>
+              <Dialog
+                visible={showModal}
+                onDismiss={hideDialog}
+                style={[
+                  styles.dialog,
+                  {
+                    backgroundColor: theme.colors.surface.card,
+                    borderColor: theme.colors.border.default,
+                    shadowColor: theme.colors.text.inverse,
+                  },
+                ]}
+              >
+                <Dialog.Title
+                  style={[
+                    styles.dialogTitle,
+                    {
+                      backgroundColor: theme.colors.surface.card,
+                      color: theme.colors.text.primary,
+                    },
+                  ]}
+                >
+                  {title||"Título del Modal"}
+                </Dialog.Title>
+                <Dialog.ScrollArea
+                  style={[
+                    styles.dialogScrollArea,
+                    {
+                      backgroundColor: theme.colors.surface.card,
+                      borderTopColor: theme.colors.border.muted,
+                      borderBottomColor: theme.colors.border.muted,
+                    },
+                  ]}
+                >
+                  <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={[
+                      styles.scrollContent,
+                      { backgroundColor: theme.colors.surface.card },
+                    ]}
+                  >
                     {
                       textContent &&
-                      <Text style={styles.modalText}>{textContent}</Text>
+                      <Text style={[styles.modalText, { color: theme.colors.text.secondary }]}>{textContent}</Text>
                     }
                     {
                       nodeContent &&
@@ -69,16 +115,37 @@ const GenericModal = ({
                     }
                   </ScrollView>
                 </Dialog.ScrollArea>
-                <Divider/>
-                <Dialog.Actions style={{gap:10}}>
-                  {showCancelButton && <Button onPress={()=>{
-                    onCancel &&onCancel()
-                    hideDialog()
-                  }} labelStyle={{fontSize:20, color:theme === "dark" ? "white" : "black"}}>{textCloseButton||"Cancelar"}</Button>}
-                  {showConfirmButton && <Button onPress={ ()=>{
-                    onConfirm && onConfirm()
-                    hideDialog()
-                  }} labelStyle={{fontSize:20, color:theme === "dark" ? "white" : "black"}}>{textConfirmButton||"Ok"}</Button>}
+                <Divider style={{backgroundColor: theme.colors.border.muted}}/>
+                <Dialog.Actions style={styles.actionsContainer}>
+                  {showCancelButton && <Button
+                    mode="outlined"
+                    onPress={()=>{
+                      onCancel &&onCancel()
+                      hideDialog()
+                    }}
+                    style={[
+                      styles.actionButton,
+                      {
+                        borderColor: theme.components.button.secondary.borderColor,
+                        backgroundColor: theme.components.button.secondary.backgroundColor,
+                      },
+                    ]}
+                    labelStyle={{fontSize:16, color: theme.components.button.secondary.textColor, fontWeight:'700'}}
+                  >{textCloseButton||"Cancelar"}</Button>}
+                  {showConfirmButton && <Button
+                    mode="contained"
+                    onPress={ ()=>{
+                      onConfirm && onConfirm()
+                      hideDialog()
+                    }}
+                    style={[
+                      styles.actionButton,
+                      {
+                        backgroundColor: theme.components.button.primary.backgroundColor,
+                      },
+                    ]}
+                    labelStyle={{fontSize:16, color: theme.components.button.primary.textColor, fontWeight:'700'}}
+                  >{textConfirmButton||"Ok"}</Button>}
                 </Dialog.Actions>
               </Dialog>
             </Portal>
@@ -94,61 +161,61 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   openButton: {
-    padding: 12,
-    // backgroundColor: '#3498db',
-    borderRadius: 6,
+    minWidth: 160,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 14,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowOpacity: 0.16,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 18,
+    elevation: 6,
   },
   openButtonText: {
-    // color: 'white',
+    fontSize: 16,
     fontWeight: 'bold',
   },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)', // Fondo semi-transparente
-    justifyContent: 'center',
-    alignItems: 'center',
+  dialog: {
+    borderRadius: 24,
+    borderWidth: 1,
+    overflow: 'hidden',
+    elevation: 12,
+    shadowOpacity: 0.18,
+    shadowOffset: { width: 0, height: 12 },
+    shadowRadius: 24,
   },
-  modalContent: {
-    width: 300,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    paddingVertical: 20,
-    alignItems: 'center',
-    elevation: 5, // sombra para Android
-    shadowColor: '#000', // sombra para iOS
-    shadowOpacity: 0.25,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
+  dialogTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    paddingTop: 22,
+    paddingBottom: 10,
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
+  dialogScrollArea: {
+    height: 240,
+    paddingHorizontal: 0,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 24,
+    paddingVertical: 18,
   },
   modalText: {
     fontSize: 16,
-    marginBottom: 20,
+    lineHeight: 24,
+    marginBottom: 16,
   },
-  closeButton: {
-    paddingVertical: 10,
+  actionsContainer: {
+    gap: 12,
     paddingHorizontal: 20,
-    backgroundColor: '#e74c3c',
-    borderRadius: 6,
+    paddingTop: 16,
+    paddingBottom: 18,
+    justifyContent: 'flex-end',
   },
-  confirmButton:{
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    backgroundColor: 'blue',
-    borderRadius: 6,
+  actionButton: {
+    minWidth: 120,
+    borderRadius: 14,
   },
-  closeButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  confirmCancelButtons:{
-    width:"100%",
-    flexDirection:"row",
-    justifyContent:"space-between",
-    paddingTop:15
-  }
 });

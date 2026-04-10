@@ -1,21 +1,31 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { Product } from '@/interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { OrdenProducto, Producto } from '@/interfaces/general.interface';
+import { OrdenProducto } from '@/interfaces/general.interface';
 
-// export interface OrderItem extends Product {
-//   cantidad: number;
-//   observaciones?: string;
-//   ordenProductos?: OrdenProducto & { producto: Producto }; 
-// }
-export interface OrderItem extends OrdenProducto {
-  producto: Producto;
+type OrderItemProduct = {
+  uuid: string;
+  nombre: string;
+  precio: number;
+  stock: number;
+  ilimitado?: boolean | number;
+  [key: string]: unknown;
+};
+
+export interface OrderItem extends Omit<OrdenProducto, 'estadoSync' | 'notas' | 'createdAt' | 'updatedAt' | 'updatedByUuid' | 'deletedAt'> {
+  estadoSync: string;
+  notas?: string | null;
+  createdAt: string | Date;
+  updatedAt: string | Date | null;
+  updatedByUuid?: string | null;
+  deletedAt?: string | Date | null;
+  producto: OrderItemProduct;
+  observaciones?: string;
 }
 
 interface OrderState {
-  items: any[];
-  addItem: (item: any) => void;
+  items: OrderItem[];
+  addItem: (item: OrderItem) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, cantidad: number) => void;
   updateNotes: (productId: string, observaciones: string) => void;
@@ -33,11 +43,11 @@ const useOrderStore = create<OrderState>()(
       
       addItem: (producto) =>
         set((state) => {
-          const existingItem = state.items.find(item => item.uuid === producto.uuid);
+          const existingItem = state.items.find((item) => item.uuid === producto.uuid);
           
           if (existingItem) {
             return {
-              items: state.items.map(item =>
+              items: state.items.map((item) =>
                 item.uuid === producto.uuid
                   ? { ...item, cantidad: item.cantidad + 1 }
                   : item
@@ -46,7 +56,15 @@ const useOrderStore = create<OrderState>()(
           }
           
           return {
-            items: [...state.items, { ...producto, cantidad: producto.cantidad || 1 }],
+            items: [
+              ...state.items,
+              {
+                ...producto,
+                cantidad: producto.cantidad || 1,
+                observaciones: producto.observaciones ?? producto.notas ?? '',
+                notas: producto.notas ?? producto.observaciones ?? '',
+              },
+            ],
           };
         }),
       
@@ -65,7 +83,7 @@ const useOrderStore = create<OrderState>()(
       updateNotes: (productId, observaciones) =>
         set((state) => ({
           items: state.items.map((item) =>
-            item.uuid === productId ? { ...item, observaciones } : item
+            item.uuid === productId ? { ...item, observaciones, notas: observaciones } : item
           ),
         })),
       
@@ -74,22 +92,21 @@ const useOrderStore = create<OrderState>()(
       
       clearOrder: () => set({ items: [] }),
       
-      getTotal: () => 0,
-        // get().items.reduce(
-        //   //se puede analizar si se usa el precio total con iva o el precio normal
-        //   (total, item) => total + item.precio * item.cantidad,
-        //   0
-        // ),
+      getTotal: () =>
+        get().items.reduce((total, item) => {
+          const unitPrice = item.precioUnitario ?? item.producto?.precio ?? 0;
+
+          return total + unitPrice * item.cantidad;
+        }, 0),
       
       getItemCount: () =>
         get().items.reduce((count, item) => count + item.cantidad, 0),
 
       getQuantity: (productId) =>
-        get().items.find(item => item.uuid === productId)?.cantidad || 0,
+        get().items.find((item) => item.uuid === productId)?.cantidad || 0,
     }),
     {
       name: 'order-storage',
-      // Uncomment and use with AsyncStorage for React Native
       storage: createJSONStorage(() => AsyncStorage),
     }
   )

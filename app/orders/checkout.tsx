@@ -58,7 +58,7 @@ const CheckoutOrder = ({
   // }
 
   useEffect(()=>{
-    console.log("CheckoutOrder useEffect", uuid_orden)
+    clearOrder()
     if (uuid_orden) {
       loadOrderData(uuid_orden)
     }
@@ -130,27 +130,37 @@ const CheckoutOrder = ({
             </>
           }
       </CView>
-      {/* <GenericModal
+      <GenericModal
         showModal={opendModalTextualOrder}
         setShowModal={setOpendedModalTextualOrder}
         showConfirmButton={false}
         textCloseButton='Cerrar'
         title="Orden Textual"
         nodeContent={<>
-          <CText style={{fontSize:20}}>Su orden consta de:</CText>
+          <CText style={{fontSize:22, marginBottom:14}}>Su orden consta de:</CText>
           {
             items.map((item, index)=>{
               return(
-                <CView key={index} style={{paddingVertical:10}}>
-                  <CText style={{fontSize:20}}>● {item.cantidad} {item.nombre} 
-                    {item.observaciones?` considerando: ${item.observaciones}`:``}</CText>
+                <CView key={index} style={{paddingVertical:10, paddingHorizontal:14, marginBottom:10, borderRadius:14, borderWidth:1, borderColor:'#d7dde5', backgroundColor:'rgba(2,219,183,0.08)'}}>
+                  <CView style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginBottom: item.observaciones ? 8 : 0, backgroundColor:'transparent'}}>
+                    <CText style={{fontSize:18, fontWeight:'700', flex:1}}>{item?.producto?.nombre || 'Producto'}</CText>
+                    <CView style={{paddingHorizontal:10, paddingVertical:4, borderRadius:999, backgroundColor:'#02dbb7'}}>
+                      <CText style={{fontSize:14, fontWeight:'700', color:'#1A1A1A'}}>{`x${item.cantidad}`}</CText>
+                    </CView>
+                  </CView>
+                  {
+                    item.observaciones ?
+                    <CText style={{fontSize:15, opacity:0.8}}>{`Considerar: ${item.observaciones}.`}</CText>
+                    :
+                    <CText style={{fontSize:15, opacity:0.65}}>Sin observaciones adicionales.</CText>
+                  }
                 </CView>
               )
             })
           }
         </>}
         withButton={false}
-      /> */}
+      />
       {
         toShare && (
           <ShareCheckout toShare={toShare} setToShare={setToShare}/>
