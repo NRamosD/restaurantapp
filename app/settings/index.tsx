@@ -1,21 +1,14 @@
-
 import { CButton, CContainerView, CText, CView } from '@/components'
-import CInputText from '@/components/CInputText'
-import FloatingButton from '@/components/FloatingButton'
-import { ItemOrderSelected } from '@/components/orders'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from "expo-router";
-import {useNavigation} from '@react-navigation/native';
-import React, { useEffect, useState } from 'react'
-import { FlatList, Image, SectionList, StyleSheet, TouchableOpacity } from 'react-native'
-import { Product } from '@/interfaces'
-import { v4 as uuidv4 } from 'uuid';
-import ItemOrderOptionSquare from '@/components/orders/ItemOrderOptionSquare'
-import CImagePicker from '@/components/CImagePicker'
-
+import React, { useMemo, useState } from 'react'
+import { Image, SectionList, StyleSheet, TouchableOpacity } from 'react-native'
+import { useAppTheme } from '@/theme'
+import ThemeSettingsModal from '@/app/settings/modals/ThemeSettingsModal'
+import FontSizeSettingsModal from '@/app/settings/modals/FontSizeSettingsModal'
+import { fontScaleOptions, useAppearanceStore } from '@/hooks/useAppearanceStore'
 
 type Props = {}
-
 
 type itemSectionMenu = {
   id:string,
@@ -99,43 +92,98 @@ const DATA_SETTINGS_MENU:dataSettingsMenu[] = [
 const URL_ME ="https://media.licdn.com/dms/image/v2/D4E03AQEwPhvZi8oeSw/profile-displayphoto-crop_800_800/B4EZhKXejYGoAI-/0/1753594326547?e=1759363200&v=beta&t=9Z7Uz3-IY3BWKF_j9D8qzRG2_CbtnC7XLsqGVtjALrY" ;
 
 const SettingsIndex = (props: Props) => {
+  const theme = useAppTheme();
+  const themePreset = useAppearanceStore((state) => state.themePreset);
+  const fontScale = useAppearanceStore((state) => state.fontScale);
+  const [showThemeModal, setShowThemeModal] = useState(false);
+  const [showFontModal, setShowFontModal] = useState(false);
+
+  const fontScaleLabel = useMemo(() => {
+    return fontScaleOptions.find((item) => item.scale === fontScale)?.label ?? 'Mediana';
+  }, [fontScale]);
+
+  const handlePressItem = (item: itemSectionMenu) => {
+    if (item.url === '/settings/theme') {
+      setShowThemeModal(true);
+      return;
+    }
+
+    if (item.url === '/settings/font') {
+      setShowFontModal(true);
+      return;
+    }
+
+    alert(item.name + ' ' + item.url)
+  }
 
 
 
   return (
-    <CContainerView style={{flex:1, justifyContent:"center"}}>
+    <CContainerView style={styles.container}>
 
-      <CView style={{flex:1, gap:15, justifyContent:"center", paddingHorizontal:5, alignItems:"center", backgroundColor:"#1c1c1c"}}>
-          <CText type="title" style={{color:"white", textAlign:"center"}}>Configuración</CText>
+      <CView style={[styles.header, { backgroundColor: theme.colors.brand.primary }]}>
+          <CText type="title" style={{color:theme.colors.brand.onPrimary, textAlign:"center"}}>Configuración</CText>
+          <CText style={{color:theme.colors.brand.onPrimary}}>Personaliza la experiencia de tu app</CText>
       </CView>
-      <CView style={{flex:10, justifyContent:"center", paddingHorizontal:10}}>
-        <CView style={{justifyContent:"center", alignItems:"center", gap:5, padding:10}}>
+      <CView style={styles.content}>
+        <CView style={[styles.profileCard, { backgroundColor: theme.colors.surface.card, borderColor: theme.colors.border.default }]}>
           <Image source={{uri:URL_ME}} style={{width:100, height:100, borderRadius:50}} alt="user-image"/>
           <CView>
             <CText type="title" style={{textAlign:"center", fontSize:20}}>Usuario Prueba</CText>
             <CText type="title" style={{textAlign:"center", fontSize:20}}>Rol de Usuario</CText>
           </CView>
+          <CView style={styles.summaryRow}>
+            <CView style={[styles.summaryChip, { backgroundColor: theme.colors.surface.muted, borderColor: theme.colors.border.muted }]}>
+              <Ionicons name="color-palette-outline" size={16} color={theme.colors.icon.primary} />
+              <CText>{themePreset}</CText>
+            </CView>
+            <CView style={[styles.summaryChip, { backgroundColor: theme.colors.surface.muted, borderColor: theme.colors.border.muted }]}>
+              <Ionicons name="text-outline" size={16} color={theme.colors.icon.primary} />
+              <CText>{fontScaleLabel}</CText>
+            </CView>
+          </CView>
         </CView>
         <SectionList
           sections={DATA_SETTINGS_MENU}
           keyExtractor={(item, index) => item.id+ "_" +item.name+ "_" + index}
-          style={{paddingHorizontal:10}}
+          style={styles.list}
+          contentContainerStyle={styles.listContent}
           renderItem={({item}) => (
-            <TouchableOpacity onPress={()=>alert(item.name+" " +item.url)} style={{padding:10, backgroundColor:"#1c1c1c", borderRadius:10, marginBottom:5}}>
-              <CText style={{color:"white"}}>{item.name}</CText>
+            <TouchableOpacity
+              onPress={()=>handlePressItem(item)}
+              style={[
+                styles.rowItem,
+                {
+                  backgroundColor: theme.colors.surface.card,
+                  borderColor: theme.colors.border.default,
+                },
+              ]}
+            >
+              <CView style={styles.rowTextBlock}>
+                <CText style={{color:theme.colors.text.primary}}>{item.name}</CText>
+                {item.url === '/settings/theme' && (
+                  <CText style={{color:theme.colors.text.secondary}}>Tema actual: {themePreset}</CText>
+                )}
+                {item.url === '/settings/font' && (
+                  <CText style={{color:theme.colors.text.secondary}}>Tamaño actual: {fontScaleLabel}</CText>
+                )}
+              </CView>
+              <Ionicons name="chevron-forward" size={18} color={theme.colors.icon.muted} />
             </TouchableOpacity>
           )}
           renderSectionHeader={({section: {title}}) => (
-            <CText style={{color:"black", padding:10, borderRadius:10, marginBottom:5}}>{title}</CText>
+            <CText style={{color:theme.colors.text.primary, padding:10, borderRadius:10, marginBottom:5}}>{title}</CText>
           )}
         />
       </CView>
       <CView style={{flex:1, padding:10}}>
         <CButton title="Volver Inicio" onPress={()=>router.dismissTo("/")}
         textStyles={{fontSize:20}}
-        containerStyles={{paddingVertical: 2, borderRadius:10, borderWidth:5, borderStyle:"solid", borderColor:"#cecece"}}
+        containerStyles={{paddingVertical: 2, borderRadius:10, borderWidth:1, borderStyle:"solid", borderColor:theme.colors.border.default}}
         />
       </CView>
+      <ThemeSettingsModal showModal={showThemeModal} setShowModal={setShowThemeModal} />
+      <FontSizeSettingsModal showModal={showFontModal} setShowModal={setShowFontModal} />
       
 
 
@@ -144,3 +192,65 @@ const SettingsIndex = (props: Props) => {
 }
 
 export default SettingsIndex
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  header: {
+    flex: 1.2,
+    gap: 8,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  content: {
+    flex: 10,
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+  },
+  profileCard: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
+    padding: 16,
+    borderWidth: 1,
+    borderRadius: 20,
+    marginBottom: 12,
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    gap: 8,
+    backgroundColor: 'transparent',
+  },
+  summaryChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 999,
+    borderWidth: 1,
+  },
+  list: {
+    paddingHorizontal: 4,
+  },
+  listContent: {
+    paddingBottom: 16,
+  },
+  rowItem: {
+    padding: 14,
+    borderRadius: 16,
+    marginBottom: 8,
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  rowTextBlock: {
+    gap: 4,
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+})

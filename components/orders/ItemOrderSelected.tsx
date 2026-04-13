@@ -139,7 +139,7 @@ const style = StyleSheet.create({
     borderColor:"gray",
     borderRadius: 10
   },
-  nameProduct: {flex:1,  fontSize:25},
+  nameProduct: {flex:1,  fontSize:25, paddingVertical:3},
 
 
 })

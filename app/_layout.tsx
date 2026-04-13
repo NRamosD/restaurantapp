@@ -20,6 +20,7 @@ dayjs.extend(utc);
 SplashScreen.preventAutoHideAsync();
 
 const DATABASE_NAME = process.env.EXPO_PUBLIC_DATABASE_NAME ?? 'restaurant';
+const DATABASE_FILE_NAME = `${DATABASE_NAME}.db`;
 const IS_DEV = process.env.EXPO_PUBLIC_ENVIRONMENT === 'dev';
 
 const styles = StyleSheet.create({
@@ -28,9 +29,11 @@ const styles = StyleSheet.create({
 
 async function resetDatabaseIfDev() {
   if (IS_DEV) {
-    console.log('[DEV MODE] Eliminando base de datos...');
+    console.log('[DEV MODE] Reinicializando base de datos...');
     try {
-      await deleteDatabaseAsync(`${DATABASE_NAME}.db`);
+      console.log(`[DEV MODE] Borrando base de datos: ${DATABASE_FILE_NAME}`);
+      await deleteDatabaseAsync(DATABASE_FILE_NAME);
+      console.log(`[DEV MODE] Base de datos eliminada: ${DATABASE_FILE_NAME}`);
     } catch (error) {
       console.log('[DEV MODE] Error al eliminar DB:', error);
     }
@@ -40,6 +43,7 @@ async function resetDatabaseIfDev() {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [dbReady, setDbReady] = useState(!IS_DEV);
+  const [dbInstanceKey, setDbInstanceKey] = useState(0);
   const navigationTheme = getNavigationTheme(colorScheme);
   const paperTheme = getPaperTheme(colorScheme);
 
@@ -49,8 +53,13 @@ export default function RootLayout() {
 
   useEffect(() => {
     const init = async () => {
+      console.log(
+        `[DB INIT] Inicio de preparación. env=${process.env.EXPO_PUBLIC_ENVIRONMENT ?? 'undefined'} db=${DATABASE_FILE_NAME}`
+      );
       await resetDatabaseIfDev();
+      setDbInstanceKey((prev) => prev + 1);
       setDbReady(true);
+      console.log(`[DB INIT] SQLiteProvider listo para montar con db=${DATABASE_FILE_NAME}`);
     };
     init();
   }, []);
@@ -64,7 +73,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <ThemeProvider value={navigationTheme}>
-        <SQLiteProvider databaseName={`${DATABASE_NAME}.db`} useSuspense>
+        <SQLiteProvider key={dbInstanceKey} databaseName={DATABASE_FILE_NAME} useSuspense>
           <Suspense fallback={<ActivityIndicator />}>
             <DrizzleProvider>
               <SafeAreaProvider>

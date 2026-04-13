@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "e875d1a6-5926-4a8a-814a-bd5ddf09c9cf",
+  "id": "c3eab1d0-3298-44c4-bed8-6e0fddef4fb9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "app_config": {
@@ -18,7 +18,7 @@
           "name": "valor",
           "type": "text",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         }
       },
@@ -101,7 +101,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -109,7 +109,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -188,9 +188,9 @@
           "autoincrement": false,
           "default": 0
         },
-        "perfil_negocio_id": {
-          "name": "perfil_negocio_id",
-          "type": "integer",
+        "perfil_negocio_uuid": {
+          "name": "perfil_negocio_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -201,7 +201,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -256,16 +256,16 @@
           "notNull": true,
           "autoincrement": false
         },
-        "cliente_id": {
-          "name": "cliente_id",
-          "type": "integer",
+        "cliente_uuid": {
+          "name": "cliente_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "orden_id": {
-          "name": "orden_id",
-          "type": "integer",
+        "orden_uuid": {
+          "name": "orden_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -354,7 +354,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -362,7 +362,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -425,9 +425,9 @@
           "autoincrement": false,
           "default": 1
         },
-        "perfil_negocio_id": {
-          "name": "perfil_negocio_id",
-          "type": "integer",
+        "perfil_negocio_uuid": {
+          "name": "perfil_negocio_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -438,7 +438,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -486,16 +486,16 @@
           "notNull": false,
           "autoincrement": false
         },
-        "cliente_id": {
-          "name": "cliente_id",
-          "type": "integer",
+        "cliente_uuid": {
+          "name": "cliente_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "usuario_id": {
-          "name": "usuario_id",
-          "type": "integer",
+        "usuario_uuid": {
+          "name": "usuario_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -560,7 +560,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -568,11 +568,11 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
-        "updated_by": {
-          "name": "updated_by",
-          "type": "integer",
+        "updated_by_uuid": {
+          "name": "updated_by_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -616,16 +616,16 @@
           "notNull": true,
           "autoincrement": false
         },
-        "orden_id": {
-          "name": "orden_id",
-          "type": "integer",
+        "orden_uuid": {
+          "name": "orden_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "producto_id": {
-          "name": "producto_id",
-          "type": "integer",
+        "producto_uuid": {
+          "name": "producto_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -699,7 +699,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -707,11 +707,11 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
-        "updated_by": {
-          "name": "updated_by",
-          "type": "integer",
+        "updated_by_uuid": {
+          "name": "updated_by_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -755,23 +755,23 @@
           "notNull": true,
           "autoincrement": false
         },
-        "orden_id": {
-          "name": "orden_id",
-          "type": "integer",
+        "orden_uuid": {
+          "name": "orden_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "factura_id": {
-          "name": "factura_id",
-          "type": "integer",
+        "factura_uuid": {
+          "name": "factura_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
         },
-        "tipo_pago_id": {
-          "name": "tipo_pago_id",
-          "type": "integer",
+        "tipo_pago_uuid": {
+          "name": "tipo_pago_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -813,7 +813,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "created_at": {
           "name": "created_at",
@@ -821,7 +821,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -829,11 +829,11 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
-        "updated_by": {
-          "name": "updated_by",
-          "type": "integer",
+        "updated_by_uuid": {
+          "name": "updated_by_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -972,7 +972,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.298Z'"
+          "default": "'2026-04-13T17:48:47.316Z'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -980,7 +980,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.298Z'"
+          "default": "'2026-04-13T17:48:47.316Z'"
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -1041,7 +1041,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -1049,11 +1049,11 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
-        "updated_by": {
-          "name": "updated_by",
-          "type": "integer",
+        "updated_by_uuid": {
+          "name": "updated_by_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -1119,9 +1119,9 @@
           "autoincrement": false,
           "default": 1
         },
-        "perfil_negocio_id": {
-          "name": "perfil_negocio_id",
-          "type": "integer",
+        "perfil_negocio_uuid": {
+          "name": "perfil_negocio_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -1132,7 +1132,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -1248,9 +1248,9 @@
           "autoincrement": false,
           "default": "'DISPONIBLE'"
         },
-        "perfil_negocio_id": {
-          "name": "perfil_negocio_id",
-          "type": "integer",
+        "perfil_negocio_uuid": {
+          "name": "perfil_negocio_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -1269,7 +1269,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -1278,9 +1278,9 @@
           "notNull": false,
           "autoincrement": false
         },
-        "updated_by": {
-          "name": "updated_by",
-          "type": "integer",
+        "updated_by_uuid": {
+          "name": "updated_by_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -1324,16 +1324,16 @@
           "notNull": true,
           "autoincrement": false
         },
-        "producto_id": {
-          "name": "producto_id",
-          "type": "integer",
+        "producto_uuid": {
+          "name": "producto_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "componente_id": {
-          "name": "componente_id",
-          "type": "integer",
+        "componente_uuid": {
+          "name": "componente_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -1360,7 +1360,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -1368,11 +1368,11 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
-        "updated_by": {
-          "name": "updated_by",
-          "type": "integer",
+        "updated_by_uuid": {
+          "name": "updated_by_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -1416,9 +1416,9 @@
           "notNull": true,
           "autoincrement": false
         },
-        "usuario_id": {
-          "name": "usuario_id",
-          "type": "integer",
+        "usuario_uuid": {
+          "name": "usuario_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -1443,7 +1443,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "activo": {
           "name": "activo",
@@ -1521,7 +1521,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "updated_at": {
           "name": "updated_at",
@@ -1529,11 +1529,11 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
-        "updated_by": {
-          "name": "updated_by",
-          "type": "integer",
+        "updated_by_uuid": {
+          "name": "updated_by_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -1605,9 +1605,9 @@
           "notNull": true,
           "autoincrement": false
         },
-        "perfil_negocio_id": {
-          "name": "perfil_negocio_id",
-          "type": "integer",
+        "perfil_negocio_uuid": {
+          "name": "perfil_negocio_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -1626,7 +1626,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2026-03-26T19:55:20.299Z'"
+          "default": "'2026-04-13T17:48:47.317Z'"
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -1674,16 +1674,16 @@
           "notNull": true,
           "autoincrement": false
         },
-        "usuario_id": {
-          "name": "usuario_id",
-          "type": "integer",
+        "usuario_uuid": {
+          "name": "usuario_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "permiso_id": {
-          "name": "permiso_id",
-          "type": "integer",
+        "permiso_uuid": {
+          "name": "permiso_uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false

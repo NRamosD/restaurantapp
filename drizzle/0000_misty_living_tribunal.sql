@@ -1,6 +1,6 @@
 CREATE TABLE `app_config` (
 	`clave` text PRIMARY KEY NOT NULL,
-	`valor` text NOT NULL
+	`valor` text
 );
 --> statement-breakpoint
 CREATE TABLE `Cliente` (
@@ -13,8 +13,8 @@ CREATE TABLE `Cliente` (
 	`telefono` text,
 	`email` text,
 	`estado_sync` text DEFAULT 'PENDIENTE' NOT NULL,
-	`created_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
-	`updated_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
+	`created_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
+	`updated_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
 	`deleted_at` text
 );
 --> statement-breakpoint
@@ -27,8 +27,8 @@ CREATE TABLE `Componente` (
 	`stock_actual` real DEFAULT 0 NOT NULL,
 	`stock_minimo` real DEFAULT 0 NOT NULL,
 	`costo_unitario` integer DEFAULT 0 NOT NULL,
-	`perfil_negocio_id` integer NOT NULL,
-	`created_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
+	`perfil_negocio_uuid` text NOT NULL,
+	`created_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
 	`deleted_at` text
 );
 --> statement-breakpoint
@@ -38,8 +38,8 @@ CREATE TABLE `Factura` (
 	`uuid` text NOT NULL,
 	`numero_factura` text NOT NULL,
 	`clave_acceso` text NOT NULL,
-	`cliente_id` integer NOT NULL,
-	`orden_id` integer,
+	`cliente_uuid` text NOT NULL,
+	`orden_uuid` text,
 	`fecha_emision` text NOT NULL,
 	`subtotal_0` integer DEFAULT 0 NOT NULL,
 	`subtotal_iva` integer DEFAULT 0 NOT NULL,
@@ -50,8 +50,8 @@ CREATE TABLE `Factura` (
 	`estado_sri` text DEFAULT 'PENDIENTE' NOT NULL,
 	`estado_sync` text DEFAULT 'PENDIENTE' NOT NULL,
 	`pdf_url` text,
-	`created_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
-	`updated_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
+	`created_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
+	`updated_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
 	`deleted_at` text
 );
 --> statement-breakpoint
@@ -62,8 +62,8 @@ CREATE TABLE `Feature` (
 	`uuid` text NOT NULL,
 	`nombre` text NOT NULL,
 	`habilitado` integer DEFAULT 1 NOT NULL,
-	`perfil_negocio_id` integer,
-	`updated_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
+	`perfil_negocio_uuid` text,
+	`updated_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
 	`deleted_at` text
 );
 --> statement-breakpoint
@@ -72,8 +72,8 @@ CREATE TABLE `Orden` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`uuid` text NOT NULL,
 	`numero_orden` integer,
-	`cliente_id` integer,
-	`usuario_id` integer NOT NULL,
+	`cliente_uuid` text,
+	`usuario_uuid` text NOT NULL,
 	`tipo` text NOT NULL,
 	`estado` text DEFAULT 'PENDIENTE' NOT NULL,
 	`estado_sync` text DEFAULT 'PENDIENTE' NOT NULL,
@@ -81,9 +81,9 @@ CREATE TABLE `Orden` (
 	`iva` integer DEFAULT 0 NOT NULL,
 	`total` integer DEFAULT 0 NOT NULL,
 	`observaciones` text,
-	`created_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
-	`updated_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
-	`updated_by` integer,
+	`created_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
+	`updated_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
+	`updated_by_uuid` text,
 	`deleted_at` text
 );
 --> statement-breakpoint
@@ -91,8 +91,8 @@ CREATE UNIQUE INDEX `Orden_uuid_unique` ON `Orden` (`uuid`);--> statement-breakp
 CREATE TABLE `OrdenProducto` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`uuid` text NOT NULL,
-	`orden_id` integer NOT NULL,
-	`producto_id` integer NOT NULL,
+	`orden_uuid` text NOT NULL,
+	`producto_uuid` text NOT NULL,
 	`cantidad` integer DEFAULT 1 NOT NULL,
 	`precio_unitario` integer DEFAULT 0 NOT NULL,
 	`descuento` integer DEFAULT 0 NOT NULL,
@@ -101,9 +101,9 @@ CREATE TABLE `OrdenProducto` (
 	`total` integer DEFAULT 0 NOT NULL,
 	`estado_sync` text DEFAULT 'PENDIENTE' NOT NULL,
 	`notas` text,
-	`created_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
-	`updated_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
-	`updated_by` integer,
+	`created_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
+	`updated_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
+	`updated_by_uuid` text,
 	`deleted_at` text
 );
 --> statement-breakpoint
@@ -111,17 +111,17 @@ CREATE UNIQUE INDEX `OrdenProducto_uuid_unique` ON `OrdenProducto` (`uuid`);--> 
 CREATE TABLE `Pago` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`uuid` text NOT NULL,
-	`orden_id` integer,
-	`factura_id` integer,
-	`tipo_pago_id` integer NOT NULL,
+	`orden_uuid` text,
+	`factura_uuid` text,
+	`tipo_pago_uuid` text NOT NULL,
 	`monto` integer DEFAULT 0 NOT NULL,
 	`referencia` text,
 	`estado` text DEFAULT 'PENDIENTE' NOT NULL,
 	`estado_sync` text DEFAULT 'PENDIENTE' NOT NULL,
-	`fecha_pago` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
-	`created_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
-	`updated_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
-	`updated_by` integer,
+	`fecha_pago` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
+	`created_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
+	`updated_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
+	`updated_by_uuid` text,
 	`deleted_at` text
 );
 --> statement-breakpoint
@@ -141,8 +141,8 @@ CREATE TABLE `PerfilNegocio` (
 	`tipo_emision` text DEFAULT 'NORMAL' NOT NULL,
 	`secuencia_factura_actual` integer DEFAULT 0 NOT NULL,
 	`secuencia_orden_actual` integer DEFAULT 0 NOT NULL,
-	`created_at` text DEFAULT '2026-03-26T19:55:20.298Z' NOT NULL,
-	`updated_at` text DEFAULT '2026-03-26T19:55:20.298Z' NOT NULL,
+	`created_at` text DEFAULT '2026-04-13T17:48:47.316Z' NOT NULL,
+	`updated_at` text DEFAULT '2026-04-13T17:48:47.316Z' NOT NULL,
 	`deleted_at` text
 );
 --> statement-breakpoint
@@ -152,9 +152,9 @@ CREATE TABLE `Permiso` (
 	`uuid` text NOT NULL,
 	`nombre` text NOT NULL,
 	`descripcion` text,
-	`created_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
-	`updated_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
-	`updated_by` integer,
+	`created_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
+	`updated_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
+	`updated_by_uuid` text,
 	`deleted_at` text
 );
 --> statement-breakpoint
@@ -165,8 +165,8 @@ CREATE TABLE `Plan` (
 	`uuid` text NOT NULL,
 	`nombre` text NOT NULL,
 	`activo` integer DEFAULT 1 NOT NULL,
-	`perfil_negocio_id` integer,
-	`updated_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
+	`perfil_negocio_uuid` text,
+	`updated_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
 	`deleted_at` text
 );
 --> statement-breakpoint
@@ -184,11 +184,11 @@ CREATE TABLE `Producto` (
 	`imagen_url` text,
 	`galeria` text,
 	`estado` text DEFAULT 'DISPONIBLE' NOT NULL,
-	`perfil_negocio_id` integer NOT NULL,
+	`perfil_negocio_uuid` text NOT NULL,
 	`estado_sync` text DEFAULT 'PENDIENTE' NOT NULL,
-	`created_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
+	`created_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
 	`updated_at` text,
-	`updated_by` integer,
+	`updated_by_uuid` text,
 	`deleted_at` text
 );
 --> statement-breakpoint
@@ -196,13 +196,13 @@ CREATE UNIQUE INDEX `Producto_uuid_unique` ON `Producto` (`uuid`);--> statement-
 CREATE TABLE `ProductoComponente` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`uuid` text NOT NULL,
-	`producto_id` integer NOT NULL,
-	`componente_id` integer NOT NULL,
+	`producto_uuid` text NOT NULL,
+	`componente_uuid` text NOT NULL,
 	`cantidad` real DEFAULT 1 NOT NULL,
 	`estado_sync` text DEFAULT 'PENDIENTE',
-	`created_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
-	`updated_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
-	`updated_by` integer,
+	`created_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
+	`updated_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
+	`updated_by_uuid` text,
 	`deleted_at` text
 );
 --> statement-breakpoint
@@ -210,10 +210,10 @@ CREATE UNIQUE INDEX `ProductoComponente_uuid_unique` ON `ProductoComponente` (`u
 CREATE TABLE `Sesion` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`uuid` text NOT NULL,
-	`usuario_id` integer NOT NULL,
+	`usuario_uuid` text NOT NULL,
 	`token` text NOT NULL,
 	`expira_en` text NOT NULL,
-	`ultimo_login` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
+	`ultimo_login` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
 	`activo` integer DEFAULT 1 NOT NULL,
 	`estado_sync` text DEFAULT 'PENDIENTE' NOT NULL,
 	`deleted_at` text
@@ -225,9 +225,9 @@ CREATE TABLE `TipoPago` (
 	`uuid` text NOT NULL,
 	`nombre` text NOT NULL,
 	`activo` integer DEFAULT 1 NOT NULL,
-	`created_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
-	`updated_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
-	`updated_by` integer,
+	`created_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
+	`updated_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
+	`updated_by_uuid` text,
 	`deleted_at` text
 );
 --> statement-breakpoint
@@ -239,9 +239,9 @@ CREATE TABLE `Usuario` (
 	`email` text NOT NULL,
 	`password_hash` text NOT NULL,
 	`rol` text NOT NULL,
-	`perfil_negocio_id` integer NOT NULL,
+	`perfil_negocio_uuid` text NOT NULL,
 	`activo` integer DEFAULT 1 NOT NULL,
-	`created_at` text DEFAULT '2026-03-26T19:55:20.299Z' NOT NULL,
+	`created_at` text DEFAULT '2026-04-13T17:48:47.317Z' NOT NULL,
 	`deleted_at` text
 );
 --> statement-breakpoint
@@ -250,8 +250,8 @@ CREATE UNIQUE INDEX `Usuario_email_unique` ON `Usuario` (`email`);--> statement-
 CREATE TABLE `UsuarioPermiso` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`uuid` text NOT NULL,
-	`usuario_id` integer NOT NULL,
-	`permiso_id` integer NOT NULL,
+	`usuario_uuid` text NOT NULL,
+	`permiso_uuid` text NOT NULL,
 	`deleted_at` text
 );
 --> statement-breakpoint

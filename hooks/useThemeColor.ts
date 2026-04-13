@@ -4,7 +4,7 @@
  */
 
 import { Colors } from '@/constants/Colors';
-import { resolveThemeMode } from '@/theme';
+import { getLegacyColors, resolveThemeMode } from '@/theme';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 export function useThemeColor(
@@ -12,11 +12,11 @@ export function useThemeColor(
   colorName: keyof typeof Colors.light & keyof typeof Colors.dark
 ) {
   const theme = resolveThemeMode(useColorScheme());
-  const colorFromProps = props[theme];
+  const colorFromProps = theme === 'dark' ? props.dark : props.light;
 
   if (colorFromProps) {
     return colorFromProps;
   } else {
-    return Colors[theme][colorName];
+    return getLegacyColors(theme)[colorName];
   }
 }

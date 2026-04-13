@@ -1,27 +1,18 @@
-import { StyleSheet, Image, Platform, FlatList, TouchableOpacity, View, SectionList, Button, ToastAndroid, RefreshControl, useColorScheme } from 'react-native';
+import { StyleSheet, TouchableOpacity, SectionList, ToastAndroid, RefreshControl, useColorScheme } from 'react-native';
 import dayjs from 'dayjs'
 import "dayjs/locale/es";
 dayjs.locale("es");
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { CText } from '@/components/CText';
 import { CView } from '@/components/CView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import { TopBarWithMenu } from '@/components/TopBarWithMenu';
 import { CContainerView } from '@/components/CContainerView';
 import ItemOrderExtendedLink from '@/components/orders/ItemOrderExtendedLink';
 import { Ionicons } from '@expo/vector-icons';
-import { ItemOrderExtended, Orden } from '../../interfaces/orders';
 import GenericModal from '@/components/ui/GenericModal';
 import React, { useEffect, useState } from 'react';
 // import DateTimePicker from "@react-native-community/datetimepicker";
-import DateTimePicker, { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
-import { Divider } from 'react-native-paper';
-import { Picker } from '@react-native-picker/picker';
+import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import CInputText from '@/components/CInputText';
-import { useSQLiteContext } from 'expo-sqlite';
-import { getOrdersByDate, getOrdersGroupedByDayStats } from '@/db/order.operations';
 import { useIsFocused } from '@react-navigation/native';
 import { useOrdenService } from '@/modules';
 
@@ -29,8 +20,6 @@ import { useOrdenService } from '@/modules';
 
 
 export default function TabTwoScreen() {
-
-  const dbConnection  = useSQLiteContext();
   const isFocused = useIsFocused();
   const theme = useColorScheme()
 
@@ -45,7 +34,6 @@ export default function TabTwoScreen() {
 
 
   
-  DateTimePickerAndroid.dismiss('date')
 
 
 
@@ -122,9 +110,14 @@ export default function TabTwoScreen() {
       setRefreshing(false);
     }, 1500);
   };
-  useEffect(()=>{
-    getOrdersByDay()
-  },[isFocused])
+  useEffect(() => {
+    if (!isFocused) return;
+    getOrdersByDay();
+  }, [isFocused]);
+
+  useEffect(() => {
+    DateTimePickerAndroid.dismiss('date');
+  }, []);
 
   return (
     <CContainerView withBottomPadding={false} style={{

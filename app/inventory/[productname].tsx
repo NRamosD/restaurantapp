@@ -5,16 +5,16 @@ import { CText } from '@/components/CText'
 import { CView } from '@/components/CView'
 import { router, useLocalSearchParams } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { Image, ScrollView, StyleSheet, TouchableOpacity, useColorScheme } from 'react-native'
+import { ActivityIndicator, ScrollView, StyleSheet, useColorScheme } from 'react-native'
 import * as ImagePicker from 'expo-image-picker';
-import { Switch, TextInput } from 'react-native-paper'
+import { Switch } from 'react-native-paper'
 import { Picker } from '@react-native-picker/picker'
 import { useSQLiteContext } from 'expo-sqlite'
-// import { getProductByUuid, getProducts, updateProduct } from '@/db/producto.operations'
+import { getProductByUuid, updateProduct } from '@/db/product.operations'
 import { Product } from '@/interfaces'
 import CImage from '@/components/CImage'
 import { useIsFocused } from '@react-navigation/native';
-import { Colors, getColors } from '@/constants/Colors'
+import { getColors } from '@/constants/Colors'
 
 type Props = {}
 
@@ -23,16 +23,21 @@ const DetailedProductScreen = ({
 }: Props) => {
     const db = useSQLiteContext();
     const {productname} = useLocalSearchParams()
+    const isFocused = useIsFocused();
     const color = useColorScheme()
+    const colors = getColors(color)
 
     const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [switchEnvioGratis, setSwitchEnvioGratis] = useState(false);
     const [switchIlimitado, setSwitchIlimitado] = useState(false);
     const [image, setImage] = useState<string>("");
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
 
     const [formData, setFormData] = useState<Omit<Product, 'id_producto' | 'uuid'>>({
         perfilNegocioUuid: 'TEMP_PERFIL_NEGOCIO_UUID', 
+
         nombre: '',
         descripcion: '',
         precio: 0,
@@ -101,11 +106,22 @@ const DetailedProductScreen = ({
     };
 
     const handleSaveProduct = async() => {
-        // await updateProduct(db, {
-        //     ...formData,
-        //     id_producto: currentProduct?.id_producto || 0
-        // })
-        router.dismissTo("/")
+        if (!currentProduct?.id_producto) {
+            return;
+        }
+
+        try {
+            setSaving(true);
+            await updateProduct(db, {
+                ...formData,
+                id_producto: currentProduct.id_producto,
+            });
+            router.back();
+        } catch (error) {
+            console.log('[PRODUCT DETAIL] Error actualizando producto', error);
+        } finally {
+            setSaving(false);
+        }
     };
     
     useEffect(() => {
@@ -118,33 +134,85 @@ const DetailedProductScreen = ({
     }, [formData.precio, formData.descuento]);
 
     async function setup() {
-        // const result = await getProductByUuid(
-        //     db, 
-        //     productname?.toString()?.slice(1, productname?.length)
-        // );
-        // console.log(result);
-        // if(result){
-        //     setCurrentProduct(result);
-        //     setImage(result?.imagen_url || "");
-        //     setFormData(result);
-        // }
+        try {
+            setLoading(true);
+            const uuid = Array.isArray(productname) ? productname[0] : productname;
+            if (!uuid) {
+                setCurrentProduct(null);
+                return;
+            }
+
+            const result = await getProductByUuid(db, uuid.toString());
+            if(result){
+                setCurrentProduct(result);
+                setImage(result?.imagen_url || "");
+                setSwitchEnvioGratis(Boolean(result.envio_gratis));
+                setSwitchIlimitado(Boolean(result.ilimitado));
+                setFormData({
+                    perfilNegocioUuid: result.perfilNegocioUuid,
+                    negocioUuid: result.negocioUuid,
+                    nombre: result.nombre,
+                    descripcion: result.descripcion ?? '',
+                    imagen: result.imagen ?? '',
+                    iva: result.iva ?? null,
+                    precio: result.precio,
+                    precio_total: result.precio_total,
+                    stock: result.stock,
+                    estado: result.estado,
+                    imagen_url: result.imagen_url ?? '',
+                    galeria: result.galeria ?? '',
+                    video_url: result.video_url ?? '',
+                    codigo_barras: result.codigo_barras ?? '',
+                    slug: result.slug ?? '',
+                    descuento: result.descuento ?? 0,
+                    precio_anterior: result.precio_anterior ?? 0,
+                    envio_gratis: Boolean(result.envio_gratis),
+                    tiempo_entrega: result.tiempo_entrega ?? '',
+                    ilimitado: Boolean(result.ilimitado),
+                });
+            }
+        } catch (error) {
+            console.log('[PRODUCT DETAIL] Error cargando producto', error);
+        } finally {
+            setLoading(false);
+        }
     }
     useEffect(() => {
         setup();
-    }, []);
-    
+    }, [db, isFocused, productname]);
 
 
-
+    if (loading) {
+        return (
+            <CContainerView style={style.loadingContainer}>
+                <ActivityIndicator size="large" color={colors.tint} />
+                <CText>Cargando producto...</CText>
+            </CContainerView>
+        )
+    }
 
     return (
-    // <CContainerView style={{flex:1}}>
     <>
-        <CView style={{flex:1, backgroundColor:getColors(color).tint, justifyContent:"center", height:20 }}>
-          <CText type="title" style={{ textAlign:"center", color:"white"}}>Editar Producto</CText>
+        <CView style={[style.header, { backgroundColor: colors.tint }] }>
+          <CText type="title" style={style.headerTitle}>Editar Producto</CText>
+          <CText style={style.headerSubtitle}>{currentProduct?.nombre || 'Detalle del producto'}</CText>
         </CView>
         <CView style={{flex:9}}>
-            <ScrollView style={{padding:10}}>
+            <ScrollView style={{padding:10}} contentContainerStyle={style.scrollContent}>
+                <CView style={style.summaryCard}>
+                    <CView>
+                        <CText type="subtitle">Resumen rápido</CText>
+                        <CText>{currentProduct?.uuid}</CText>
+                    </CView>
+                    <CView style={style.summaryRow}>
+                        <CText>Precio final</CText>
+                        <CText type="defaultSemiBold">${formData.precio_total || 0}</CText>
+                    </CView>
+                    <CView style={style.summaryRow}>
+                        <CText>Stock actual</CText>
+                        <CText type="defaultSemiBold">{formData.ilimitado ? 'Ilimitado' : formData.stock}</CText>
+                    </CView>
+                </CView>
                 
                 <CView style={{ padding:5, justifyContent:"center", gap:5, marginVertical:5}}>
                         <CImage style={style.imgComponent} 
@@ -192,27 +260,30 @@ const DetailedProductScreen = ({
                             />
                         </CView>
                     </CView>
-                    <CView style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderRadius: 5}}>
+                    <CView style={style.switchRow}>
                         <CText>Ilimitado</CText>
                         <Switch 
                             value={formData.ilimitado} 
+
                             onValueChange={()=>onToggleSwitchIlimitado("ilimitado")} 
                         />
                     </CView>
                     
-                    <CView>
+                    <CView style={style.fieldCard}>
                         <CText style={{paddingHorizontal:2, marginBottom: 4}}>Categoría</CText>
-                        <CView style={{borderWidth:1, borderColor:"#cacacaff", borderRadius:5}}>
+                        <CView style={style.pickerWrapper}>
                             <Picker
                                 selectedValue={selectedCategory}
                                 onValueChange={(itemValue) => {
+
                                     setSelectedCategory(itemValue);
                                     // You might want to map this to a category ID in your actual implementation
                                 }}
-                                style={{color: getColors(color).text}}
+                                style={{color: colors.text}}
                             >
                                 <Picker.Item label="Seleccione una categoría" value="" />
                                 <Picker.Item label="Comida" value="comida" />
+
                                 <Picker.Item label="Entrada" value="entrada" />
                                 <Picker.Item label="Plato Fuerte" value="plato_fuerte" />
                                 <Picker.Item label="Comida Rápida" value="comida_rapida" />
@@ -226,52 +297,12 @@ const DetailedProductScreen = ({
                     <CView>
                         <CInputText 
                             label={"Código de Barras"} 
+
                             placeholder='Código de barras del producto'
                             value={formData.codigo_barras}
                             onChangeText={(text) => handleInputChange('codigo_barras', text)}
                         />
                     </CView>
-
-                    {/* <CView>
-                        <CInputText 
-                            label={"URL de la Imagen"} 
-                            placeholder='https://ejemplo.com/imagen.jpg'
-                            value={formData.imagen_url}
-                            onChangeText={(text) => {
-                                handleInputChange('imagen_url', text);
-                                setImage(text || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c");
-                            }}
-                        />
-                    </CView> */}
-
-                    {/* <CView>
-                        <CInputText 
-                            label={"Galería (URLs separadas por comas)"} 
-                            placeholder='https://ejemplo.com/img1.jpg, https://ejemplo.com/img2.jpg'
-                            value={formData.galeria}
-                            onChangeText={(text) => handleInputChange('galeria', text)}
-                            multiline
-                        />
-                    </CView> */}
-
-                    {/* <CView>
-                        <CInputText 
-                            label={"URL del Video"} 
-                            placeholder='https://ejemplo.com/video.mp4'
-                            value={formData.video_url}
-                            onChangeText={(text) => handleInputChange('video_url', text)}
-                        />
-                    </CView> */}
-                    {/* <CView>
-                        <CInputText 
-                            label={"IVA %"} 
-                            placeholder='Ej: 19'
-                            keyboardType="numeric"
-                            value={formData.iva?.toString() || ''}
-                            onChangeText={(text) => handleInputChange('iva', text ? parseFloat(text) : null)}
-                        />
-                    </CView> */}
-                    
 
                     <CView style={{flexDirection: 'row', gap: 10}}>
                         <CView style={{flex: 1, gap: 10}}>
@@ -311,10 +342,11 @@ const DetailedProductScreen = ({
                             onChangeText={(text) => handleInputChange('tiempo_entrega', text)}
                         />
                     </CView>
-                    <CView style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderRadius: 5}}>
+                    <CView style={style.switchRow}>
                         <CText>Envío Gratis</CText>
                         <Switch 
                             value={formData.envio_gratis} 
+
                             onValueChange={()=>onToggleSwitchEnvioGratis("envio_gratis")} 
                         />
                     </CView>
@@ -326,322 +358,90 @@ const DetailedProductScreen = ({
             containerStyles={{borderRadius:10}} 
             textStyles={{fontSize:24, paddingVertical:0}}
             onPress={handleSaveProduct}
-            title='Guardar'/>
-            <CButton title="Inicio" onPress={()=>router.dismissTo("/")}
+            title={saving ? 'Guardando...' : 'Guardar'} />
+            <CButton title="Volver" onPress={()=>router.back()}
             textStyles={{fontSize:16, paddingVertical:0}}
             containerStyles={{borderRadius:10, paddingVertical:0, borderWidth:5, borderStyle:"solid", borderColor:"#cecece", backgroundColor:"transparent"}}
             />
+
         </CView>
         </>
 
         
 
-    // </CContainerView>
-
-
-
-
-
-
-        // <CContainerView style={{flex:1}}>
-        //     {/* <CView style={{flex:1, backgroundColor:"#acacac", justifyContent:"center", height:20 }}>
-        //     <CText type="title" style={{ textAlign:"center", color:"white"}}>Nuevo Producto</CText>
-        //     </CView> */}
-        //     <CView style={{flex:9}}>
-        //         <ScrollView style={{padding:10}}>
-                    
-        //             <CView style={{ padding:5, justifyContent:"center", gap:5, marginVertical:5}}>
-        //                     <CImage style={style.imgComponent} 
-        //                     src={image}
-        //                     fallback='https://images.unsplash.com/photo-1546069901-ba9599a7e63c'/>
-        //                     <CButton containerStyles={style.btnStyle} title='Subir Imagen' onPress={pickImage}/>
-
-        //             </CView>
-        //             <CView style={{ gap:10, marginBottom:20, padding:10}}>
-        //                 <CView>
-        //                     <CInputText 
-        //                         label={"Nombre"} 
-        //                         placeholder='Escriba aquí el nombre'
-        //                         value={formData.nombre}
-        //                         onChangeText={(text) => handleInputChange('nombre', text)}
-        //                     />
-        //                 </CView>
-        //                 <CView>
-        //                     <CInputText 
-        //                         label={"Descripción"} 
-        //                         placeholder='Escriba aquí la descripción' 
-        //                         multiline
-        //                         value={formData.descripcion as string}
-        //                         onChangeText={(text) => handleInputChange('descripcion', text)}
-        //                     />
-        //                 </CView>
-        //                 <CView style={{flexDirection: 'row', gap: 10}}>
-        //                     <CView style={{flex: 1}}>
-        //                         <CInputText 
-        //                             label={"Precio"} 
-        //                             placeholder='0.00'
-        //                             keyboardType="numeric"
-        //                             value={formData.precio?.toString()}
-        //                             onChangeText={(text) => handleInputChange('precio', parseFloat(text) || 0)}
-        //                         />
-        //                     </CView>
-        //                     <CView style={{flex: 1}}>
-        //                         <CInputText 
-        //                             label={"Stock"} 
-        //                             placeholder='0'
-        //                             keyboardType="numeric"
-        //                             value={formData.stock?.toString()}
-        //                             onChangeText={(text) => handleInputChange('stock', parseInt(text) || 0)}
-        //                             disabled={switchIlimitado}
-        //                         />
-        //                     </CView>
-        //                 </CView>
-        //                 <CView style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 8, backgroundColor: '#f5f5f5', borderRadius: 5}}>
-        //                     <CText>Ilimitado</CText>
-        //                     <Switch 
-        //                         value={formData.ilimitado} 
-        //                         onValueChange={()=>onToggleSwitchIlimitado("ilimitado")} 
-        //                     />
-        //                 </CView>
-                        
-        //                 <CView>
-        //                     <CText style={{paddingHorizontal:2, marginBottom: 4}}>Categoría</CText>
-        //                     <CView style={{borderWidth:1, borderColor:"#cacacaff", borderRadius:5}}>
-        //                         <Picker
-        //                             selectedValue={selectedCategory}
-        //                             onValueChange={(itemValue) => {
-        //                                 setSelectedCategory(itemValue);
-        //                                 // You might want to map this to a category ID in your actual implementation
-        //                             }}
-        //                         >
-        //                             <Picker.Item label="Seleccione una categoría" value="" />
-        //                             <Picker.Item label="Comida Rápida" value="comida_rapida" />
-        //                             <Picker.Item label="Bebidas" value="bebidas" />
-        //                             <Picker.Item label="Postres" value="postres" />
-        //                         </Picker>
-        //                     </CView>
-        //                 </CView>
-
-        //                 <CView>
-        //                     <CInputText 
-        //                         label={"Código de Barras"} 
-        //                         placeholder='Código de barras del producto'
-        //                         value={formData.codigo_barras}
-        //                         onChangeText={(text) => handleInputChange('codigo_barras', text)}
-        //                     />
-        //                 </CView>
-
-        //                 <CView>
-        //                     <CInputText 
-        //                         label={"URL de la Imagen"} 
-        //                         placeholder='https://ejemplo.com/imagen.jpg'
-        //                         value={formData.imagen_url}
-        //                         onChangeText={(text) => {
-        //                             handleInputChange('imagen_url', text);
-        //                             setImage(text || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c");
-        //                         }}
-        //                     />
-        //                 </CView>
-
-        //                 <CView>
-        //                     <CInputText 
-        //                         label={"Galería (URLs separadas por comas)"} 
-        //                         placeholder='https://ejemplo.com/img1.jpg, https://ejemplo.com/img2.jpg'
-        //                         value={formData.galeria}
-        //                         onChangeText={(text) => handleInputChange('galeria', text)}
-        //                         multiline
-        //                     />
-        //                 </CView>
-
-        //                 <CView>
-        //                     <CInputText 
-        //                         label={"URL del Video"} 
-        //                         placeholder='https://ejemplo.com/video.mp4'
-        //                         value={formData.video_url}
-        //                         onChangeText={(text) => handleInputChange('video_url', text)}
-        //                     />
-        //                 </CView>
-        //                 <CView>
-        //                     <CInputText 
-        //                         label={"IVA %"} 
-        //                         placeholder='Ej: 19'
-        //                         keyboardType="numeric"
-        //                         value={formData.iva?.toString() || ''}
-        //                         onChangeText={(text) => handleInputChange('iva', text ? parseFloat(text) : null)}
-        //                     />
-        //                 </CView>
-                        
-
-        //                 <CView style={{flexDirection: 'row', gap: 10}}>
-        //                     <CView style={{flex: 1}}>
-        //                         <CInputText 
-        //                             label={"Descuento %"} 
-        //                             placeholder='0'
-        //                             keyboardType="numeric"
-        //                             value={formData.descuento?.toString()}
-        //                             onChangeText={(text) => handleInputChange('descuento', parseInt(text) || 0)}
-        //                         />
-        //                     </CView>
-        //                     <CView style={{flex: 1}}>
-        //                         <CInputText 
-        //                             label={"Precio Anterior"} 
-        //                             placeholder='0.00'
-        //                             keyboardType="numeric"
-        //                             value={formData.precio_anterior?.toString()}
-        //                             onChangeText={(text) => handleInputChange('precio_anterior', parseFloat(text) || 0)}
-        //                         />
-        //                     </CView>
-        //                 </CView>
-
-        //                 <CView>
-        //                     <CInputText 
-        //                         label={"Tiempo de Entrega"} 
-        //                         placeholder='Ej: 3-5 días'
-        //                         value={formData.tiempo_entrega}
-        //                         onChangeText={(text) => handleInputChange('tiempo_entrega', text)}
-        //                     />
-        //                 </CView>
-        //                 <CView style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 8, backgroundColor: '#f5f5f5', borderRadius: 5}}>
-        //                     <CText>Envío Gratis</CText>
-        //                     <Switch 
-        //                         value={formData.envio_gratis} 
-        //                         onValueChange={()=>onToggleSwitchEnvioGratis("envio_gratis")} 
-        //                     />
-        //                 </CView>
-        //             </CView>
-        //         </ScrollView>
-        //     </CView>
-        //     <CView style={{flex:1.5, gap:5, justifyContent:"center", padding:10, }}>
-        //         <CButton 
-        //         containerStyles={{ backgroundColor:"orange", borderRadius:10}} 
-        //         textStyles={{fontSize:24, paddingVertical:0}}
-        //         onPress={handleSaveProduct}
-        //         title='Guardar'/>
-        //         <CButton title="Volver Inicio" onPress={()=>router.dismissTo("/")}
-        //         textStyles={{fontSize:16, paddingVertical:0}}
-        //         containerStyles={{borderRadius:10, paddingVertical:0, borderWidth:5, borderStyle:"solid", borderColor:"#cecece"}}
-        //         />
-        //     </CView>
-
-        
-
-        // </CContainerView>
-
-
-
-
-
-
-
-        // <CContainerView style={{flex:1, paddingHorizontal:10}}>  
-        //     <CView style={{flex:5}}>
-        //         <ScrollView>
-        //             {/* <CView>
-        //                 {
-        //                     todos.map((item,key)=>{
-        //                         return <TouchableOpacity key={key} onPress={async()=>{
-        //                                 const dataPressed:any =  await db.getFirstAsync('SELECT * FROM platos where id=?',[item.id]);
-        //                                 console.log({dataPressed})
-        //                                 alert(`Boton presionado: ${dataPressed?.nombre}`)
-        //                             }}>
-        //                                 <CText>{item.nombre||"nada"}</CText>
-        //                         </TouchableOpacity>
-                                
-        //                     })
-        //                 }
-        //             </CView> */}
-        //             <CView style={{ padding:5, justifyContent:"center", gap:5, marginVertical:5}}>
-        //                     <Image style={style.imgComponent} 
-        //                     source={{ uri: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" }}/>
-        //                     <CButton containerStyles={style.btnStyle} title='Subir Imagen' onPress={pickImage}/>
-
-        //             </CView>
-        //             <CView style={{ gap:10, marginBottom:20, padding:10}}>
-        //                 {/* <CText type="title">
-        //                     {`Detalles de ${productname}`}
-        //                 </CText> */}
-        //                 <CView>
-        //                     <CInputText label={"Nombre"} placeholder='Escriba aquí el nombre' />
-        //                 </CView>
-        //                 <CView>
-        //                     <CInputText label={"Descripción"} 
-        //                     placeholder='Escriba aquí la descripción' 
-        //                     multiline/>
-                            
-        //                 </CView>
-        //                 <CView>
-        //                     <CInputText label={"Precio"} optionText='number'
-        //                     keyboardType="numeric"
-        //                     placeholder='Escriba aquí el precio' />
-        //                 </CView>
-        //                 <CText style={{paddingHorizontal:2}}>Categoría</CText>
-        //                 <CView style={{borderWidth:2, borderCurve:"circular", borderColor:"#cacacaff", borderRadius:5}}>
-        //                     {/* <CInputText label={"Categoría"} placeholder='Escriba aquí la categoría' /> */}
-        //                     <Picker
-        //                         selectedValue={selectedCategory}
-        //                         onValueChange={(itemValue, itemIndex) =>
-        //                             setSelectedCategory(itemValue)
-        //                         }
-        //                     >
-        //                         <Picker.Item label="Java" value="java" />
-        //                         <Picker.Item label="JavaScript" value="js" />
-        //                     </Picker>
-        //                 </CView>
-        //                 <CView>
-        //                     <CInputText label={"Subcategoría"} placeholder='Escriba aquí la subcategoría' />
-        //                 </CView>
-        //                 <CView>
-        //                     <CInputText label={"Imagen URL"} placeholder='Escriba aquí la URL de la imagen' />
-        //                 </CView>
-        //                 <CView>
-        //                     <CInputText label={"Galería"} placeholder='Escriba aquí las URLs de la galería' />
-        //                 </CView>
-        //                 <CView>
-        //                     <CInputText label={"Video URL"} placeholder='Escriba aquí la URL del video' />
-        //                 </CView>
-        //                 <CView>
-        //                     <CInputText label={"Descuento"} placeholder='Escriba aquí el descuento (%)' 
-        //                     keyboardType="numeric"
-        //                     />
-        //                 </CView>
-        //                 <CView>
-        //                     <CInputText label={"Precio Anterior"} placeholder='Escriba aquí el precio anterior' 
-        //                     keyboardType="numeric"
-        //                     />
-        //                 </CView>
-        //                 <CView style={{flex:1, flexDirection:"row", alignItems:"center", justifyContent:"center"}}>
-        //                     <CText style={{paddingHorizontal:2, flex:1}}>Envío Gratis</CText>
-        //                     <Switch value={switchEnvioGratis} onValueChange={onToggleSwitch} style={{flex:3, alignSelf:"center"}}/>
-        //                 </CView>
-        //                 <CView>
-        //                     <CInputText label={"Relacionados"} placeholder='Escriba los IDs o nombres relacionados' />
-        //                 </CView>
-
-        //             </CView>
-        //         </ScrollView>
-        //     </CView>
-        //     <CView style={{flex:1, gap:5,  paddingHorizontal:10}}>
-        //         <CButton containerStyles={{backgroundColor:"orange", borderRadius:10}} title='Guardar'/>
-        //         <CButton title="Volver Inicio" onPress={()=>router.dismissTo("/")}
-        //         textStyles={{fontSize:20}}
-        //         containerStyles={{paddingVertical: 0, borderRadius:10, borderWidth:2, borderStyle:"solid", borderColor:"#cecece"}}
-        //         />
-        //     </CView>
-        // </CContainerView>
     )
 }
 
 export default DetailedProductScreen
 
 const style = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 12,
+    },
+    header: {
+        flex: 1.2,
+        justifyContent: "center",
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        gap: 4,
+    },
+    headerTitle: {
+        textAlign:"center",
+        color:"white"
+    },
+    headerSubtitle: {
+        color: 'white',
+        opacity: 0.92,
+    },
+    scrollContent: {
+        paddingBottom: 24,
+    },
+    summaryCard: {
+        padding: 14,
+        borderRadius: 18,
+        borderWidth: 1,
+        borderColor: '#e4e4e7',
+        backgroundColor: '#fafafc',
+        marginBottom: 8,
+        gap: 8,
+    },
+    summaryRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
     imgComponent:{
         width:"90%",
         height: 200,
         objectFit: "cover",
-        margin:"auto"
+        margin:"auto",
+        borderRadius: 18,
     },
     btnStyle: {
         padding:2,
         borderRadius:5
-    }
+    },
+    switchRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: 12,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#e4e4e7',
+        backgroundColor: '#fafafc',
+    },
+    fieldCard: {
+        gap: 6,
+    },
+    pickerWrapper: {
+        borderWidth:1,
+        borderColor:"#cacacaff",
+        borderRadius:12,
+        backgroundColor: '#fafafc',
+        overflow: 'hidden',
+    },
 })

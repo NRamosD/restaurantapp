@@ -9,8 +9,9 @@ import {
   type MD3Theme,
 } from 'react-native-paper';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { type AppThemePreset } from '@/hooks/useAppearanceStore';
 
-export type AppThemeMode = 'light' | 'dark';
+export type AppThemeMode = AppThemePreset;
 
 export interface AppTheme {
   mode: AppThemeMode;
@@ -320,9 +321,199 @@ const darkTheme: AppTheme = {
   },
 };
 
+const sunsetTheme: AppTheme = {
+  mode: 'sunset',
+  colors: {
+    text: {
+      primary: '#5F2E22',
+      secondary: '#7A4A36',
+      inverse: '#FFFFFF',
+      link: '#FF9A86',
+    },
+    surface: {
+      background: '#FFF0BE',
+      card: '#FFF7D6',
+      cardGradientStart: '#FFD6A6',
+      cardGradientEnd: '#FFF0BE',
+      muted: '#FFE6BE',
+    },
+    border: {
+      default: '#FFB399',
+      active: '#FF9A86',
+      muted: '#FFD6A6',
+    },
+    brand: {
+      primary: '#FF9A86',
+      onPrimary: '#5F2E22',
+    },
+    feedback: {
+      success: '#7C9D5D',
+      warning: '#C97A42',
+      error: '#C75454',
+    },
+    icon: {
+      primary: '#5F2E22',
+      muted: '#A56C56',
+    },
+    input: {
+      background: '#FFF7D6',
+      text: '#5F2E22',
+      placeholder: '#A56C56',
+      border: '#FFB399',
+      borderActive: '#FF9A86',
+      disabled: '#E7C8B5',
+    },
+    disabled: '#E7C8B5',
+    shimmer: {
+      start: '#FFE1C6',
+      end: '#FFF0BE',
+    },
+  },
+  spacing: baseSpacing,
+  radius: baseRadius,
+  components: {
+    button: {
+      primary: {
+        backgroundColor: '#FF9A86',
+        textColor: '#5F2E22',
+        borderColor: '#FF9A86',
+      },
+      secondary: {
+        backgroundColor: '#FFF7D6',
+        textColor: '#5F2E22',
+        borderColor: '#FFB399',
+      },
+      ghost: {
+        backgroundColor: 'transparent',
+        textColor: '#5F2E22',
+        borderColor: 'transparent',
+      },
+      danger: {
+        backgroundColor: '#C75454',
+        textColor: '#FFFFFF',
+        borderColor: '#C75454',
+      },
+    },
+    input: {
+      backgroundColor: '#FFF7D6',
+      textColor: '#5F2E22',
+      labelColor: '#7A4A36',
+      placeholderColor: '#A56C56',
+      borderColor: '#FFB399',
+      activeBorderColor: '#FF9A86',
+      disabledColor: '#E7C8B5',
+    },
+    card: {
+      backgroundColor: '#FFF7D6',
+      borderColor: '#FFB399',
+    },
+    tabBar: {
+      activeTintColor: '#FF9A86',
+      inactiveTintColor: '#A56C56',
+      backgroundColor: '#FFF7D6',
+    },
+  },
+};
+
+const greenlandTheme: AppTheme = {
+  mode: 'greenland',
+  colors: {
+    text: {
+      primary: '#17361D',
+      secondary: '#346739',
+      inverse: '#FFFFFF',
+      link: '#346739',
+    },
+    surface: {
+      background: '#F2EDC2',
+      card: '#FCF8DA',
+      cardGradientStart: '#9FCB98',
+      cardGradientEnd: '#F2EDC2',
+      muted: '#E4E8BF',
+    },
+    border: {
+      default: '#79AE6F',
+      active: '#346739',
+      muted: '#9FCB98',
+    },
+    brand: {
+      primary: '#346739',
+      onPrimary: '#FFFFFF',
+    },
+    feedback: {
+      success: '#346739',
+      warning: '#9A7B2F',
+      error: '#B44A4A',
+    },
+    icon: {
+      primary: '#17361D',
+      muted: '#5F8C57',
+    },
+    input: {
+      background: '#FCF8DA',
+      text: '#17361D',
+      placeholder: '#5F8C57',
+      border: '#79AE6F',
+      borderActive: '#346739',
+      disabled: '#B7C7A1',
+    },
+    disabled: '#B7C7A1',
+    shimmer: {
+      start: '#DDE8C1',
+      end: '#F2EDC2',
+    },
+  },
+  spacing: baseSpacing,
+  radius: baseRadius,
+  components: {
+    button: {
+      primary: {
+        backgroundColor: '#346739',
+        textColor: '#FFFFFF',
+        borderColor: '#346739',
+      },
+      secondary: {
+        backgroundColor: '#FCF8DA',
+        textColor: '#17361D',
+        borderColor: '#79AE6F',
+      },
+      ghost: {
+        backgroundColor: 'transparent',
+        textColor: '#17361D',
+        borderColor: 'transparent',
+      },
+      danger: {
+        backgroundColor: '#B44A4A',
+        textColor: '#FFFFFF',
+        borderColor: '#B44A4A',
+      },
+    },
+    input: {
+      backgroundColor: '#FCF8DA',
+      textColor: '#17361D',
+      labelColor: '#346739',
+      placeholderColor: '#5F8C57',
+      borderColor: '#79AE6F',
+      activeBorderColor: '#346739',
+      disabledColor: '#B7C7A1',
+    },
+    card: {
+      backgroundColor: '#FCF8DA',
+      borderColor: '#79AE6F',
+    },
+    tabBar: {
+      activeTintColor: '#346739',
+      inactiveTintColor: '#5F8C57',
+      backgroundColor: '#FCF8DA',
+    },
+  },
+};
+
 export const appThemes = {
   light: lightTheme,
   dark: darkTheme,
+  sunset: sunsetTheme,
+  greenland: greenlandTheme,
 } satisfies Record<AppThemeMode, AppTheme>;
 
 export type AppThemeColorKey =
@@ -347,7 +538,7 @@ export type LegacyThemeColors = Record<AppThemeColorKey, string>;
 export function resolveThemeMode(
   scheme: ReturnType<typeof useColorScheme>
 ): AppThemeMode {
-  return scheme === 'dark' ? 'dark' : 'light';
+  return scheme;
 }
 
 export function getAppTheme(
