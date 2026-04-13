@@ -15,13 +15,14 @@ import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 import CInputText from '@/components/CInputText';
 import { useIsFocused } from '@react-navigation/native';
 import { useOrdenService } from '@/modules';
+import { useAppearanceStore } from '@/hooks/useAppearanceStore';
 
 
 
 
 export default function TabTwoScreen() {
   const isFocused = useIsFocused();
-  const theme = useColorScheme()
+  const themePreset = useAppearanceStore((state) => state.themePreset);
 
   const [textFieldToShow, setTextFieldToShow] = useState(0);
   const [openModal2, setopenModal2] = useState(false);
@@ -157,7 +158,7 @@ export default function TabTwoScreen() {
         <CView style={styles.sectionFilters}>
           <CView style={styles.filtersStyle}>
               <TouchableOpacity onPress={showDatepicker} style={styles.filtersBtnStyle}>
-                  <Ionicons name="filter" size={25} color={theme === "dark" ? "white" : "black"}/>
+                  <Ionicons name="filter" size={25} color={themePreset === "dark" ? "white" : "black"}/>
                   <CText type="default">Filtrar por fecha</CText>
               </TouchableOpacity>
               <TouchableOpacity onPress={()=>{
@@ -172,10 +173,10 @@ export default function TabTwoScreen() {
                   alignItems:"center",
                   height:"100%",
               }}>
-                  <Ionicons name="sync" size={25} color={theme === "dark" ? "white" : "black"}/>
+                  <Ionicons name="sync" size={25} color={themePreset === "dark" ? "white" : "black"}/>
               </TouchableOpacity>
               <TouchableOpacity onPress={()=>setopenModal2(true)} style={styles.filtersBtnStyle}>
-                <Ionicons name="filter" size={25} color={theme === "dark" ? "white" : "black"}/>
+                <Ionicons name="filter" size={25} color={themePreset === "dark" ? "white" : "black"}/>
                 <CText type="default">Otros filtros</CText>
               </TouchableOpacity>
           </CView>

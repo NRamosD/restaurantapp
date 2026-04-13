@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: 1,
     borderColor: '#e4e4e7',
-    backgroundColor: '#fafafc',
+    marginTop: 10,
     gap: 4,
   },
   listContent: {
