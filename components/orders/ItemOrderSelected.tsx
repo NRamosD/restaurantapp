@@ -8,9 +8,10 @@ import GenericModal from '../ui/GenericModal'
 import { useState } from 'react'
 import CInputText from '../CInputText'
 import { useColorScheme } from '@/hooks/useColorScheme'
+import { OrdenProductoDetails } from '@/modules/orden/orden.service'
 
 type Props = {
-    singleProduct: OrderItem,
+    singleProduct: OrdenProductoDetails,
     removeItem?: (productoUuid: string)=>void,
     justShow?: boolean
 }
@@ -27,10 +28,10 @@ const ItemOrderSelected = ({
   const [openModal, setopenModal] = useState(false)
   const [detailProduct, setDetailProduct] = useState("")
   
-  const currentItem = getItem(singleProduct.productoUuid)
-  const quantity = getQuantity(singleProduct.productoUuid) || singleProduct.cantidad || 0
-  const unitPrice = singleProduct.precio ?? 0
-  const notes = currentItem?.observaciones ?? currentItem?.notas ?? singleProduct.observaciones ?? singleProduct.notas ?? ""
+  const currentItem = getItem(singleProduct?.productoUuid || "")
+  const quantity = getQuantity(singleProduct?.productoUuid || "") || singleProduct.cantidad || 0
+  const unitPrice = singleProduct?.precioUnitario ?? 0
+  const notes = singleProduct.notas ?? ""
   const subtotal = unitPrice * quantity
 
   return (
@@ -43,7 +44,7 @@ const ItemOrderSelected = ({
         style={style.container}>
             <CView style={{flex:8}}>
               <CText style={style.nameProduct}>
-              {singleProduct?.nombre}
+              {currentItem ? currentItem?.producto?.nombre : singleProduct?.producto?.nombre}
               </CText>
               {
                 notes ?
@@ -78,18 +79,18 @@ const ItemOrderSelected = ({
               </CView>
             </CView>
             <CView style={{flex:3}}>
-              {justShow ? null : <TouchableOpacity style={{flex:1, alignItems:"flex-end"}} onPress={()=>{removeItem && removeItem(singleProduct.productoUuid)}}>
+              {justShow ? null : <TouchableOpacity style={{flex:1, alignItems:"flex-end"}} onPress={()=>{removeItem && removeItem(singleProduct?.productoUuid || "")}}>
                   <Ionicons name={"trash"} size={30} color={"red"} />
               </TouchableOpacity>}
               {justShow ? null : <CView style={{flex:1}}>
-                <AddReduceButton item={{ uuid: singleProduct.productoUuid, ilimitado: Boolean(singleProduct.ilimitado), stock: singleProduct.stock ?? 0 }} />
+                <AddReduceButton item={{ uuid: singleProduct?.productoUuid || "", ilimitado: !!singleProduct?.producto?.ilimitado, stock: singleProduct?.producto?.stock ?? 0 }} />
               </CView>}
             </CView>
         </CView>
       </TouchableOpacity>
 
       <GenericModal
-        title={singleProduct.nombre}
+        title={singleProduct.producto?.nombre || ""}
         showModal={openModal}
         setShowModal={setopenModal}
         showConfirmButton={!justShow}

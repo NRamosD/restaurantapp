@@ -1,8 +1,10 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { OrdenProducto } from '@/interfaces/general.interface';
+import { v4 as uuidv4 } from 'uuid';
+import { OrdenProducto, Producto } from '@/interfaces/general.interface';
 import { ProductoDisponible } from '@/modules/producto/producto.service';
+import { OrdenDetails, OrdenProductoDetails } from '@/modules/orden/orden.service';
 
 type OrderItemProduct = {
   uuid: string;
@@ -13,25 +15,17 @@ type OrderItemProduct = {
   [key: string]: unknown;
 };
 
-export interface OrderItem
-  extends Omit<Partial<ProductoDisponible>, 'uuid' | 'createdAt' | 'updatedAt' | 'deletedAt'> {
-  uuid: string;
-  productoUuid: string;
-  uuid_order_item?: string;
-  estadoSync: string;
-  notas?: string | null;
-  createdAt: string | Date;
-  updatedAt: string | Date | null;
-  updatedByUuid?: string | null;
-  deletedAt?: string | Date | null;
-  cantidad:number;
-  observaciones?: string;
+export interface OrderItem extends OrdenProductoDetails {
+
 }
 
+
 interface OrderState {
+  orderDetails: OrdenDetails | null;
+  setOrderDetails: (orderDetails: OrdenDetails | null) => void;
   items: OrderItem[];
   setItems: (items: Partial<OrderItem>[]) => void;
-  addItem: (item: OrderItem) => void;
+  addItem: (item: Producto) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, cantidad: number) => void;
   updateNotes: (productId: string, observaciones: string) => void;
@@ -46,18 +40,39 @@ const useOrderStore = create<OrderState>()(
   persist(
     (set, get) => ({
       items: [] as OrderItem[],
+      orderDetails: null,
       
       setItems: (items) => set({ items: items as OrderItem[] }),
+      setOrderDetails: (orderDetails) => set({ orderDetails: orderDetails ?? null }),
       
       addItem: (producto) =>
         set((state) => {
           const existingItem = state.items.find((item) => item.uuid === producto.uuid);
-          
+
+          const newItem: OrderItem = {
+            uuid: uuidv4(),
+            ordenUuid: get().orderDetails?.orden?.uuid|| '',
+            productoUuid: producto.uuid,
+            cantidad: 1,
+            precioUnitario: producto?.precio ?? 0,
+            descuento: 0,
+            subtotal: (producto.precio ?? 0) *1,
+            iva: 0,
+            total: (producto.precio ?? 0) *1,
+            estadoSync: 'PENDIENTE',
+            notas: null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            updatedByUuid: null,
+            deletedAt: null,
+            producto: producto,
+          }
+
           if (existingItem) {
             return {
               items: state.items.map((item) =>
-                item.uuid === producto.uuid
-                  ? { ...item, cantidad: item.cantidad + 1 }
+                item.productoUuid === producto.uuid
+                  ? { ...item, cantidad: (item.cantidad || 0) + 1 }
                   : item
               ),
             };
@@ -66,12 +81,7 @@ const useOrderStore = create<OrderState>()(
           return {
             items: [
               ...state.items,
-              {
-                ...producto,
-                cantidad: producto.cantidad || 1,
-                observaciones: producto.observaciones ?? producto.notas ?? '',
-                notas: producto.notas ?? producto.observaciones ?? '',
-              },
+              newItem
             ],
           };
         }),
@@ -84,7 +94,7 @@ const useOrderStore = create<OrderState>()(
       updateQuantity: (productId, cantidad) =>
         set((state) => ({
           items: state.items.map((item) =>
-            item.uuid === productId ? { ...item, cantidad } : item
+            item.productoUuid === productId ? { ...item, cantidad } : item
           ),
         })),
       
@@ -102,16 +112,16 @@ const useOrderStore = create<OrderState>()(
       
       getTotal: () =>
         get().items.reduce((total, item) => {
-          const unitPrice = item.precio ?? 0;
+          const unitPrice = item.precioUnitario ?? 0;
 
-          return total + unitPrice * item.cantidad;
+          return total + unitPrice * (item.cantidad || 0);
         }, 0),
       
       getItemCount: () =>
-        get().items.reduce((count, item) => count + item.cantidad, 0),
+        get().items.reduce((count, item) => count + (item.cantidad || 0), 0),
 
       getQuantity: (productId) =>
-        get().items.find((item) => item.uuid === productId)?.cantidad || 0,
+        get().items.find((item) => item.productoUuid === productId)?.cantidad || 0,
     }),
     {
       name: 'order-storage',

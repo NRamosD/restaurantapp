@@ -15,8 +15,8 @@ const useOrderOperations = ({
     const { obtenerOrdenPorUuid } = useOrdenService()
 
     const {
-        items,
-        addItem
+        setItems,
+        setOrderDetails
     } = useOrderStore()
 
 
@@ -31,17 +31,19 @@ const useOrderOperations = ({
 
 
     const loadOrderData = async(ordenUuid: string)=>{
-        console.log("loadOrderData", ordenUuid)
+        // console.log("loadOrderData", ordenUuid)
         const resultOrder = await obtenerOrdenPorUuid(ordenUuid)
-        console.log({resultOrder})
-        console.log(resultOrder?.ordenProductos)
-        resultOrder?.ordenProductos?.forEach((item) => {
-            addItem({
-              ...item,
-              cantidad: item.cantidad,
-              observaciones: item.notas || ""
-            })
-        })
+        setOrderDetails(resultOrder)
+        setItems(resultOrder?.ordenProductos || [])
+        // console.log({resultOrder})
+        // console.log({veamos: resultOrder?.ordenProductos})
+        // resultOrder?.ordenProductos?.forEach((item) => {
+        //     addItem({
+        //       ...item,
+        //       cantidad: item.cantidad || 0,
+        //       observaciones: item.notas || ""
+        //     })
+        // })
         // resultOrder.ordenProductos.forEach(async (item) => {
         //   const currentProduct =  await getProductById(dbConnection, item.id_producto)
         //   if(currentProduct){

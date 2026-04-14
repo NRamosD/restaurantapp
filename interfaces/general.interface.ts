@@ -100,28 +100,28 @@ export interface Producto {
     uuid: string;
 
     nombre: string;
-    descripcion?: string;
+    descripcion?: string | null;
 
     precio: number;
-    aplicaIva: boolean;
-    porcentajeIva: number;
+    aplicaIva: boolean | null | number;
+    porcentajeIva: number | null;
 
     stock: number;
-    ilimitado: boolean;
+    ilimitado: boolean | null | number;
 
-    imagenUrl?: string;
-    galeria?: string[];
+    imagenUrl?: string | null;
+    galeria?: string[] | string | null;
 
-    estado: 'DISPONIBLE' | 'NO_DISPONIBLE';
+    estado: 'DISPONIBLE' | 'NO_DISPONIBLE' | string;
 
     perfilNegocioUuid: string;
 
-    estadoSync: 'PENDIENTE' | 'SINCRONIZADO';
+    estadoSync: 'PENDIENTE' | 'SINCRONIZADO' | string;
 
-    createdAt: Date;
-    updatedAt?: Date;
-    updatedByUuid?: string;
-    deletedAt?: Date;
+    createdAt: Date | string;
+    updatedAt?: Date | null | string;
+    updatedByUuid?: string | null;
+    deletedAt?: Date | null | string;
 }
 
 
@@ -159,26 +159,26 @@ export interface ProductoComponente {
 export interface Orden {
     id: number;
     uuid: string;
-    numeroOrden?: number;
+    numeroOrden?: number|null;
 
-    clienteUuid?: string;
+    clienteUuid?: string | null;
     usuarioUuid: string;
 
-    tipo: 'LOCAL' | 'LLEVAR' | 'DELIVERY';
+    tipo: 'LOCAL' | 'LLEVAR' | 'DELIVERY' | string;
 
-    estado: 'PENDIENTE' | 'EN_PREPARACION' | 'LISTO' | 'ENTREGADO' | 'CANCELADO';
-    estadoSync: 'PENDIENTE' | 'SINCRONIZADO';
+    estado: 'PENDIENTE' | 'EN_PREPARACION' | 'LISTO' | 'ENTREGADO' | 'CANCELADO' | string;
+    estadoSync: 'PENDIENTE' | 'SINCRONIZADO' | string;
 
     subtotal: number;
     iva: number;
     total: number;
 
-    observaciones?: string;
+    observaciones?: string | null;
 
-    createdAt: Date;
-    updatedAt: Date;
-    updatedByUuid?: string;
-    deletedAt?: Date;
+    createdAt: Date | string;
+    updatedAt: Date | string;
+    updatedByUuid?: string | null;
+    deletedAt?: Date | string | null;
 }
 
 
@@ -196,13 +196,13 @@ export interface OrdenProducto {
     subtotal: number;
     iva: number;
     total: number;
-    estadoSync: 'PENDIENTE' | 'SINCRONIZADO';
+    estadoSync: 'PENDIENTE' | 'SINCRONIZADO' | string;
 
-    notas?: string;
-    createdAt: Date;
-    updatedAt: Date;
-    updatedByUuid?: string;
-    deletedAt?: Date;
+    notas?: string | null;
+    createdAt: Date | string;
+    updatedAt: Date | string;
+    updatedByUuid?: string | null;
+    deletedAt?: Date | null | string;
 }
 
 

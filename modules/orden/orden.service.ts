@@ -2,9 +2,10 @@ import { eq, asc, desc, and, sql, gte, lt } from 'drizzle-orm';
 import { useDrizzle } from '@/db/db';
 import { Orden, OrdenProducto, Producto, Cliente, Usuario } from '@/db/schema';
 import { v4 as uuidv4 } from 'uuid';
+import { Orden as OrdenInterface, OrdenProducto as OrdenProductoInterface, Producto as ProductoInterface } from '@/interfaces/general.interface';
 
 type OrdenEstado = 'PENDIENTE' | 'EN_PREPARACION' | 'LISTO' | 'ENTREGADO' | 'CANCELADO';
-type OrdenTipo = 'LOCAL' | 'LLEVAR' | 'DELIVERY';
+export type OrdenTipo = 'LOCAL' | 'LLEVAR' | 'DELIVERY';
 
 interface CrearOrdenParams {
   usuarioUuid: string;
@@ -18,6 +19,15 @@ interface AgregarProductoParams {
   productoUuid: string;
   cantidad: number;
   notas?: string;
+}
+
+export interface OrdenProductoDetails extends Partial<OrdenProductoInterface>{
+  producto: Partial<ProductoInterface>;
+}
+
+export interface OrdenDetails{
+    orden: Partial<OrdenInterface> | null
+    ordenProductos: OrdenProductoDetails[]
 }
 
 export function useOrdenService() {
@@ -120,7 +130,7 @@ export function useOrdenService() {
     await cambiarEstadoOrden(ordenUuid, 'ENTREGADO');
   };
 
-  const obtenerOrdenPorUuid = async (ordenUuid: string) => {
+  const obtenerOrdenPorUuid = async (ordenUuid: string) : Promise<OrdenDetails | null> => {
     const [orden] = await db
       .select()
       .from(Orden)
@@ -147,7 +157,7 @@ export function useOrdenService() {
       })
     );
 
-    return { orden, ordenProductos: productosConDetalle };
+    return { orden: orden , ordenProductos: productosConDetalle };
   };
 
   const obtenerOrdenesPorEstado = async (estado?: OrdenEstado) => {

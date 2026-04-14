@@ -28,6 +28,7 @@ const CreateOrder = ({
   //store
   const {
     items,
+    setItems,
     addItem,
     removeItem,
     clearOrder,
@@ -76,15 +77,12 @@ const CreateOrder = ({
 
 
   useEffect(() => {
-    
     (async () => {
       const products = await obtenerProductosDisponibles()
       setDataProducts(products)
       setProductsList(products)
     })()
 
-
-    console.log({items})
   }, []);
 
   useEffect(() => {
