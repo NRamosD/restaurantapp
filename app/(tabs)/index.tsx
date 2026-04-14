@@ -16,31 +16,23 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CButton from "@/components/CButton";
 import { Ionicons } from "@expo/vector-icons";
 import { ItemOrderLink } from "@/components/orders";
-import { useSQLiteContext } from "expo-sqlite";
-// import { Orden } from "@/interfaces";
-import { getAllOrders, getOrdersByStatus } from "@/db/order.operations";
 import { useIsFocused } from "@react-navigation/native";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Colors, getColors } from "@/constants/Colors";
+import { getColors } from "@/constants/Colors";
 import { useOrdenService } from "@/modules";
-import { Orden } from "@/interfaces/general.interface";
 
 export default function HomeScreen() {
-  // const [nameProduct, setNameProduct] = useState<string>("");
 
   const colorScheme = useColorScheme()
-  const dbConnection = useSQLiteContext()
   const isFocused = useIsFocused();
   const [orderList, setOrderList] = useState<any[]>([])
   const [refreshing, setRefreshing] = useState(false);
 
   const { obtenerOrdenesPorEstado } = useOrdenService()
-  // const [profiles, setProfiles] = useState<Perfil[]>([])
   const insets = useSafeAreaInsets()
 
   const getAllOrdersList = async () => {
     const result = await obtenerOrdenesPorEstado("PENDIENTE")
-    console.log("result", result)
     setOrderList(result)
   }
   
@@ -59,14 +51,6 @@ export default function HomeScreen() {
 
 
   return (
-    // <ParallaxScrollView
-    //   headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-    //   headerImage={
-    //     <Image
-    //       source={require('@/assets/images/partial-react-logo.png')}
-    //       style={styles.reactLogo}
-    //     />
-    //   }>
     <View style={{
       flex: 1,
       flexDirection:"column",
@@ -121,37 +105,15 @@ export default function HomeScreen() {
         </View>
         <View style={styles.contNewPedido}>
           <CButton onPress={()=>{
-            // alert("hola")
             router.push("/orders/create-order")
           }} title={"NUEVO PEDIDO"} containerStyles={styles.touchableCreate}/>
         </View>
-        {/* <View style={styles.contNewPedido}>
-          <CButton onPress={()=>{
-            createComponentWithButton()
-          }} title={"NUEVO componente"} containerStyles={styles.touchableCreate}/>
-        </View> */}
-        {/* <View style={styles.contNewPedido}>
-          <CText type="title" style={{textAlign:"center", paddingVertical:5}}>
-            Perfiles
-          </CText>
-          <ScrollView style={styles.scrollView}>
-            {profiles.map((profile, index) => (
-              <CText key={index} style={{padding:5}}>{profile.nombre_perfil}</CText>
-            ))}
-          </ScrollView>
-        </View> */}
     </View>
-    // </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  // container: {
-  //   flex: 1,
-  //   paddingTop: 20,
-  // },
   touchableCreate:{
-    // backgroundColor:"#dedede",
     padding:10,
     textAlign:"center",
     justifyContent:"center",
@@ -210,139 +172,4 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
 });
-
-
-
-
-
-{/* <Text>Contenido seguro aquí</Text>
-
-<CView style={styles.titleContainer}>
-  <CText type="title">Welcome!</CText>
-  <HelloWave />
-  <Link href={"/inventory/:tomate"}>Veamos el tomate</Link>
-</CView>
-<View style={{ padding: 10, display: "flex", gap: 15 }}>
-  <TextInput
-    onChangeText={(text) => setNameProduct(text)}
-    style={{
-      borderStyle: "solid",
-      borderWidth: 5,
-      borderColor: "red",
-      borderRadius: 10,
-    }}
-  />
-  <Button
-    title="aquiii"
-    onPress={() => {
-      router.navigate(`inventory/:${nameProduct}`);
-    }}
-  />
-</View>
-<CView style={styles.stepContainer}>
-  <CText type="subtitle">Step 1: Try it</CText>
-  <CText>
-    Edit{" "}
-    <CText type="defaultSemiBold">
-      app/(tabs)/index.tsx
-    </CText>{" "}
-    to see changes. Press{" "}
-    <CText type="defaultSemiBold">
-      {Platform.select({
-        ios: "cmd + d",
-        android: "cmd + m",
-        web: "F12",
-      })}
-    </CText>{" "}
-    to open developer tools.
-  </CText>
-</CView>
-<CView style={styles.stepContainer}>
-  <CText type="subtitle">Step 2: Explore</CText>
-  <CText>
-    Tap the Explore tab to learn more about what's included in this
-    starter app.
-  </CText>
-  <Link href={"/inventory/(tabs)"}>asdas</Link>
-  <Button
-    title="qweqw"
-    color={"#123"}
-    accessibilityLabel="qweqw"
-    onPress={() => {
-      router.push("/inventory/(tabs)");
-    }}
-  />
-</CView>
-<CView style={styles.stepContainer}>
-  <CText type="subtitle">Step 3: Get a fresh start</CText>
-  <CText>
-    When you're ready, run{" "}
-    <CText type="defaultSemiBold">
-      npm run reset-project
-    </CText>{" "}
-    to get a fresh <CText type="defaultSemiBold">app</CText>{" "}
-    directory. This will move the current{" "}
-    <CText type="defaultSemiBold">app</CText> to{" "}
-    <CText type="defaultSemiBold">app-example</CText>.
-  </CText>
-</CView>
-<CView style={styles.stepContainer}>
-  <CText type="subtitle">Step 3: Get a fresh start</CText>
-  <CText>
-    When you're ready, run{" "}
-    <CText type="defaultSemiBold">
-      npm run reset-project
-    </CText>{" "}
-    to get a fresh <CText type="defaultSemiBold">app</CText>{" "}
-    directory. This will move the current{" "}
-    <CText type="defaultSemiBold">app</CText> to{" "}
-    <CText type="defaultSemiBold">app-example</CText>.
-  </CText>
-</CView>
-<CView style={styles.stepContainer}>
-  <CText type="subtitle">Step 3: Get a fresh start</CText>
-  <CText>
-    When you're ready, run{" "}
-    <CText type="defaultSemiBold">
-      npm run reset-project
-    </CText>{" "}
-    to get a fresh <CText type="defaultSemiBold">app</CText>{" "}
-    directory. This will move the current{" "}
-    <CText type="defaultSemiBold">app</CText> to{" "}
-    <CText type="defaultSemiBold">app-example</CText>.
-  </CText>
-</CView>
-<CView style={styles.stepContainer}>
-  <CText type="subtitle">Step 3: Get a fresh start</CText>
-  <CText>
-    When you're ready, run{" "}
-    <CText type="defaultSemiBold">
-      npm run reset-project
-    </CText>{" "}
-    to get a fresh <CText type="defaultSemiBold">app</CText>{" "}
-    directory. This will move the current{" "}
-    <CText type="defaultSemiBold">app</CText> to{" "}
-    <CText type="defaultSemiBold">app-example</CText>.
-  </CText>
-</CView>
-<CView style={styles.stepContainer}>
-  <CText type="subtitle">Step 3: Get a fresh start</CText>
-  <CText>
-    When you're ready, run{" "}
-    <CText type="defaultSemiBold">
-      npm run reset-project
-    </CText>{" "}
-    to get a fresh <CText type="defaultSemiBold">app</CText>{" "}
-    directory. This will move the current{" "}
-    <CText type="defaultSemiBold">app</CText> to{" "}
-    <CText type="defaultSemiBold">app-example</CText>.
-  </CText>
-</CView> */}
-
-
-
-
-
-
-
 

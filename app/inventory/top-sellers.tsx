@@ -1,19 +1,14 @@
 import { CButton } from '@/components'
 import { CContainerView } from '@/components/CContainerView'
-import CInputText from '@/components/CInputText'
 import { CText } from '@/components/CText'
 import { CView } from '@/components/CView'
-import { router, useLocalSearchParams } from 'expo-router'
+import { router } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { Image, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
-import * as ImagePicker from 'expo-image-picker';
-import { Switch, TextInput } from 'react-native-paper'
-import { Picker } from '@react-native-picker/picker'
+import { ScrollView } from 'react-native'
 import { useSQLiteContext } from 'expo-sqlite'
 import { SegmentedButtons } from 'react-native-paper';
 import DetailTopSeller from '@/components/inventory/DetailTopSeller'
-import { getOrdersByDateRange } from '@/db/order.operations'
-import { getOrderProduct, getTopSellingProducts } from '@/db/order_product.operations'
+import { getTopSellingProducts } from '@/db/order_product.operations'
 import dayjs from 'dayjs'
 
 type Props = {}
@@ -28,32 +23,12 @@ export type mostSellsProduct = {
 }
 
 const CreateProductScreen = (props: Props) => {
-    const {productname} = useLocalSearchParams()
     const db = useSQLiteContext();
     
     const [todos, setTodos] = useState<mostSellsProduct[]>([]);
-    const [image, setImage] = useState<string | null>(null);
-    const [switchEnvioGratis, setSwitchEnvioGratis] = useState(false);
     const [segmentedButtonValue, setSegmentedButtonValue] = useState('today');
 
 
-    const onToggleSwitch = () => setSwitchEnvioGratis(!switchEnvioGratis);
-    
-    const pickImage = async () => {
-        // No permissions request is necessary for launching the image library
-        let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images', 'videos'],
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-        });
-
-        console.log(result);
-
-        if (!result.canceled) {
-        setImage(result.assets[0].uri);
-        }
-    };
 
 
     async function setup(
@@ -99,13 +74,6 @@ const CreateProductScreen = (props: Props) => {
                                     key={`${item.nombre||"item"}+${key}`}
                                 />
                             )
-                            // <TouchableOpacity key={key} onPress={async()=>{
-                            //         const dataPressed:any =  await db.getFirstAsync('SELECT * FROM platos where id=?',[item.id]);
-                            //         console.log({dataPressed})
-                            //         alert(`Boton presionado: ${dataPressed?.nombre}`)
-                            //     }}>
-                            //         <CText>{item.nombre||"nada"}</CText>
-                            // </TouchableOpacity>
                             
                         })
                         :
@@ -134,17 +102,3 @@ const CreateProductScreen = (props: Props) => {
 }
 
 export default CreateProductScreen
-
-const style = StyleSheet.create({
-    imgComponent:{
-        width:"90%",
-        height: 200,
-        objectFit: "cover",
-        margin:"auto"
-    },
-    btnStyle: {
-        padding:2,
-        backgroundColor:"gray",
-        borderRadius:5
-    }
-})

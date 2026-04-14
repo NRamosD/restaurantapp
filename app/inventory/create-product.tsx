@@ -3,33 +3,29 @@ import { CContainerView } from '@/components/CContainerView'
 import CInputText from '@/components/CInputText'
 import { CText } from '@/components/CText'
 import { CView } from '@/components/CView'
-import { router, useLocalSearchParams } from 'expo-router'
+import { router } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { Image, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
+import { ScrollView, StyleSheet } from 'react-native'
 import * as ImagePicker from 'expo-image-picker';
-import { Switch, TextInput } from 'react-native-paper'
+import { Switch } from 'react-native-paper'
 import { Picker } from '@react-native-picker/picker'
-import { useSQLiteContext } from 'expo-sqlite'
 import CImage from '@/components/CImage'
-// import { createProduct } from '@/db/producto.operations'
 import { Product } from '@/interfaces'
 import { useColorScheme } from '@/hooks/useColorScheme'
-import { Colors, getColors } from '@/constants/Colors'
+import { getColors } from '@/constants/Colors'
 
 type Props = {}
 
 
 
 const CreateProductScreen = ({}: Props) => {
-    const db = useSQLiteContext();
     const color = useColorScheme()
-    // State for form fields
     const [formData, setFormData] = useState<Omit<Product, 'id_producto' | 'negocioUuid' | 'uuid'>>({
         perfilNegocioUuid: 'TEMP_PERFIL_NEGOCIO_UUID',
         nombre: '',
         descripcion: '',
         precio: 0,
-        precio_total: 0, // This should be calculated based on precio and descuento
+        precio_total: 0,
         stock: 0,
         estado: 'disponible',
         envio_gratis: false,
@@ -97,8 +93,6 @@ const CreateProductScreen = ({}: Props) => {
     };
 
     const handleSaveProduct = async() => {
-        // console.log(formData);
-        // await createProduct(db, formData)
         router.dismissTo("/")
     };
 
@@ -206,47 +200,6 @@ const CreateProductScreen = ({}: Props) => {
                             />
                         </CView>
 
-                        {/* <CView>
-                            <CInputText 
-                                label={"URL de la Imagen"} 
-                                placeholder='https://ejemplo.com/imagen.jpg'
-                                value={formData.imagen_url}
-                                onChangeText={(text) => {
-                                    handleInputChange('imagen_url', text);
-                                    setImage(text || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c");
-                                }}
-                            />
-                        </CView> */}
-
-                        {/* <CView>
-                            <CInputText 
-                                label={"Galería (URLs separadas por comas)"} 
-                                placeholder='https://ejemplo.com/img1.jpg, https://ejemplo.com/img2.jpg'
-                                value={formData.galeria}
-                                onChangeText={(text) => handleInputChange('galeria', text)}
-                                multiline
-                            />
-                        </CView> */}
-
-                        {/* <CView>
-                            <CInputText 
-                                label={"URL del Video"} 
-                                placeholder='https://ejemplo.com/video.mp4'
-                                value={formData.video_url}
-                                onChangeText={(text) => handleInputChange('video_url', text)}
-                            />
-                        </CView> */}
-                        {/* <CView>
-                            <CInputText 
-                                label={"IVA %"} 
-                                placeholder='Ej: 19'
-                                keyboardType="numeric"
-                                value={formData.iva?.toString() || ''}
-                                onChangeText={(text) => handleInputChange('iva', text ? parseFloat(text) : null)}
-                            />
-                        </CView> */}
-                        
-
                         <CView style={{flexDirection: 'row', gap: 10}}>
                             <CView style={{flex: 1, gap: 10}}>
                                 <CInputText 
@@ -267,13 +220,7 @@ const CreateProductScreen = ({}: Props) => {
                                         ((formData.precio||0)-(formData.precio||0)*(formData.descuento||0)/100).toString()
                                     }
                                 />
-                                {/* <CInputText 
-                                    label={"Precio Anterior"} 
-                                    placeholder='0.00'
-                                    keyboardType="numeric"
-                                    value={formData.precio_anterior?.toString()}
-                                    onChangeText={(text) => handleInputChange('precio_anterior', parseFloat(text) || 0)}
-                                /> */}
+
                             </CView>
                         </CView>
 
