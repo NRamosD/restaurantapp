@@ -51,18 +51,27 @@ export function CText({
   const typeStyle = type === enum_TYPETEXT.link
     ? { ...TEXT_STYLES.link, color: theme.colors.text.link }
     : TEXT_STYLES[type] || TEXT_STYLES.default;
+  const inlineStyle = StyleSheet.flatten(style) as TextStyle | undefined;
   const scaledTypeStyle: TextStyle = {
     ...typeStyle,
     fontSize: typeStyle.fontSize ? typeStyle.fontSize * fontScale : undefined,
     lineHeight: typeStyle.lineHeight ? typeStyle.lineHeight * fontScale : undefined,
   };
+  const scaledInlineStyle: TextStyle | undefined = inlineStyle
+    ? {
+        ...inlineStyle,
+        fontSize: inlineStyle.fontSize ? inlineStyle.fontSize * fontScale : inlineStyle.fontSize,
+        lineHeight: inlineStyle.lineHeight ? inlineStyle.lineHeight * fontScale : inlineStyle.lineHeight,
+        letterSpacing: inlineStyle.letterSpacing ? inlineStyle.letterSpacing * fontScale : inlineStyle.letterSpacing,
+      }
+    : undefined;
 
   return (
     <Text
       style={[
         { color },
         scaledTypeStyle,
-        style,
+        scaledInlineStyle,
       ]}
       {...rest}
     />

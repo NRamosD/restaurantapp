@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { OrdenProducto } from '@/interfaces/general.interface';
+import { ProductoDisponible } from '@/modules/producto/producto.service';
 
 type OrderItemProduct = {
   uuid: string;
@@ -12,19 +13,24 @@ type OrderItemProduct = {
   [key: string]: unknown;
 };
 
-export interface OrderItem extends Omit<OrdenProducto, 'estadoSync' | 'notas' | 'createdAt' | 'updatedAt' | 'updatedByUuid' | 'deletedAt'> {
+export interface OrderItem
+  extends Omit<Partial<ProductoDisponible>, 'uuid' | 'createdAt' | 'updatedAt' | 'deletedAt'> {
+  uuid: string;
+  productoUuid: string;
+  uuid_order_item?: string;
   estadoSync: string;
   notas?: string | null;
   createdAt: string | Date;
   updatedAt: string | Date | null;
   updatedByUuid?: string | null;
   deletedAt?: string | Date | null;
-  producto: OrderItemProduct;
+  cantidad:number;
   observaciones?: string;
 }
 
 interface OrderState {
   items: OrderItem[];
+  setItems: (items: Partial<OrderItem>[]) => void;
   addItem: (item: OrderItem) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, cantidad: number) => void;
@@ -39,7 +45,9 @@ interface OrderState {
 const useOrderStore = create<OrderState>()(
   persist(
     (set, get) => ({
-      items: [],
+      items: [] as OrderItem[],
+      
+      setItems: (items) => set({ items: items as OrderItem[] }),
       
       addItem: (producto) =>
         set((state) => {
@@ -88,13 +96,13 @@ const useOrderStore = create<OrderState>()(
         })),
       
       getItem: (productId:string) =>
-        get().items.find(item => item.uuid === productId),
+        get().items.find(item => item.productoUuid === productId),
       
       clearOrder: () => set({ items: [] }),
       
       getTotal: () =>
         get().items.reduce((total, item) => {
-          const unitPrice = item.precioUnitario ?? item.producto?.precio ?? 0;
+          const unitPrice = item.precio ?? 0;
 
           return total + unitPrice * item.cantidad;
         }, 0),

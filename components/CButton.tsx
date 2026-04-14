@@ -24,7 +24,10 @@ const CButton = ({
     {...rest}
     style={[
         styles.container,
-        { backgroundColor: buttonTheme.backgroundColor, borderColor: buttonTheme.borderColor },
+        { 
+            backgroundColor: buttonTheme.backgroundColor, 
+            borderColor: buttonTheme.borderColor,
+        },
         containerStyles,
     ]}>
         <CText type={"title"} style={[styles.textBtn, { color: buttonTheme.textColor }, textStyles]}>{title}</CText>
@@ -35,12 +38,16 @@ const CButton = ({
 const styles = StyleSheet.create({
     container: {
         width:"100%",
-        paddingVertical: 5,
-        paddingHorizontal: 5,
+        justifyContent:"center",
+        alignItems:"center",
+        // paddingVertical: 5,
+        // paddingHorizontal: 5,
         borderWidth: 1,
     },
     textBtn: {
-        textAlign:"center"
+        textAlign:"center",
+        justifyContent:"center",
+        alignItems:"center",
     }
 })
 

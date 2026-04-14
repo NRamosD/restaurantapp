@@ -59,7 +59,7 @@ export default function HomeScreen() {
     }}>
         <TopBarWithMenu title={"Inicio"}/>
         <CView style={{flex:3}}>
-          <CText type="title" style={{textAlign:"center", paddingVertical:5}}>
+          <CText type="title" style={{fontSize:18, textAlign:"center", paddingVertical:5}}>
             Pendientes de Facturar
           </CText>
           <ScrollView style={styles.scrollView}

@@ -5,6 +5,28 @@ import { v4 as uuidv4 } from 'uuid';
 
 type ProductoEstado = 'DISPONIBLE' | 'NO_DISPONIBLE';
 
+
+export interface ProductoDisponible {
+  id: number;
+  uuid: string;
+  nombre: string;
+  descripcion: string | null;
+  precio: number;
+  aplicaIva: number;
+  porcentajeIva: number;
+  stock: number;
+  ilimitado: number;
+  imagenUrl: string | null;
+  galeria: string | null;
+  estado: string;
+  perfilNegocioUuid: string;
+  estadoSync: string;
+  createdAt: string;
+  updatedAt: string | null;
+  updatedByUuid: string | null;
+  deletedAt: string | null;
+}
+
 interface CrearProductoParams {
   nombre: string;
   descripcion?: string;
@@ -44,7 +66,8 @@ export function useProductoService() {
     return db.select().from(Producto).orderBy(asc(Producto.nombre));
   };
 
-  const obtenerProductosDisponibles = async (perfilNegocioUuid?: string) => {
+  
+  const obtenerProductosDisponibles = async (perfilNegocioUuid?: string): Promise<ProductoDisponible[]> => {
     const condiciones = [eq(Producto.estado, 'DISPONIBLE')];
     if (perfilNegocioUuid) {
       condiciones.push(eq(Producto.perfilNegocioUuid, perfilNegocioUuid));

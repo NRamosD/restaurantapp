@@ -390,7 +390,8 @@ const style = StyleSheet.create({
     },
     headerTitle: {
         textAlign:"center",
-        color:"white"
+        color:"white",
+        fontSize:24
     },
     headerSubtitle: {
         color: 'white',
@@ -404,7 +405,7 @@ const style = StyleSheet.create({
         borderRadius: 18,
         borderWidth: 1,
         borderColor: '#e4e4e7',
-        backgroundColor: '#fafafc',
+        // backgroundColor: '#fafafc',
         marginBottom: 8,
         gap: 8,
     },
@@ -432,7 +433,7 @@ const style = StyleSheet.create({
         borderRadius: 12,
         borderWidth: 1,
         borderColor: '#e4e4e7',
-        backgroundColor: '#fafafc',
+        // backgroundColor: '#fafafc',
     },
     fieldCard: {
         gap: 6,
@@ -441,7 +442,7 @@ const style = StyleSheet.create({
         borderWidth:1,
         borderColor:"#cacacaff",
         borderRadius:12,
-        backgroundColor: '#fafafc',
+        // backgroundColor: '#fafafc',
         overflow: 'hidden',
     },
 })

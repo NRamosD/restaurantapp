@@ -3,7 +3,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { DrizzleContext } from './drizzleContext';
 import { useEffect, useState } from 'react';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import * as schema from '@/db/schema';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import migrations from '@/drizzle/migrations';
@@ -45,9 +45,9 @@ export function DrizzleProvider({ children }: { children: React.ReactNode }) {
     };
   }, [db, error, success]);
 
-  if (error) return <Text>Error en migración: {error.message}</Text>;
-  if (!success) return <Text>Cargando...</Text>;
-  if (!seedReady) return <Text>Preparando datos iniciales...</Text>;
+  if (error) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text style={{ color: 'red' }}>Error en migración: {error.message}</Text></View>;
+  if (!success) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Cargando...</Text></View>;
+  if (!seedReady) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Preparando datos iniciales...</Text></View>;
 
   console.log('[DRIZZLE] Migraciones aplicadas correctamente');
 

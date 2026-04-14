@@ -20,15 +20,16 @@ const ItemOrderSelected = ({
     removeItem,
     justShow = false
 }: Props) => {
+  
   const { getQuantity, updateNotes, getItem } = useOrderStore();
   const theme = useColorScheme()
   
   const [openModal, setopenModal] = useState(false)
   const [detailProduct, setDetailProduct] = useState("")
   
-  const currentItem = getItem(singleProduct.uuid)
-  const quantity = getQuantity(singleProduct.uuid) || singleProduct.cantidad || 0
-  const unitPrice = singleProduct.precioUnitario ?? singleProduct?.producto?.precio ?? 0
+  const currentItem = getItem(singleProduct.productoUuid)
+  const quantity = getQuantity(singleProduct.productoUuid) || singleProduct.cantidad || 0
+  const unitPrice = singleProduct.precio ?? 0
   const notes = currentItem?.observaciones ?? currentItem?.notas ?? singleProduct.observaciones ?? singleProduct.notas ?? ""
   const subtotal = unitPrice * quantity
 
@@ -38,11 +39,11 @@ const ItemOrderSelected = ({
         setDetailProduct(notes)
         setopenModal(true)
       }}>
-        <CView key={`singleProduct-selected-${singleProduct.uuid}`}
+        <CView key={`singleProduct-selected-${singleProduct.productoUuid}`}
         style={style.container}>
             <CView style={{flex:8}}>
               <CText style={style.nameProduct}>
-              {singleProduct?.producto.nombre}
+              {singleProduct?.nombre}
               </CText>
               {
                 notes ?
@@ -77,18 +78,18 @@ const ItemOrderSelected = ({
               </CView>
             </CView>
             <CView style={{flex:3}}>
-              {justShow ? null : <TouchableOpacity style={{flex:1, alignItems:"flex-end"}} onPress={()=>{removeItem && removeItem(singleProduct.uuid)}}>
+              {justShow ? null : <TouchableOpacity style={{flex:1, alignItems:"flex-end"}} onPress={()=>{removeItem && removeItem(singleProduct.productoUuid)}}>
                   <Ionicons name={"trash"} size={30} color={"red"} />
               </TouchableOpacity>}
               {justShow ? null : <CView style={{flex:1}}>
-                <AddReduceButton item={{ uuid: singleProduct.uuid, ilimitado: Boolean(singleProduct.producto.ilimitado), stock: singleProduct.producto.stock }} />
+                <AddReduceButton item={{ uuid: singleProduct.productoUuid, ilimitado: Boolean(singleProduct.ilimitado), stock: singleProduct.stock ?? 0 }} />
               </CView>}
             </CView>
         </CView>
       </TouchableOpacity>
 
       <GenericModal
-        title={singleProduct.producto.nombre}
+        title={singleProduct.nombre}
         showModal={openModal}
         setShowModal={setopenModal}
         showConfirmButton={!justShow}
@@ -98,21 +99,22 @@ const ItemOrderSelected = ({
           setopenModal(false)
         }}
         onConfirm={()=>{
-          updateNotes(singleProduct.uuid, detailProduct)
+          updateNotes(singleProduct.uuid || "", detailProduct)
           setDetailProduct("")
           setopenModal(false)
         }}
         nodeContent={<>
-          <CView style={{flex:2, width:"100%", gap:10, padding:10}} darkColor="black">
-            <CView style={{flex:1}} darkColor="black">
+          <CView style={{flex:2, width:"100%", gap:10, padding:10}}>
+            <CView style={{flex:1}}>
               <CText>Ingrese los detalles del producto</CText>
             </CView>
-            <CView darkColor="black">
+            <CView>
               <CInputText label="Detalle" 
               fontSize={20}
               value={detailProduct}
               onChangeText={(text)=>setDetailProduct(text)}
-              multiline={true} numberOfLines={6} 
+              multiline={true} numberOfLines={6}
+              height={40} 
               disabled={justShow}/>
             </CView>
           </CView>

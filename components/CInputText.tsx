@@ -1,8 +1,8 @@
 import React from 'react'
-import { StyleProp, TextStyle } from 'react-native';
+import { DimensionValue, StyleProp, TextStyle } from 'react-native';
 import { TextInput, TextInputProps } from 'react-native-paper';
 import { useAppTheme } from '@/theme';
-
+import { useAppearanceStore } from '@/hooks/useAppearanceStore';
 
 type Props =  TextInputProps & {
     label:string;
@@ -10,6 +10,7 @@ type Props =  TextInputProps & {
     optionText?: "text" | "number"
     fontSize?:number
     style?: StyleProp<TextStyle>
+    height?: DimensionValue | undefined
 }
 
 const CInputText = ({
@@ -17,14 +18,22 @@ const CInputText = ({
     optionText="text",
     fontSize=15,
     style,
+    height,
     ...rest
 }: Props) => {
     const theme = useAppTheme()
+    const fontScale = useAppearanceStore((state) => state.fontScale)
+    const resolvedFontSize = (fontSize || 15) * fontScale
 
     return (
         <TextInput
             {...rest}
-            style={[style,{ fontSize:fontSize||15, marginVertical:10, backgroundColor: theme.components.input.backgroundColor }]}
+            style={[style,{ 
+                fontSize: resolvedFontSize, 
+                marginVertical:10, 
+                backgroundColor: theme.components.input.backgroundColor,
+                height: height ?? "auto"
+            }]}
             label={label}
             mode="outlined"
             theme={{

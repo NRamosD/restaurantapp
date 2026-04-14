@@ -1,43 +1,31 @@
-
-import { CButton, CContainerView, CText, CView } from '@/components'
+import { CContainerView, CText, CView } from '@/components'
 import CInputText from '@/components/CInputText'
-import FloatingButton from '@/components/FloatingButton'
 import { ItemOrderSelected } from '@/components/orders'
-import { Ionicons } from '@expo/vector-icons'
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from 'react'
 import { FlatList, StyleSheet, ToastAndroid, TouchableOpacity } from 'react-native'
-import { Product } from '@/interfaces'
-import { v4 as uuidv4 } from 'uuid';
+import { SegmentedButtons } from 'react-native-paper'
 import ItemOrderOptionSquare from '@/components/orders/ItemOrderOptionSquare'
-import { useSQLiteContext } from 'expo-sqlite'
-// import { getAllProducts } from '@/db/producto.operations'
 import useOrderStore from '@/hooks/useOrderStore'
-import useOrderOperations from '@/hooks/useOrderOperations'
-
-
+import { useOrdenService, useProductoService } from '@/modules'
+import { ProductoDisponible } from '@/modules/producto/producto.service'
 
 type Props = {}
 type dataType = {id:string, name:string}
-// const data:Product[] = Array.from({ length: 20 }, (_, i) => ({ 
-//   id: i.toString(), 
-//   uuid:uuidv4(),//"Producto #"+(i/2),
-//   nombre:"Producto #"+i,
-//   precio:(Math.random()*100)+ parseFloat(Math.random().toFixed(3)),
-//   activo:true,
-//   fechaCreacion:new Date(),
-// }) as Product );
+type OrderType = 'LOCAL' | 'LLEVAR' | 'DELIVERY'
 
 const CreateOrder = ({
   
 }: Props) => {
   const {id_orden} = useLocalSearchParams<{ id_orden: string }>()
-  const dbConnection = useSQLiteContext()
 
-  const [dataProducts, setDataProducts] = useState<Product[]>([]);
-  const [productsList, setProductsList] = useState<Product[]>([]);
+  //state
+  const [dataProducts, setDataProducts] = useState<ProductoDisponible[]>([]);
+  const [productsList, setProductsList] = useState<ProductoDisponible[]>([]);
   const [textSearchedItem, setTextSearchedItem] = useState<string>("");
-
+  const [orderType, setOrderType] = useState<OrderType>('LOCAL');
+  
+  //store
   const {
     items,
     addItem,
@@ -46,42 +34,53 @@ const CreateOrder = ({
     getTotal,
   } = useOrderStore();
 
-  // const {
-  //   createOrderProcess,
-  //   updateOrderProcess
-  // } = useOrderOperations({})
+  //hooks
+  const { obtenerProductosDisponibles } = useProductoService()
+  const { crearOrden, agregarProductoAOrden, obtenerOrdenPorUuid } = useOrdenService()
   
 
-  const addProductToOrder = (item:Product & {
-    cantidad?:number
-  }) => {
-    // addItem([])
+  const addProductToOrder = (product:ProductoDisponible) => {
+    const newItem = {
+      ...product,
+      cantidad: 1,
+    }
+    console.log(" newItem", newItem)
+    addItem(newItem)
     setTextSearchedItem("")
   }
 
-  const deleteItemSelected = (item:Product) => {
-    removeItem(item.uuid)
+  const decideHowToProccess = async () => {
+    if(!!id_orden){
+      items.forEach(item => {
+        if(!item.uuid) return;
+
+
+
+
+        agregarProductoAOrden({
+          ordenUuid: id_orden,
+          productoUuid: item.uuid,
+          cantidad: item.cantidad,
+        })
+      })
+    }else{
+      await crearOrden({
+        usuarioUuid: "usuario-uuid",
+        clienteUuid: undefined,
+        tipo: orderType,
+        observaciones: undefined,
+      })
+    }
   }
 
-  const decideHowToProccess = async () => {
-    // if(!!id_orden){
-    //   await updateOrderProcess({
-    //     id_orden: Number(id_orden),
-    //     total:getTotal(),
-    //   })
-    // }else{
-    //   await createOrderProcess({
-    //     total:getTotal(),
-    //   })
-    // }
-  }
+
 
   useEffect(() => {
     
     (async () => {
-      const result:any = []//await getAllProducts(dbConnection)
-      setDataProducts(result as any)
-      setProductsList(result as any)
+      const products = await obtenerProductosDisponibles()
+      setDataProducts(products)
+      setProductsList(products)
     })()
 
 
@@ -106,8 +105,8 @@ const CreateOrder = ({
   return (
     <CContainerView style={{flex:1}}>
       <CView style={{flex:1.5, flexDirection:"row", backgroundColor:"#000000", justifyContent:"center", alignItems:"center", height:20 }}>
-        <CText type="subtitle" style={{flex:1, textAlign:"left", color:"white", paddingHorizontal:10}}>{id_orden ? "Editar" : "Nuevo"} Pedido</CText>
-        <CText type="subtitle" style={{flex:1, textAlign:"right", color:"white", paddingHorizontal:10}}>Total: ${getTotal().toFixed(2)}</CText>
+        <CText type="subtitle" style={{flex:1, textAlign:"left", color:"white", paddingHorizontal:10, fontSize:20}}>{id_orden ? "Editar" : "Nuevo"} Pedido</CText>
+        <CText type="subtitle" style={{flex:1, textAlign:"right", color:"white", paddingHorizontal:10, fontSize:16}}>Total: ${getTotal().toFixed(2)}</CText>
       </CView>
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
         <FlatList<any>
@@ -120,22 +119,31 @@ const CreateOrder = ({
 
       <CView style={{flex: items?.length==productsList?.length ? 1 : 5, flexDirection:"row", gap:15,
         justifyContent:"flex-start", alignItems:"center", backgroundColor:"#1c1c1c"}}>
-          <FlatList<Product>
+          <FlatList<ProductoDisponible>
             data={productsList.filter(x=>!items.find(y=>y.uuid==x.uuid))}
             horizontal={true}
             keyExtractor={item => item.uuid}
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => <ItemOrderOptionSquare singleProduct={item} touchAction={()=>addProductToOrder(item)}/>}
+            renderItem={({ item }) => <ItemOrderOptionSquare singleProduct={item} touchAction={(product)=>addProductToOrder(product)}/>}
             contentContainerStyle={{ paddingHorizontal: 10, paddingTop: 10 }}
           />
-
       </CView>
-      <CView style={{flex:2, paddingHorizontal:10, paddingVertical:5}}>
-        <CInputText label={""} value={textSearchedItem} 
-          onChangeText={(val)=>setTextSearchedItem(val)} style={{}} />
+      <CView style={{flex:1}}>
+        <SegmentedButtons
+          value={orderType}
+          onValueChange={(value) => setOrderType(value as OrderType)}
+          buttons={[
+            { value: 'LOCAL', label: 'Local' },
+            { value: 'LLEVAR', label: 'Llevar' },
+            { value: 'DELIVERY', label: 'Delivery' },
+          ]}
+        />
       </CView>
-
-      <CView style={{flex:1, flexDirection:"row", gap:10,
+      <CView style={{flex:2, paddingHorizontal:10, paddingVertical:0, justifyContent:"center" }}>
+        <CInputText label={"Ingresa el producto a buscar..."} value={textSearchedItem} 
+          onChangeText={(val)=>setTextSearchedItem(val)} style={{flex:1, marginVertical:0}} />
+      </CView>
+      <CView style={{flex:2, flexDirection:"row", gap:10,
         justifyContent:"space-between", paddingHorizontal:10, alignItems:"center" }}>
           <TouchableOpacity style={styles.orderButton} onPress={()=>{
             clearOrder()
@@ -145,7 +153,7 @@ const CreateOrder = ({
           </TouchableOpacity>
           <TouchableOpacity style={styles.orderButton} onPress={async()=>{
             if(items.length==0){
-              ToastAndroid.show("No hay productos", ToastAndroid.SHORT)
+              ToastAndroid.show("No se añadieron productos", ToastAndroid.SHORT)
               return
             }
             await decideHowToProccess()

@@ -19,6 +19,7 @@ type Props = {
     setShowModal:  React.Dispatch<React.SetStateAction<boolean>>
     onConfirm?: () => void
     onCancel?: () => void
+    fontSizeButtons?: number
 }
 
 /**
@@ -39,7 +40,8 @@ const GenericModal = ({
     showModal,
     onConfirm,
     onCancel,
-    setShowModal
+    setShowModal,
+    fontSizeButtons = 18
 }: Props) => {
     const hideDialog = () => setShowModal(false)
     const theme = useAppTheme()
@@ -130,8 +132,8 @@ const GenericModal = ({
                         backgroundColor: theme.components.button.secondary.backgroundColor,
                       },
                     ]}
-                    labelStyle={{fontSize:16, color: theme.components.button.secondary.textColor, fontWeight:'700'}}
-                  >{textCloseButton||"Cancelar"}</Button>}
+                    labelStyle={{color: theme.components.button.secondary.textColor, fontWeight:'700'}}
+                  ><CText style={{color: theme.components.button.secondary.textColor, fontSize: fontSizeButtons, fontWeight:'700'}}>{textCloseButton||"Cancelar"}</CText></Button>}
                   {showConfirmButton && <Button
                     mode="contained"
                     onPress={ ()=>{
@@ -144,8 +146,8 @@ const GenericModal = ({
                         backgroundColor: theme.components.button.primary.backgroundColor,
                       },
                     ]}
-                    labelStyle={{fontSize:16, color: theme.components.button.primary.textColor, fontWeight:'700'}}
-                  >{textConfirmButton||"Ok"}</Button>}
+                    labelStyle={{color: theme.components.button.primary.textColor, fontWeight:'700'}}
+                  ><CText style={{color: theme.components.button.primary.textColor, fontSize: fontSizeButtons, fontWeight:'700'}}>{textConfirmButton||"Ok"}</CText></Button>}
                 </Dialog.Actions>
               </Dialog>
             </Portal>

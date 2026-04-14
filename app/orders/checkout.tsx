@@ -76,7 +76,7 @@ const CheckoutOrder = ({
   return (
     <CContainerView style={{flex:1}}>
       <CView style={{flex:1.5, justifyContent:"center", height:20 }}>
-        <CText type="title" style={{ textAlign:"center"}}>Resumen de la Orden</CText>
+        <CText type="title" style={{ fontSize: 24, textAlign:"center"}}>Resumen de la Orden</CText>
       </CView>
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
         <FlatList<any>
@@ -89,8 +89,8 @@ const CheckoutOrder = ({
 
       <CView style={{flex:2, flexDirection:"row", gap:15,
         justifyContent:"center", alignItems:"center", backgroundColor:"#1c1c1c"}}>
-          <CText type="title" style={{color:"white"}}>Total</CText>
-          <CText type="title" style={{color:"white"}}>${getTotal().toFixed(2)}</CText>
+          <CText type="title" style={{fontSize:24, color:"white"}}>Total</CText>
+          <CText type="title" style={{fontSize:24, color:"white"}}>${getTotal().toFixed(2)}</CText>
 
       </CView>
 
@@ -118,14 +118,14 @@ const CheckoutOrder = ({
                 clearOrder()
                 router.push({pathname:"/orders/final-status-checkout"})
               }} title={"Facturar"} containerStyles={styles.touchableCreate}/> */}
-              <CView style={{flex:1, flexDirection:"row", gap:10, backgroundColor:"#1c1c1c"}}>
+              <CView style={{flex:1, flexDirection:"row", gap:10}}>
                 <CButton onPress={()=>{
                   // clearOrder()
                   router.back()
-                }} title={"Regresar"} textStyles={{fontSize:20}} containerStyles={[styles.touchableCreate, {width:"49%"}]} />
+                }} title={"Regresar"} textStyles={{fontSize:18}} containerStyles={[styles.touchableCreate, {width:"49%"}]} />
                 <CButton onPress={()=>{
                   setOpendedModalTextualOrder(true)
-                }} title={"Orden Textual"} textStyles={{fontSize:20}} containerStyles={[styles.touchableCreate, {width:"49%"}]} />
+                }} title={"Orden Textual"} textStyles={{fontSize:18}} containerStyles={[styles.touchableCreate, {width:"49%"}]} />
               </CView>
             </>
           }
@@ -143,7 +143,7 @@ const CheckoutOrder = ({
               return(
                 <CView key={index} style={{paddingVertical:10, paddingHorizontal:14, marginBottom:10, borderRadius:14, borderWidth:1, borderColor:'#d7dde5', backgroundColor:'rgba(2,219,183,0.08)'}}>
                   <CView style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginBottom: item.observaciones ? 8 : 0, backgroundColor:'transparent'}}>
-                    <CText style={{fontSize:18, fontWeight:'700', flex:1}}>{item?.producto?.nombre || 'Producto'}</CText>
+                    <CText style={{fontSize:18, fontWeight:'700', flex:1}}>{item?.nombre || 'Producto'}</CText>
                     <CView style={{paddingHorizontal:10, paddingVertical:4, borderRadius:999, backgroundColor:'#02dbb7'}}>
                       <CText style={{fontSize:14, fontWeight:'700', color:'#1A1A1A'}}>{`x${item.cantidad}`}</CText>
                     </CView>

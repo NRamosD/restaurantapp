@@ -10,5 +10,5 @@ export type CViewProps = ViewProps & {
 export function CView({ style, lightColor, darkColor, ...otherProps }: CViewProps) {
   const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
 
-  return <View style={[{ backgroundColor }, style]} {...otherProps} />;
+  return <View style={[lightColor || darkColor ? { backgroundColor } : null, style]} {...otherProps} />;
 }
