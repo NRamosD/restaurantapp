@@ -30,8 +30,33 @@ export interface OrdenDetails{
     ordenProductos: OrdenProductoDetails[]
 }
 
+interface SyncOrdenProductoItem {
+  uuid?: string;
+  productoUuid: string;
+  cantidad?: number;
+  notas?: string | null;
+}
+
 export function useOrdenService() {
   const db = useDrizzle();
+
+  const calcularTotalesProducto = (producto: typeof Producto.$inferSelect, cantidad: number) => {
+    const precioUnitario = producto.precio;
+    const aplicaIva = producto.aplicaIva === 1;
+    const porcentajeIva = producto.porcentajeIva ?? 0;
+    const descuento = 0;
+    const subtotal = precioUnitario * cantidad;
+    const iva = aplicaIva ? Math.round(subtotal * (porcentajeIva / 100)) : 0;
+    const total = subtotal + iva;
+
+    return {
+      precioUnitario,
+      descuento,
+      subtotal,
+      iva,
+      total,
+    };
+  };
 
   const crearOrden = async (params: CrearOrdenParams) => {
     const uuid = uuidv4();
@@ -57,7 +82,10 @@ export function useOrdenService() {
       updatedAt: now,
     });
 
-    return result.lastInsertRowId;
+    return {
+      id: result.lastInsertRowId,
+      uuid,
+    };
   };
 
   const agregarProductoAOrden = async (params: AgregarProductoParams) => {
@@ -70,15 +98,8 @@ export function useOrdenService() {
     if (!producto) throw new Error('Producto no encontrado');
     if (producto.estado !== 'DISPONIBLE') throw new Error('Producto no disponible');
 
-    const precioUnitario = producto.precio;
-    const aplicaIva = producto.aplicaIva === 1;
-    const porcentajeIva = producto.porcentajeIva;
-    const descuento = 0;
     const cantidad = params.cantidad;
-
-    const subtotal = precioUnitario * cantidad;
-    const iva = aplicaIva ? Math.round(subtotal * (porcentajeIva / 100)) : 0;
-    const total = subtotal + iva;
+    const { precioUnitario, descuento, subtotal, iva, total } = calcularTotalesProducto(producto, cantidad);
 
     const uuid = uuidv4();
     const now = new Date().toISOString();
@@ -99,6 +120,44 @@ export function useOrdenService() {
     });
 
     await recalcularOrden(params.ordenUuid);
+  };
+
+  const actualizarProductoDeOrden = async (ordenProductoUuid: string, params: Omit<AgregarProductoParams, 'ordenUuid'>) => {
+    const [ordenProducto] = await db
+      .select()
+      .from(OrdenProducto)
+      .where(eq(OrdenProducto.uuid, ordenProductoUuid))
+      .limit(1);
+
+    if (!ordenProducto) throw new Error('Producto en orden no encontrado');
+
+    const [producto] = await db
+      .select()
+      .from(Producto)
+      .where(eq(Producto.uuid, params.productoUuid))
+      .limit(1);
+
+    if (!producto) throw new Error('Producto no encontrado');
+    if (producto.estado !== 'DISPONIBLE') throw new Error('Producto no disponible');
+
+    const now = new Date().toISOString();
+    const cantidad = params.cantidad;
+    const { precioUnitario, descuento, subtotal, iva, total } = calcularTotalesProducto(producto, cantidad);
+
+    await db
+      .update(OrdenProducto)
+      .set({
+        productoUuid: params.productoUuid,
+        cantidad,
+        precioUnitario,
+        descuento,
+        subtotal,
+        iva,
+        total,
+        notas: params.notas,
+        updatedAt: now,
+      })
+      .where(eq(OrdenProducto.uuid, ordenProductoUuid));
   };
 
   const cambiarEstadoOrden = async (ordenUuid: string, estado: OrdenEstado) => {
@@ -126,6 +185,61 @@ export function useOrdenService() {
       .where(eq(Orden.uuid, ordenUuid));
   };
 
+  const sincronizarProductosDeOrden = async (ordenUuid: string, items: SyncOrdenProductoItem[], observaciones?:string) => {
+    const productosActuales = await db
+      .select()
+      .from(OrdenProducto)
+      .where(eq(OrdenProducto.ordenUuid, ordenUuid));
+    
+    if (!!observaciones) {
+      await db
+        .update(Orden)
+        .set({ observaciones, updatedAt: new Date().toISOString() })
+        .where(eq(Orden.uuid, ordenUuid));
+    }
+
+    const productosActualesPorUuid = new Map(productosActuales.map((item) => [item.uuid, item]));
+    const productosActualesPorProductoUuid = new Map(productosActuales.map((item) => [item.productoUuid, item]));
+    const productoUuidsEnPayload = new Set<string>();
+
+    for (const item of items) {
+      if (!item.productoUuid) {
+        continue;
+      }
+
+      productoUuidsEnPayload.add(item.productoUuid);
+
+      const existente = (item.uuid ? productosActualesPorUuid.get(item.uuid) : undefined)
+        ?? productosActualesPorProductoUuid.get(item.productoUuid);
+
+      if (existente) {
+        await actualizarProductoDeOrden(existente.uuid, {
+          productoUuid: item.productoUuid,
+          cantidad: item.cantidad ?? 1,
+          notas: item.notas ?? undefined,
+        });
+        continue;
+      }
+
+      await agregarProductoAOrden({
+        ordenUuid,
+        productoUuid: item.productoUuid,
+        cantidad: item.cantidad ?? 1,
+        notas: item.notas ?? undefined,
+      });
+    }
+
+    const productosAEliminar = productosActuales.filter(
+      (item) => !productoUuidsEnPayload.has(item.productoUuid)
+    );
+
+    for (const item of productosAEliminar) {
+      await db.delete(OrdenProducto).where(eq(OrdenProducto.uuid, item.uuid));
+    }
+
+    await recalcularOrden(ordenUuid);
+  };
+
   const cerrarOrden = async (ordenUuid: string) => {
     await cambiarEstadoOrden(ordenUuid, 'ENTREGADO');
   };
@@ -143,8 +257,6 @@ export function useOrdenService() {
       .select()
       .from(OrdenProducto)
       .where(eq(OrdenProducto.ordenUuid, ordenUuid));
-
-    console.log('productos aqui', productos);
 
     const productosConDetalle = await Promise.all(
       productos.map(async (op) => {
@@ -244,8 +356,10 @@ export function useOrdenService() {
   return {
     crearOrden,
     agregarProductoAOrden,
+    actualizarProductoDeOrden,
     cambiarEstadoOrden,
     recalcularOrden,
+    sincronizarProductosDeOrden,
     cerrarOrden,
     obtenerOrdenPorUuid,
     obtenerOrdenesPorEstado,

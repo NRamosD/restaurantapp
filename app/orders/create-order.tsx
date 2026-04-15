@@ -13,6 +13,7 @@ import { useAuthStore } from '@/hooks/useAuthStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '@/theme';
 import GenericModal from '@/components/ui/GenericModal';
+import useOrderOperations from '@/hooks/useOrderOperations';
 // import { Producto } from '@/modules/producto/producto.service'
 
 type Props = {}
@@ -37,8 +38,8 @@ const CreateOrder = ({
   
   //store
   const {
+    orderDetails,
     items,
-    setItems,
     addItem,
     removeItem,
     clearOrder,
@@ -47,7 +48,8 @@ const CreateOrder = ({
 
   //hooks
   const { obtenerProductosDisponibles } = useProductoService()
-  const { crearOrden, agregarProductoAOrden, obtenerOrdenPorUuid } = useOrdenService()
+  const { crearOrden, agregarProductoAOrden, sincronizarProductosDeOrden } = useOrdenService()
+  const { loadOrderData } = useOrderOperations({})
   const { user } = useAuthStore()
   
 
@@ -58,31 +60,29 @@ const CreateOrder = ({
 
   const decideHowToProccess = async () => {
     if(!!id_orden){
-      items.forEach(item => {
-        if(!item.uuid || !item.productoUuid) return;
-        agregarProductoAOrden({
-          ordenUuid: id_orden,
-          productoUuid: item.productoUuid,
-          cantidad: item.cantidad??1,
-          notas: item.notas??undefined,
-        })
-      })
+      await sincronizarProductosDeOrden(id_orden, items.map((item) => ({
+        uuid: item.uuid,
+        productoUuid: item.productoUuid || item.producto?.uuid || '',
+        cantidad: item.cantidad ?? 1,
+        notas: item.notas ?? undefined,
+      })), observacionOrden || undefined)
     }else{
-      const orderId = await crearOrden({
+      const createdOrder = await crearOrden({
         usuarioUuid: user?.uuid || "5fe15cbe-08a5-4832-862d-720655cc0403",
         clienteUuid: undefined,
         tipo: orderType,
-        observaciones: undefined,
+        observaciones: observacionOrden || undefined,
       })
-      items.forEach(item => {
-        if(!item.uuid) return;
-        agregarProductoAOrden({
-          ordenUuid: orderId.toString(),
-          productoUuid: item.uuid,
-          cantidad: item.cantidad??1,
-          notas: item.notas??undefined,
+      for (const item of items) {
+        const productoUuid = item.productoUuid || item.producto?.uuid;
+        if(!productoUuid) continue;
+        await agregarProductoAOrden({
+          ordenUuid: createdOrder.uuid,
+          productoUuid,
+          cantidad: item.cantidad ?? 1,
+          notas: item.notas ?? undefined,
         })
-      })
+      }
     }
   }
 
@@ -93,9 +93,14 @@ const CreateOrder = ({
       const products = await obtenerProductosDisponibles()
       setDataProducts(products)
       setProductsList(products)
+      if (id_orden) {
+        await loadOrderData(id_orden)
+      }
     })()
+    if(orderDetails?.orden?.observaciones)
+      setObservacionOrden(orderDetails.orden.observaciones || "")
 
-  }, []);
+  }, [id_orden]);
 
   useEffect(() => {
     if(!!textSearchedItem){
@@ -132,11 +137,11 @@ const CreateOrder = ({
       <CView style={{flex: 5, flexDirection:"row", gap:15,
         justifyContent:"flex-start", alignItems:"center", backgroundColor:"#1c1c1c"}}>
           <FlatList<Producto>
-            data={productsList.filter(x=>!items.find(y=>y.uuid==x.uuid))}
+            data={productsList.filter(x=>!items.find(y=>y.productoUuid==x.uuid))}
             horizontal={true}
             keyExtractor={item => item.uuid}
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => <ItemOrderOptionSquare singleProduct={item} touchAction={(product)=>addProductToOrder(product)}/>}
+            renderItem={({ item }) => <ItemOrderOptionSquare singleProduct={item} touchAction={()=>addProductToOrder(item)}/>}
             contentContainerStyle={{ paddingHorizontal: 10, paddingTop: 10 }}
           />
       </CView>
@@ -220,11 +225,11 @@ const CreateOrder = ({
             </CView>
             <CView>
               <CInputText label="Observaciones" 
-              fontSize={20}
+              fontSize={18}
               value={observacionOrden}
               onChangeText={(text)=>setObservacionOrden(text)}
               multiline={true} numberOfLines={7}
-              height={60}/>
+              height={90}/>
             </CView>
           </CView>
         </>

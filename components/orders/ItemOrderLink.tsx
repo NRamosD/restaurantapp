@@ -7,6 +7,7 @@ import { router } from "expo-router";
 // import { Orden } from "@/interfaces";
 import useOrderOperations from "@/hooks/useOrderOperations";
 import { Orden } from "@/interfaces/general.interface";
+import useOrderStore from "@/hooks/useOrderStore";
 
 type Props = {
   path?:any
@@ -26,6 +27,10 @@ const ItemOrderLink = ({
   const {
     loadOrderData
   } = useOrderOperations({})
+  const {
+    setItems,
+    setOrderDetails
+  } = useOrderStore()
   
   // useEffect(()=>{
   //   if(loadOrder && order?.id_orden){
@@ -37,6 +42,8 @@ const ItemOrderLink = ({
     if (!order?.uuid) {
       return;
     }
+    setItems([])
+    setOrderDetails(null)
 
     loadOrderData(order.uuid)
     path ? router.push({ pathname: path, params: { id_orden: order.uuid } }) : alert("No hay ruta")

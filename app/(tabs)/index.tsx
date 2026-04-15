@@ -106,7 +106,7 @@ export default function HomeScreen() {
         <View style={styles.contNewPedido}>
           <CButton onPress={()=>{
             router.push("/orders/create-order")
-          }} title={"NUEVO PEDIDO"} containerStyles={styles.touchableCreate}/>
+          }} title={"NUEVO PEDIDO"} textStyles={{fontSize:25}} containerStyles={styles.touchableCreate}/>
         </View>
     </View>
   );

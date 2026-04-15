@@ -1,13 +1,17 @@
-import { Product } from '@/interfaces'
 import React from 'react'
 import { CView } from '../CView'
 import { CText } from '../CText'
 import { Image, ImageBackground, StyleSheet, TouchableOpacity } from 'react-native'
-import { Producto } from '@/interfaces/general.interface'
+
+type ItemOrderOptionSquareProduct = {
+    uuid: string;
+    nombre: string;
+    imagenUrl?: string | null;
+}
 
 type Props = {
-    singleProduct: Producto
-    touchAction?: (producto:Producto)=>void
+    singleProduct: ItemOrderOptionSquareProduct
+    touchAction?: (producto:ItemOrderOptionSquareProduct)=>void
 }
 
 const ItemOrderOptionSquare = ({

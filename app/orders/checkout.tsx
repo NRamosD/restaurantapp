@@ -142,15 +142,15 @@ const CheckoutOrder = ({
             items.map((item, index)=>{
               return(
                 <CView key={index} style={{paddingVertical:10, paddingHorizontal:14, marginBottom:10, borderRadius:14, borderWidth:1, borderColor:'#d7dde5', backgroundColor:'rgba(2,219,183,0.08)'}}>
-                  <CView style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginBottom: item.observaciones ? 8 : 0, backgroundColor:'transparent'}}>
-                    <CText style={{fontSize:18, fontWeight:'700', flex:1}}>{item?.nombre || 'Producto'}</CText>
+                  <CView style={{flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginBottom: item.notas ? 8 : 0, backgroundColor:'transparent'}}>
+                    <CText style={{fontSize:18, fontWeight:'700', flex:1}}>{item?.producto?.nombre || 'Producto'}</CText>
                     <CView style={{paddingHorizontal:10, paddingVertical:4, borderRadius:999, backgroundColor:'#02dbb7'}}>
                       <CText style={{fontSize:14, fontWeight:'700', color:'#1A1A1A'}}>{`x${item.cantidad}`}</CText>
                     </CView>
                   </CView>
                   {
-                    item.observaciones ?
-                    <CText style={{fontSize:15, opacity:0.8}}>{`Considerar: ${item.observaciones}.`}</CText>
+                    item.notas ?
+                    <CText style={{fontSize:15, opacity:0.8}}>{`Considerar: ${item.notas}.`}</CText>
                     :
                     <CText style={{fontSize:15, opacity:0.65}}>Sin observaciones adicionales.</CText>
                   }

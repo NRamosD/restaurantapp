@@ -31,7 +31,7 @@ const ItemOrderSelected = ({
   const currentItem = getItem(singleProduct?.productoUuid || "")
   const quantity = getQuantity(singleProduct?.productoUuid || "") || singleProduct.cantidad || 0
   const unitPrice = singleProduct?.precioUnitario ?? 0
-  const notes = singleProduct.notas ?? ""
+  const notes = currentItem?.notas ?? singleProduct.notas ?? ""
   const subtotal = unitPrice * quantity
 
   return (
@@ -44,7 +44,7 @@ const ItemOrderSelected = ({
         style={style.container}>
             <CView style={{flex:8}}>
               <CText style={style.nameProduct}>
-              {currentItem ? currentItem?.producto?.nombre : singleProduct?.producto?.nombre}
+              {currentItem?.producto?.nombre ?? singleProduct?.producto?.nombre}
               </CText>
               {
                 notes ?

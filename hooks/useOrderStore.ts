@@ -5,15 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { Producto } from '@/interfaces/general.interface';
 import { OrdenDetails, OrdenProductoDetails } from '@/modules/orden/orden.service';
 
-type OrderItemProduct = {
-  uuid: string;
-  nombre: string;
-  precio: number;
-  stock: number;
-  ilimitado?: boolean | number;
-  [key: string]: unknown;
-};
-
 export interface OrderItem extends OrdenProductoDetails {
 
 }
@@ -22,8 +13,8 @@ export interface OrderItem extends OrdenProductoDetails {
 interface OrderState {
   orderDetails: OrdenDetails | null;
   setOrderDetails: (orderDetails: OrdenDetails | null) => void;
-  items: OrderItem[];
-  setItems: (items: Partial<OrderItem>[]) => void;
+  items: OrdenProductoDetails[];
+  setItems: (items: OrdenProductoDetails[]) => void;
   addItem: (item: Producto) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, cantidad: number) => void;
@@ -32,23 +23,33 @@ interface OrderState {
   getTotal: () => number;
   getItemCount: () => number;
   getQuantity: (productId: string) => number;
-  getItem: (productId:string) => OrderItem | undefined
+  getItem: (productId:string) => OrdenProductoDetails | undefined
 }
 
 const useOrderStore = create<OrderState>()(
   persist(
     (set, get) => ({
-      items: [] as OrderItem[],
+      items: [] as OrdenProductoDetails[],
       orderDetails: null,
       
-      setItems: (items) => set({ items: items as OrderItem[] }),
+      setItems: (items) => set({ items }),
       setOrderDetails: (orderDetails) => set({ orderDetails: orderDetails ?? null }),
       
       addItem: (producto) =>
         set((state) => {
-          const existingItem = state.items.find((item) => item.uuid === producto.uuid);
+          if (!producto?.uuid) return state;
+          const itemExist = state.items.find((item) => item.productoUuid === producto.uuid);
 
-          const newItem: OrderItem = {
+          if (itemExist) {
+            return {
+              items: state.items.map((item) =>
+                item.productoUuid === producto.uuid
+                  ? { ...item, cantidad: (item.cantidad || 0) + 1 }
+                  : item
+              ),
+            };
+          }
+          const newItem: OrdenProductoDetails = {
             uuid: uuidv4(),
             ordenUuid: get().orderDetails?.orden?.uuid|| '',
             productoUuid: producto.uuid,
@@ -65,16 +66,6 @@ const useOrderStore = create<OrderState>()(
             updatedByUuid: null,
             deletedAt: null,
             producto: producto,
-          }
-
-          if (existingItem) {
-            return {
-              items: state.items.map((item) =>
-                item.productoUuid === producto.uuid
-                  ? { ...item, cantidad: (item.cantidad || 0) + 1 }
-                  : item
-              ),
-            };
           }
           
           return {
@@ -100,14 +91,14 @@ const useOrderStore = create<OrderState>()(
       updateNotes: (productId, observaciones) =>
         set((state) => ({
           items: state.items.map((item) =>
-            item.uuid === productId ? { ...item, observaciones, notas: observaciones } : item
+            item.uuid === productId ? { ...item, notas: observaciones } : item
           ),
         })),
       
       getItem: (productId:string) =>
         get().items.find(item => item.productoUuid === productId),
       
-      clearOrder: () => set({ items: [] }),
+      clearOrder: () => set({ items: [], orderDetails: null }),
       
       getTotal: () =>
         get().items.reduce((total, item) => {
