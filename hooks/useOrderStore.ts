@@ -2,8 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { v4 as uuidv4 } from 'uuid';
-import { OrdenProducto, Producto } from '@/interfaces/general.interface';
-import { ProductoDisponible } from '@/modules/producto/producto.service';
+import { Producto } from '@/interfaces/general.interface';
 import { OrdenDetails, OrdenProductoDetails } from '@/modules/orden/orden.service';
 
 type OrderItemProduct = {
@@ -88,7 +87,7 @@ const useOrderStore = create<OrderState>()(
       
       removeItem: (productId) =>
         set((state) => ({
-          items: state.items.filter((item) => item.uuid !== productId),
+          items: state.items.filter((item) => item.productoUuid !== productId),
         })),
       
       updateQuantity: (productId, cantidad) =>

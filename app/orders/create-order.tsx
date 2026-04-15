@@ -8,7 +8,12 @@ import { SegmentedButtons } from 'react-native-paper'
 import ItemOrderOptionSquare from '@/components/orders/ItemOrderOptionSquare'
 import useOrderStore from '@/hooks/useOrderStore'
 import { useOrdenService, useProductoService } from '@/modules'
-import { ProductoDisponible } from '@/modules/producto/producto.service'
+import { Producto } from '@/interfaces/general.interface';
+import { useAuthStore } from '@/hooks/useAuthStore';
+import { Ionicons } from '@expo/vector-icons';
+import { useAppTheme } from '@/theme';
+import GenericModal from '@/components/ui/GenericModal';
+// import { Producto } from '@/modules/producto/producto.service'
 
 type Props = {}
 type dataType = {id:string, name:string}
@@ -18,12 +23,17 @@ const CreateOrder = ({
   
 }: Props) => {
   const {id_orden} = useLocalSearchParams<{ id_orden: string }>()
+    const theme = useAppTheme()
+    const colorTheme = theme.components.button["primary"]
 
   //state
-  const [dataProducts, setDataProducts] = useState<ProductoDisponible[]>([]);
-  const [productsList, setProductsList] = useState<ProductoDisponible[]>([]);
+  const [dataProducts, setDataProducts] = useState<Producto[]>([]);
+  const [productsList, setProductsList] = useState<Producto[]>([]);
   const [textSearchedItem, setTextSearchedItem] = useState<string>("");
   const [orderType, setOrderType] = useState<OrderType>('LOCAL');
+  const [isSearchFocused, setIsSearchFocused] = useState<boolean>(false);
+  const [openModalObservaciones, setOpenModalObservaciones] = useState<boolean>(false);
+  const [observacionOrden, setObservacionOrden] = useState<string>("");
   
   //store
   const {
@@ -38,38 +48,40 @@ const CreateOrder = ({
   //hooks
   const { obtenerProductosDisponibles } = useProductoService()
   const { crearOrden, agregarProductoAOrden, obtenerOrdenPorUuid } = useOrdenService()
+  const { user } = useAuthStore()
   
 
-  const addProductToOrder = (product:ProductoDisponible) => {
-    const newItem = {
-      ...product,
-      cantidad: 1,
-    }
-    console.log(" newItem", newItem)
-    addItem(newItem)
+  const addProductToOrder = (product:Producto) => {
+    addItem(product)
     setTextSearchedItem("")
   }
 
   const decideHowToProccess = async () => {
     if(!!id_orden){
       items.forEach(item => {
-        if(!item.uuid) return;
-
-
-
-
+        if(!item.uuid || !item.productoUuid) return;
         agregarProductoAOrden({
           ordenUuid: id_orden,
-          productoUuid: item.uuid,
-          cantidad: item.cantidad,
+          productoUuid: item.productoUuid,
+          cantidad: item.cantidad??1,
+          notas: item.notas??undefined,
         })
       })
     }else{
-      await crearOrden({
-        usuarioUuid: "usuario-uuid",
+      const orderId = await crearOrden({
+        usuarioUuid: user?.uuid || "5fe15cbe-08a5-4832-862d-720655cc0403",
         clienteUuid: undefined,
         tipo: orderType,
         observaciones: undefined,
+      })
+      items.forEach(item => {
+        if(!item.uuid) return;
+        agregarProductoAOrden({
+          ordenUuid: orderId.toString(),
+          productoUuid: item.uuid,
+          cantidad: item.cantidad??1,
+          notas: item.notas??undefined,
+        })
       })
     }
   }
@@ -93,6 +105,7 @@ const CreateOrder = ({
           return x
         }
       })
+      console.log("filteredSearched", filteredSearched)
       setProductsList(filteredSearched)
     }else{
       setProductsList(dataProducts)
@@ -101,7 +114,8 @@ const CreateOrder = ({
 
 
   return (
-    <CContainerView style={{flex:1}}>
+    <CContainerView style={{flex:1}} avoidKeyboard>
+      <TouchableOpacity style={{flex:1}} activeOpacity={1} onPress={() => setIsSearchFocused(false)}>
       <CView style={{flex:1.5, flexDirection:"row", backgroundColor:"#000000", justifyContent:"center", alignItems:"center", height:20 }}>
         <CText type="subtitle" style={{flex:1, textAlign:"left", color:"white", paddingHorizontal:10, fontSize:20}}>{id_orden ? "Editar" : "Nuevo"} Pedido</CText>
         <CText type="subtitle" style={{flex:1, textAlign:"right", color:"white", paddingHorizontal:10, fontSize:16}}>Total: ${getTotal().toFixed(2)}</CText>
@@ -115,9 +129,9 @@ const CreateOrder = ({
         />
       </CView>
 
-      <CView style={{flex: items?.length==productsList?.length ? 1 : 5, flexDirection:"row", gap:15,
+      <CView style={{flex: 5, flexDirection:"row", gap:15,
         justifyContent:"flex-start", alignItems:"center", backgroundColor:"#1c1c1c"}}>
-          <FlatList<ProductoDisponible>
+          <FlatList<Producto>
             data={productsList.filter(x=>!items.find(y=>y.uuid==x.uuid))}
             horizontal={true}
             keyExtractor={item => item.uuid}
@@ -126,21 +140,31 @@ const CreateOrder = ({
             contentContainerStyle={{ paddingHorizontal: 10, paddingTop: 10 }}
           />
       </CView>
-      <CView style={{flex:1}}>
-        <SegmentedButtons
-          value={orderType}
-          onValueChange={(value) => setOrderType(value as OrderType)}
-          buttons={[
-            { value: 'LOCAL', label: 'Local' },
-            { value: 'LLEVAR', label: 'Llevar' },
-            { value: 'DELIVERY', label: 'Delivery' },
-          ]}
-        />
+      {!isSearchFocused && (
+        <CView style={{flex:2, justifyContent:"center", paddingHorizontal:10,}}>
+          <SegmentedButtons
+            value={orderType}
+            onValueChange={(value) => setOrderType(value as OrderType)}
+            buttons={[
+              { value: 'LOCAL', label: 'Local' },
+              { value: 'LLEVAR', label: 'Llevar' },
+              { value: 'DELIVERY', label: 'Delivery' },
+            ]}
+          />
+        </CView>
+      )}
+      <CView style={{flex:isSearchFocused?3:2, paddingHorizontal:10, justifyContent:"center", flexDirection:"row" }}>
+        <CView style={{flex:7}}>
+          <CInputText label={"Ingresa el producto a buscar..."} value={textSearchedItem} 
+            onChangeText={(val)=>setTextSearchedItem(val)} onFocus={()=>setIsSearchFocused(true)} onBlur={()=>setIsSearchFocused(false)} style={{flex:1}} />
+        </CView>
+        <CView style={{flex:1, justifyContent:"center", alignItems:"center"}}>
+          <TouchableOpacity onPress={()=>setOpenModalObservaciones(true)}>
+            <Ionicons name="eye" size={28} color={colorTheme.backgroundColor} />
+          </TouchableOpacity>
+        </CView>
       </CView>
-      <CView style={{flex:2, paddingHorizontal:10, paddingVertical:0, justifyContent:"center" }}>
-        <CInputText label={"Ingresa el producto a buscar..."} value={textSearchedItem} 
-          onChangeText={(val)=>setTextSearchedItem(val)} style={{flex:1, marginVertical:0}} />
-      </CView>
+      {!isSearchFocused && (
       <CView style={{flex:2, flexDirection:"row", gap:10,
         justifyContent:"space-between", paddingHorizontal:10, alignItems:"center" }}>
           <TouchableOpacity style={styles.orderButton} onPress={()=>{
@@ -172,9 +196,40 @@ const CreateOrder = ({
             <CText type="subtitle">Ir a Pagar</CText>
           </TouchableOpacity>
       </CView>
-      
+      )}
+      </TouchableOpacity>
 
-
+      <GenericModal
+        title={"Observaciones sobre el Pedido"}
+        showModal={openModalObservaciones}
+        setShowModal={setOpenModalObservaciones}
+        // showConfirmButton={!justShow}
+        textConfirmButton={'Guardar'}
+        onCancel={()=>{
+          setOpenModalObservaciones(false)
+        }}
+        onConfirm={()=>{
+          // updateNotes(singleProduct.uuid || "", detailProduct)
+          // setDetailProduct("")
+          setOpenModalObservaciones(false)
+        }}
+        nodeContent={<>
+          <CView style={{flex:2, width:"100%", gap:10, padding:10}}>
+            <CView style={{flex:1}}>
+              <CText>Ingrese las observaciones para este pedido</CText>
+            </CView>
+            <CView>
+              <CInputText label="Observaciones" 
+              fontSize={20}
+              value={observacionOrden}
+              onChangeText={(text)=>setObservacionOrden(text)}
+              multiline={true} numberOfLines={7}
+              height={60}/>
+            </CView>
+          </CView>
+        </>
+        }
+      />
     </CContainerView>
   )
 }

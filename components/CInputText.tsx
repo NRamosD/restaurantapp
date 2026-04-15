@@ -28,12 +28,12 @@ const CInputText = ({
     return (
         <TextInput
             {...rest}
-            style={[style,{ 
+            style={[{ 
                 fontSize: resolvedFontSize, 
-                marginVertical:10, 
+                marginVertical:5, 
                 backgroundColor: theme.components.input.backgroundColor,
-                height: height ?? "auto"
-            }]}
+                ...(height ? { height: height } : {}),
+            }, style]}
             label={label}
             mode="outlined"
             theme={{

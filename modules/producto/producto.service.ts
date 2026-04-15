@@ -2,30 +2,31 @@ import { eq, like, asc, desc, sql, and, or } from 'drizzle-orm';
 import { useDrizzle } from '@/db/db';
 import { Producto, Componente, ProductoComponente } from '@/db/schema';
 import { v4 as uuidv4 } from 'uuid';
+import { Producto as ProductoInterface } from '@/interfaces/general.interface';
 
 type ProductoEstado = 'DISPONIBLE' | 'NO_DISPONIBLE';
 
 
-export interface ProductoDisponible {
-  id: number;
-  uuid: string;
-  nombre: string;
-  descripcion: string | null;
-  precio: number;
-  aplicaIva: number;
-  porcentajeIva: number;
-  stock: number;
-  ilimitado: number;
-  imagenUrl: string | null;
-  galeria: string | null;
-  estado: string;
-  perfilNegocioUuid: string;
-  estadoSync: string;
-  createdAt: string;
-  updatedAt: string | null;
-  updatedByUuid: string | null;
-  deletedAt: string | null;
-}
+// export interface ProductoDisponible {
+//   id: number;
+//   uuid: string;
+//   nombre: string;
+//   descripcion: string | null;
+//   precio: number;
+//   aplicaIva: number;
+//   porcentajeIva: number;
+//   stock: number;
+//   ilimitado: number;
+//   imagenUrl: string | null;
+//   galeria: string | null;
+//   estado: string;
+//   perfilNegocioUuid: string;
+//   estadoSync: string;
+//   createdAt: string;
+//   updatedAt: string | null;
+//   updatedByUuid: string | null;
+//   deletedAt: string | null;
+// }
 
 interface CrearProductoParams {
   nombre: string;
@@ -67,7 +68,7 @@ export function useProductoService() {
   };
 
   
-  const obtenerProductosDisponibles = async (perfilNegocioUuid?: string): Promise<ProductoDisponible[]> => {
+  const obtenerProductosDisponibles = async (perfilNegocioUuid?: string): Promise<ProductoInterface[]> => {
     const condiciones = [eq(Producto.estado, 'DISPONIBLE')];
     if (perfilNegocioUuid) {
       condiciones.push(eq(Producto.perfilNegocioUuid, perfilNegocioUuid));

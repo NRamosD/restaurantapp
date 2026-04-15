@@ -3,11 +3,11 @@ import React from 'react'
 import { CView } from '../CView'
 import { CText } from '../CText'
 import { Image, ImageBackground, StyleSheet, TouchableOpacity } from 'react-native'
-import { ProductoDisponible } from '@/modules/producto/producto.service'
+import { Producto } from '@/interfaces/general.interface'
 
 type Props = {
-    singleProduct: ProductoDisponible
-    touchAction?: (producto:ProductoDisponible)=>void
+    singleProduct: Producto
+    touchAction?: (producto:Producto)=>void
 }
 
 const ItemOrderOptionSquare = ({
