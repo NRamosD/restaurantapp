@@ -17,8 +17,6 @@ import GenericModal from '@/components/ui/GenericModal'
 import ShareCheckout from './share-checkout'
 import { useOrdenService } from '@/modules'
 
-
-
 type Props = {}
 type dataType = {id:string, name:string}
 
@@ -58,15 +56,11 @@ const CheckoutOrder = ({
   // }
 
   useEffect(()=>{
-    clearOrder()
     if (uuid_orden) {
+      clearOrder()
       loadOrderData(uuid_orden)
     }
   },[uuid_orden])
-
-  useEffect(()=>{
-    console.log({"items in checkout": items})
-  },[items])
 
   
 
@@ -81,7 +75,7 @@ const CheckoutOrder = ({
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
         <FlatList<any>
           data={items as any || []}
-          renderItem={({item}) => <ItemOrderSelected singleProduct={item} removeItem={()=>removeItem(item.uuid)} justShow /> }
+          renderItem={({item}) => <ItemOrderSelected singleProduct={item} removeItem={()=>removeItem(item.uuid)} justShow={review_order == "1" ? true : false} /> }
           keyExtractor={item => item.uuid}
           style={{height:"100%", width:"100%"}}
         />
@@ -113,11 +107,10 @@ const CheckoutOrder = ({
             </CView>
             :
             <>
-              {/* <CButton onPress={async()=>{
-                await decideHowToProccess()
-                clearOrder()
+              <CButton onPress={async()=>{
+                // clearOrder()
                 router.push({pathname:"/orders/final-status-checkout"})
-              }} title={"Facturar"} containerStyles={styles.touchableCreate}/> */}
+              }} title={"Facturar"} textStyles={{fontSize:18}} containerStyles={styles.touchableCreate}/>
               <CView style={{flex:1, flexDirection:"row", gap:10}}>
                 <CButton onPress={()=>{
                   // clearOrder()

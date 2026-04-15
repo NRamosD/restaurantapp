@@ -93,9 +93,9 @@ const CreateOrder = ({
       const products = await obtenerProductosDisponibles()
       setDataProducts(products)
       setProductsList(products)
-      if (id_orden) {
-        await loadOrderData(id_orden)
-      }
+      // if (id_orden) {
+      //   await loadOrderData(id_orden)
+      // }
     })()
     if(orderDetails?.orden?.observaciones)
       setObservacionOrden(orderDetails.orden.observaciones || "")
@@ -180,7 +180,7 @@ const CreateOrder = ({
           </TouchableOpacity>
           <TouchableOpacity style={styles.orderButton} onPress={async()=>{
             if(items.length==0){
-              ToastAndroid.show("No se añadieron productos", ToastAndroid.SHORT)
+              ToastAndroid.show("No se añadieron productos", ToastAndroid.LONG)
               return
             }
             await decideHowToProccess()
@@ -195,7 +195,8 @@ const CreateOrder = ({
                 ToastAndroid.show("No hay productos", ToastAndroid.SHORT)
                 return
               }
-              router.push({pathname:"/orders/checkout", params:{id_orden:id_orden??""}})
+              await decideHowToProccess()
+              router.push({pathname:"/orders/checkout", params:{id_orden:id_orden??"", review_order:"0"}})
             }}
           >
             <CText type="subtitle">Ir a Pagar</CText>
@@ -203,6 +204,8 @@ const CreateOrder = ({
       </CView>
       )}
       </TouchableOpacity>
+
+
 
       <GenericModal
         title={"Observaciones sobre el Pedido"}
