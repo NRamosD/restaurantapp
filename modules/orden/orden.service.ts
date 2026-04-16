@@ -1,8 +1,8 @@
 import { eq, asc, desc, and, sql, gte, lt } from 'drizzle-orm';
 import { useDrizzle } from '@/db/db';
-import { Orden, OrdenProducto, Producto, Cliente, Usuario } from '@/db/schema';
+import { Orden, OrdenProducto, Producto, Cliente, Usuario, PerfilNegocio } from '@/db/schema';
 import { v4 as uuidv4 } from 'uuid';
-import { Orden as OrdenInterface, OrdenProducto as OrdenProductoInterface, Producto as ProductoInterface } from '@/interfaces/general.interface';
+import { Cliente as ClienteInterface, Orden as OrdenInterface, OrdenProducto as OrdenProductoInterface, Producto as ProductoInterface, Usuario as UsuarioInterface } from '@/interfaces/general.interface';
 
 type OrdenEstado = 'PENDIENTE' | 'EN_PREPARACION' | 'LISTO' | 'ENTREGADO' | 'CANCELADO';
 export type OrdenTipo = 'LOCAL' | 'LLEVAR' | 'DELIVERY';
@@ -28,6 +28,11 @@ export interface OrdenProductoDetails extends Partial<OrdenProductoInterface>{
 export interface OrdenDetails{
     orden: Partial<OrdenInterface> | null
     ordenProductos: OrdenProductoDetails[]
+}
+
+export interface OrdenData extends Partial<OrdenInterface>{
+    cliente: Partial<ClienteInterface> | null
+    usuario: Partial<UsuarioInterface> & { nombreNegocio?: string } | null
 }
 
 interface SyncOrdenProductoItem {
@@ -304,7 +309,7 @@ export function useOrdenService() {
     return db.select().from(Orden).orderBy(desc(Orden.createdAt));
   };
 
-  const obtenerOrdenConClienteYUsuario = async (ordenUuid: string) => {
+  const obtenerOrdenConClienteYUsuario = async (ordenUuid: string) : Promise<OrdenData | null> => {
     const [orden] = await db
       .select()
       .from(Orden)
@@ -329,8 +334,13 @@ export function useOrdenService() {
       .from(Usuario)
       .where(eq(Usuario.uuid, orden.usuarioUuid))
       .limit(1);
+    const [perfilNegocio] = await db
+      .select()
+      .from(PerfilNegocio)
+      .where(eq(PerfilNegocio.uuid, usuario!.perfilNegocioUuid))
+      .limit(1);
 
-    return { ...orden, cliente, usuario };
+    return { ...orden, cliente, usuario: { ...usuario, nombreNegocio: perfilNegocio?.nombreComercial } };
   };
 
   const eliminarProductoDeOrden = async (ordenProductoUuid: string) => {

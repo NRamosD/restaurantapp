@@ -31,10 +31,12 @@ const CheckoutOrder = ({
 
   const {
     items,
+    orderDetails,
     getTotal,
     removeItem,
     clearOrder,
   } = useOrderStore();
+  const { sincronizarProductosDeOrden } = useOrdenService()
 
   const {
     loadOrderData
@@ -109,7 +111,13 @@ const CheckoutOrder = ({
             <>
               <CButton onPress={async()=>{
                 // clearOrder()
-                router.push({pathname:"/orders/final-status-checkout"})
+                await sincronizarProductosDeOrden(uuid_orden || "", items.map((item) => ({
+                  uuid: item.uuid,
+                  productoUuid: item.productoUuid || item.producto?.uuid || '',
+                  cantidad: item.cantidad ?? 1,
+                  notas: item.notas ?? undefined,
+                })))
+                router.push({pathname:"/orders/final-status-checkout", params:{id_orden:uuid_orden??""}})
               }} title={"Facturar"} textStyles={{fontSize:18}} containerStyles={styles.touchableCreate}/>
               <CView style={{flex:1, flexDirection:"row", gap:10}}>
                 <CButton onPress={()=>{
@@ -156,7 +164,7 @@ const CheckoutOrder = ({
       />
       {
         toShare && (
-          <ShareCheckout toShare={toShare} setToShare={setToShare}/>
+          <ShareCheckout toShare={toShare} orderDetails={orderDetails} setToShare={setToShare}/>
         )
       }
 

@@ -30,13 +30,13 @@ export interface Usuario {
     email: string;
     passwordHash: string;
 
-    rol: 'ADMIN' | 'CAJERO' | 'MESERO' | 'COCINA';
+    rol: 'ADMIN' | 'CAJERO' | 'MESERO' | 'COCINA' | string;
 
     perfilNegocioUuid: string;
 
-    activo: boolean;
-    createdAt: Date;
-    deletedAt?: Date;
+    activo: boolean | number | undefined;
+    createdAt: Date | string;
+    deletedAt?: Date | string | null;
 }
 
 export interface Sesion {
@@ -81,17 +81,17 @@ export interface Cliente {
     id: number;
     uuid: string;
     nombre: string;
-    tipoIdentificacion: 'CEDULA' | 'RUC' | 'PASAPORTE' | 'CONSUMIDOR_FINAL';
+    tipoIdentificacion: 'CEDULA' | 'RUC' | 'PASAPORTE' | 'CONSUMIDOR_FINAL' | string;
     identificacion: string;
 
-    direccion?: string;
-    telefono?: string;
-    email?: string;
-    estadoSync: 'PENDIENTE' | 'SINCRONIZADO';
+    direccion?: string | null;
+    telefono?: string | null;
+    email?: string | null;
+    estadoSync: 'PENDIENTE' | 'SINCRONIZADO' | string;
 
-    createdAt: Date;
-    updatedAt: Date;
-    deletedAt?: Date;
+    createdAt: Date | string;
+    updatedAt: Date | string;
+    deletedAt?: Date | string | null;
 }
 
 
