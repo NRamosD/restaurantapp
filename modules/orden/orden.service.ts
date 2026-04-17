@@ -190,7 +190,12 @@ export function useOrdenService() {
       .where(eq(Orden.uuid, ordenUuid));
   };
 
-  const sincronizarProductosDeOrden = async (ordenUuid: string, items: SyncOrdenProductoItem[], observaciones?:string, tipo?:OrdenTipo, estado?:OrdenEstado) => {
+  const sincronizarProductosDeOrden = async (
+    ordenUuid: string, 
+    items: SyncOrdenProductoItem[], 
+    observaciones?:string, 
+    tipo?:OrdenTipo, 
+    estado?:OrdenEstado) => {
     const productosActuales = await db
       .select()
       .from(OrdenProducto)

@@ -122,7 +122,7 @@ const CheckoutOrder = ({
                     productoUuid: item.productoUuid || item.producto?.uuid || '',
                     cantidad: item.cantidad ?? 1,
                     notas: item.notas ?? undefined,
-                  })))
+                  })), undefined, undefined, "COMPLETADO")
 
                   await facturarOrden({ ordenUuid: orderUUID })
 
