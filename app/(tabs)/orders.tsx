@@ -52,7 +52,11 @@ export default function TabTwoScreen() {
   const showMode = (currentMode: any) => {
     DateTimePickerAndroid.open({
       value: dateFilter,
-      onChange: (_event, date) => {
+      onChange: (event, date) => {
+        if (event.type === 'dismissed' || !date) {
+          return;
+        }
+
         setDateFilter(date!);
         const dateSelected = dayjs(date).format("dddd, D [de] MMMM [de] YYYY")?.toUpperCase()
         const pickedOrders = sectionListDataByDate.filter((item: any) => item.title === dateSelected)
@@ -158,17 +162,18 @@ export default function TabTwoScreen() {
                   date: false,
                 })
               }} style={{
-                  flex:1,
+                  flex:3,
                   justifyContent:"center",
                   alignItems:"center",
                   height:"100%",
               }}>
-                  <Ionicons name="sync" size={25} color={themePreset === "dark" ? "white" : "black"}/>
+                <CText type="default" style={{fontSize:12}}>Limpiar Filtros</CText>
               </TouchableOpacity>
-              <TouchableOpacity onPress={()=>setopenModal2(true)} style={styles.filtersBtnStyle}>
+                  {/* <Ionicons name="filter" size={25} color={themePreset === "dark" ? "white" : "black"}/> */}
+              {/* <TouchableOpacity onPress={()=>setopenModal2(true)} style={styles.filtersBtnStyle}>
                 <Ionicons name="filter" size={25} color={themePreset === "dark" ? "white" : "black"}/>
                 <CText type="default">Otros filtros</CText>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
           </CView>
         </CView>
 
@@ -246,7 +251,7 @@ const styles = StyleSheet.create({
     justifyContent:"space-between",
     gap:10,
     height:"100%",
-    padding:5,
+    padding:10,
 
   },
   filtersBtnStyle: {

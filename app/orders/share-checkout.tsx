@@ -3,6 +3,7 @@ import { View, Text, Button, StyleSheet, Image, Alert, Platform, ToastAndroid } 
 import { captureRef } from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
 import { File, Paths } from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
 import { Product } from "@/interfaces";
 import dayjs from "dayjs";
 import { OrdenData, OrdenDetails, useOrdenService } from "@/modules/orden/orden.service";
@@ -102,6 +103,18 @@ export default function ShareCheckout({
 
   const saveReceipt = async () => {
     try {
+      const permissionResponse = Platform.OS === 'android'
+        ? await MediaLibrary.requestPermissionsAsync(false, ['photo'])
+        : await MediaLibrary.requestPermissionsAsync();
+
+      const { status } = permissionResponse;
+
+      if (status !== 'granted') {
+        showMessage('Debes conceder permisos para guardar el comprobante en la galería');
+        setToShare?.(false);
+        return;
+      }
+
       const uri = await captureReceipt();
       const fileName = `comprobante-${orderDetails?.orden?.numeroOrden || Date.now()}.png`;
 
@@ -117,8 +130,17 @@ export default function ShareCheckout({
       destinationFile.create({ overwrite: true });
       destinationFile.write(fileBytes);
 
+      const asset = await MediaLibrary.createAssetAsync(destinationFile.uri);
+      await MediaLibrary.createAlbumAsync('RestaurantApp', asset, false).catch(async () => {
+        const album = await MediaLibrary.getAlbumAsync('RestaurantApp');
+
+        if (album) {
+          await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
+        }
+      });
+
       console.log('Comprobante guardado en:', destinationFile.uri);
-      showMessage(`Comprobante guardado en: ${destinationFile.uri}`);
+      showMessage('Comprobante guardado en la galería del dispositivo');
       setToShare?.(false);
     } catch (error) {
       console.error("Error al guardar el comprobante:", error);

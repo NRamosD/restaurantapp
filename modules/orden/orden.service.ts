@@ -1,10 +1,10 @@
-import { eq, asc, desc, and, sql, gte, lt } from 'drizzle-orm';
+import { eq, asc, desc, and, sql, gte, lt, inArray, not } from 'drizzle-orm';
 import { useDrizzle } from '@/db/db';
 import { Orden, OrdenProducto, Producto, Cliente, Usuario, PerfilNegocio } from '@/db/schema';
 import { v4 as uuidv4 } from 'uuid';
 import { Cliente as ClienteInterface, Orden as OrdenInterface, OrdenProducto as OrdenProductoInterface, Producto as ProductoInterface, Usuario as UsuarioInterface } from '@/interfaces/general.interface';
 
-type OrdenEstado = 'PENDIENTE' | 'EN_PREPARACION' | 'LISTO' | 'ENTREGADO' | 'CANCELADO';
+type OrdenEstado = 'PENDIENTE' | 'EN_PREPARACION' | 'LISTO' | 'ENTREGADO' | 'COMPLETADO' | 'CANCELADO';
 export type OrdenTipo = 'LOCAL' | 'LLEVAR' | 'DELIVERY';
 
 interface CrearOrdenParams {
@@ -190,16 +190,20 @@ export function useOrdenService() {
       .where(eq(Orden.uuid, ordenUuid));
   };
 
-  const sincronizarProductosDeOrden = async (ordenUuid: string, items: SyncOrdenProductoItem[], observaciones?:string) => {
+  const sincronizarProductosDeOrden = async (ordenUuid: string, items: SyncOrdenProductoItem[], observaciones?:string, tipo?:OrdenTipo, estado?:OrdenEstado) => {
     const productosActuales = await db
       .select()
       .from(OrdenProducto)
       .where(eq(OrdenProducto.ordenUuid, ordenUuid));
     
-    if (!!observaciones) {
+    if (!!observaciones || !!tipo) {
+      const newData: any = { updatedAt: new Date().toISOString() };
+      if (!!observaciones) newData.observaciones = observaciones;
+      if (!!tipo) newData.tipo = tipo;
+      if (!!estado) newData.estado = estado;
       await db
         .update(Orden)
-        .set({ observaciones, updatedAt: new Date().toISOString() })
+        .set(newData)
         .where(eq(Orden.uuid, ordenUuid));
     }
 
@@ -288,6 +292,30 @@ export function useOrdenService() {
     return db.select().from(Orden).orderBy(desc(Orden.createdAt));
   };
 
+  const obtenerOrdenesExcluyendoEstado = async (estado?: OrdenEstado) => {
+    if (estado) {
+      return db
+        .select()
+        .from(Orden)
+        .where(not(eq(Orden.estado, estado)))
+        .orderBy(desc(Orden.createdAt));
+    }
+
+    return db.select().from(Orden).orderBy(desc(Orden.createdAt));
+  };
+
+  const obtenerOrdenesPorEstados = async (estados: OrdenEstado[] = []) => {
+    if (estados.length > 0) {
+      return db
+        .select()
+        .from(Orden)
+        .where(inArray(Orden.estado, estados))
+        .orderBy(desc(Orden.createdAt));
+    }
+
+    return db.select().from(Orden).orderBy(desc(Orden.createdAt));
+  };
+
   const obtenerOrdenesPorFecha = async (fecha: string) => {
     if (fecha) {
       const inicio = new Date(fecha);
@@ -373,6 +401,8 @@ export function useOrdenService() {
     cerrarOrden,
     obtenerOrdenPorUuid,
     obtenerOrdenesPorEstado,
+    obtenerOrdenesExcluyendoEstado,
+    obtenerOrdenesPorEstados,
     obtenerOrdenesPorFecha,
     obtenerOrdenConClienteYUsuario,
     eliminarProductoDeOrden,

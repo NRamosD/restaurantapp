@@ -1,4 +1,3 @@
-
 import { CButton, CContainerView, CText, CView } from '@/components'
 import CInputText from '@/components/CInputText'
 import FloatingButton from '@/components/FloatingButton'
@@ -6,7 +5,7 @@ import { ItemOrderSelected } from '@/components/orders'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from "expo-router";
 import React, { useEffect, useState } from 'react'
-import { FlatList, StyleSheet, TouchableOpacity } from 'react-native'
+import { FlatList, StyleSheet, ToastAndroid, TouchableOpacity } from 'react-native'
 import { Product } from '@/interfaces'
 import { v4 as uuidv4 } from 'uuid';
 import ItemOrderOptionSquare from '@/components/orders/ItemOrderOptionSquare'
@@ -15,7 +14,7 @@ import { useLocalSearchParams } from 'expo-router'
 import useOrderOperations from '@/hooks/useOrderOperations'
 import GenericModal from '@/components/ui/GenericModal'
 import ShareCheckout from './share-checkout'
-import { useOrdenService } from '@/modules'
+import { useFacturaService, useOrdenService } from '@/modules'
 
 type Props = {}
 type dataType = {id:string, name:string}
@@ -37,6 +36,7 @@ const CheckoutOrder = ({
     clearOrder,
   } = useOrderStore();
   const { sincronizarProductosDeOrden } = useOrdenService()
+  const { facturarOrden } = useFacturaService()
 
   const {
     loadOrderData
@@ -110,14 +110,27 @@ const CheckoutOrder = ({
             :
             <>
               <CButton onPress={async()=>{
-                // clearOrder()
-                await sincronizarProductosDeOrden(uuid_orden || "", items.map((item) => ({
-                  uuid: item.uuid,
-                  productoUuid: item.productoUuid || item.producto?.uuid || '',
-                  cantidad: item.cantidad ?? 1,
-                  notas: item.notas ?? undefined,
-                })))
-                router.push({pathname:"/orders/final-status-checkout", params:{id_orden:uuid_orden??""}})
+                try {
+                  const orderUUID = uuid_orden ?? orderDetails?.orden?.uuid
+                  if (!orderUUID) {
+                    ToastAndroid.show('No se encontró la orden a facturar', ToastAndroid.SHORT)
+                    return
+                  }
+
+                  await sincronizarProductosDeOrden(orderUUID, items.map((item) => ({
+                    uuid: item.uuid,
+                    productoUuid: item.productoUuid || item.producto?.uuid || '',
+                    cantidad: item.cantidad ?? 1,
+                    notas: item.notas ?? undefined,
+                  })))
+
+                  await facturarOrden({ ordenUuid: orderUUID })
+
+                  router.push({pathname:"/orders/final-status-checkout", params:{id_orden:orderUUID}})
+                } catch (error) {
+                  const message = error instanceof Error ? error.message : 'No se pudo facturar la orden'
+                  ToastAndroid.show(message, ToastAndroid.LONG)
+                }
               }} title={"Facturar"} textStyles={{fontSize:18}} containerStyles={styles.touchableCreate}/>
               <CView style={{flex:1, flexDirection:"row", gap:10}}>
                 <CButton onPress={()=>{

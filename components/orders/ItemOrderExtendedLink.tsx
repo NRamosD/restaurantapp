@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import { router } from "expo-router";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Orden } from "@/interfaces/general.interface";
+import ChipOrderStatus from "./ChipOrderStatus";
 
 type Props = {
   data:Orden
@@ -27,13 +28,14 @@ const ItemOrderExtendedLink = ({
         style={{ flex: 1, flexDirection: "row", }}
       >
         <CView style={{ flex: 5 }}>
-          <CText type="title">Orden #{data.numeroOrden}</CText>
-          <CText
+          <CText type="subtitle">Orden #{data.numeroOrden}</CText>
+          <ChipOrderStatus estado={data?.estado as any}/>
+          {/* <CText
             type="default"
             style={{ overflow: "hidden", textOverflow: "ellipsis" }}
           >
             {data.uuid}
-          </CText>
+          </CText> */}
           <CText>{dayjs(data.createdAt).format("DD-MM-YYYY")} - {dayjs(data.createdAt).format("HH:mm:ss")}</CText>
           {/* <CView style={{flex:1, flexDirection:"row"}}>
             <CText></CText>

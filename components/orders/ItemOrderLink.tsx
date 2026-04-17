@@ -8,6 +8,8 @@ import { router } from "expo-router";
 import useOrderOperations from "@/hooks/useOrderOperations";
 import { Orden } from "@/interfaces/general.interface";
 import useOrderStore from "@/hooks/useOrderStore";
+import ChipOrderStatus from "./ChipOrderStatus";
+import dayjs from "dayjs";
 
 type Props = {
   path?:any
@@ -57,17 +59,27 @@ const ItemOrderLink = ({
         style={{ flex: 1, flexDirection: "row", }}
       >
         <CView style={{ flex: 5 }}>
-          <CText type="title">Orden #{order?.numeroOrden?.toString() || "N/A"}</CText>
-          <CText
-            type="default"
-            style={{ overflow: "hidden", textOverflow: "ellipsis" }}
-          >
-            {order?.observaciones? order?.observaciones.slice(0, 45).concat("...") : "Sin observaciones"}
-          </CText>
+          <CView style={{ flexDirection: "row", alignItems: "center" }}>
+            <CView style={{ flex: 4, justifyContent:"flex-start" }}>
+              <CText type="default" style={{ fontSize:10 }}>Orden</CText>
+              <CText type="title">#{order?.numeroOrden?.toString() || "N/A"}</CText>
+              <CText
+                type="default"
+                style={{ overflow: "hidden", textOverflow: "ellipsis", fontSize:14 }}
+              >
+                {order?.observaciones? order?.observaciones.slice(0, 30).concat("...") : ""}
+              </CText>
+            </CView>
+            <CView style={{ flex:3, justifyContent:"center", alignItems:"flex-end" }}>
+              <ChipOrderStatus fontSize={10} estado={order?.estado as any || "PENDIENTE"} />
+              <CText type="subtitle" style={{ fontSize:14 }}>Mesa: 1</CText>
+              <CText type="subtitle" style={{ fontSize:14 }}>{dayjs(order?.createdAt).format("DD-MM-YYYY HH:mm")}</CText>
+            </CView>
+          </CView>
         </CView>
         <CView
           style={{
-            flex: 1,
+            flex: .5,
             justifyContent: "center",
             alignItems: "flex-end",
           }}

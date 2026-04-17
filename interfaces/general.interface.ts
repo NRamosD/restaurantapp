@@ -166,7 +166,7 @@ export interface Orden {
 
     tipo: 'LOCAL' | 'LLEVAR' | 'DELIVERY' | string;
 
-    estado: 'PENDIENTE' | 'EN_PREPARACION' | 'LISTO' | 'ENTREGADO' | 'CANCELADO' | string;
+    estado: 'PENDIENTE' | 'EN_PREPARACION' | 'LISTO' | 'ENTREGADO' | 'COMPLETADO' | 'CANCELADO' | string;
     estadoSync: 'PENDIENTE' | 'SINCRONIZADO' | string;
 
     subtotal: number;

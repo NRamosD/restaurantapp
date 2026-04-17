@@ -33,6 +33,16 @@
         }
       ],
       [
+        "expo-media-library",
+        {
+          "photosPermission": "Permite a RestaurantApp acceder a tus fotos.",
+          "savePhotosPermission": "Permite a RestaurantApp guardar comprobantes en tu galería.",
+          "granularPermissions": [
+            "photo"
+          ]
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",

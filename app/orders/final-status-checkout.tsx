@@ -1,7 +1,7 @@
 import { CButton, CContainerView, CText, CView } from '@/components'
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
+import { BackHandler, ScrollView, StyleSheet, TouchableOpacity } from 'react-native'
 import ShareCheckout from './share-checkout';
 import useOrderStore from '@/hooks/useOrderStore';
 import CInputText from '@/components/CInputText';
@@ -31,6 +31,14 @@ const FinalStatusCheckout = ({
     setOpenNotesModal(true);
   };
 
+  useEffect(() => {
+    const backSubscription = BackHandler.addEventListener('hardwareBackPress', () => {
+      router.replace('/');
+      return true;
+    });
+
+    return () => backSubscription.remove();
+  }, []);
 
   return (
     <CContainerView style={{flex:1, justifyContent:"center"}}>
@@ -108,7 +116,7 @@ const FinalStatusCheckout = ({
             <CButton containerStyles={styles.touchableCreate} textStyles={{fontSize:14}} onPress={()=>setToShare(true)} title={"Compartir"}/>
           </CView>
         </CView>
-        <CButton containerStyles={styles.touchableCreate} textStyles={{fontSize:18}} onPress={()=>router.dismissTo("/")} title={"Inicio"}/>
+        <CButton containerStyles={styles.touchableCreate} textStyles={{fontSize:18}} onPress={()=>router.replace('/')} title={"Inicio"}/>
       </CView>
 
       <ShareCheckout toShare={toSave} action="save" orderDetails={orderDetails} setToShare={setToSave}/>

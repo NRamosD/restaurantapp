@@ -115,7 +115,7 @@ const ItemOrderSelected = ({
               value={detailProduct}
               onChangeText={(text)=>setDetailProduct(text)}
               multiline={true} numberOfLines={6}
-              height={40} 
+              height={100} 
               disabled={justShow}/>
             </CView>
           </CView>

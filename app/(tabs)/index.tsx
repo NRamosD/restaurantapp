@@ -28,11 +28,11 @@ export default function HomeScreen() {
   const [orderList, setOrderList] = useState<any[]>([])
   const [refreshing, setRefreshing] = useState(false);
 
-  const { obtenerOrdenesPorEstado } = useOrdenService()
+  const { obtenerOrdenesPorEstados } = useOrdenService()
   const insets = useSafeAreaInsets()
 
   const getAllOrdersList = async () => {
-    const result = await obtenerOrdenesPorEstado("PENDIENTE")
+    const result = await obtenerOrdenesPorEstados(["PENDIENTE", "EN_PREPARACION", "LISTO", "ENTREGADO"])
     setOrderList(result)
   }
   
@@ -58,7 +58,7 @@ export default function HomeScreen() {
       paddingBottom: insets.bottom,
     }}>
         <TopBarWithMenu title={"Inicio"}/>
-        <CView style={{flex:3}}>
+        <CView style={{flex:4}}>
           <CText type="title" style={{fontSize:18, textAlign:"center", paddingVertical:5}}>
             Pendientes de Facturar
           </CText>
@@ -84,21 +84,21 @@ export default function HomeScreen() {
           </ScrollView>
         </CView>
         <View style={styles.easyAccess}>
-          <CText type="title" style={{padding:5}}>
+          <CText type="title" style={{fontSize:18, textAlign:"center", paddingVertical:5}}>
             Acceso Rápido
           </CText>
           <CView style={styles.easyAccessOptionsContainer}>
             <TouchableOpacity onPress={()=>router.push({pathname:"/inventory/top-sellers"})} style={[styles.easyAccessOption,{boxShadow:`${colorScheme === "dark" ? "#000" : "#c1c1c1"} 0px 5px 5px 2px`}]}>
-              <Ionicons name="heart-outline" size={70} color={getColors(colorScheme).tint}/>
-              <CText type="subtitle" style={{fontSize:14}}>Más Vendidos</CText>
+              <Ionicons name="heart-outline" size={40} color={getColors(colorScheme).tint}/>
+              <CText type="subtitle" style={{fontSize:12}}>Más Vendidos</CText>
             </TouchableOpacity>
             <TouchableOpacity onPress={()=>router.push({pathname:"/inventory/create-product"})} style={[styles.easyAccessOption,{boxShadow:`${colorScheme === "dark" ? "#000" : "#c1c1c1"} 0px 5px 5px 2px`}]}>
-              <Ionicons name="storefront-outline" size={70} color={getColors(colorScheme).tint}/>
-              <CText type="subtitle" style={{fontSize:13}}>Nuevo Producto</CText>
+              <Ionicons name="storefront-outline" size={40} color={getColors(colorScheme).tint}/>
+              <CText type="subtitle" style={{fontSize:12}}>Nuevo Producto</CText>
             </TouchableOpacity>
             <TouchableOpacity onPress={()=>router.push({pathname:"/settings"})} style={[styles.easyAccessOption,{boxShadow:`${colorScheme === "dark" ? "#000" : "#c1c1c1"} 0px 5px 5px 2px`}]}>
-              <Ionicons name="settings-outline" size={70} color={getColors(colorScheme).tint}/>
-              <CText type="subtitle" style={{fontSize:14}}>Ajustes</CText>
+              <Ionicons name="settings-outline" size={40} color={getColors(colorScheme).tint}/>
+              <CText type="subtitle" style={{fontSize:12}}>Ajustes</CText>
             </TouchableOpacity>
           </CView>
 
@@ -142,11 +142,9 @@ const styles = StyleSheet.create({
     justifyContent:"center", 
     alignItems:"center",
     borderRadius:5,
-    marginHorizontal:5, 
-    marginVertical:10,
   },
   easyAccess: {
-    flex:2,
+    flex:1.5,
     padding:5,
   },
   contNewPedido: {
