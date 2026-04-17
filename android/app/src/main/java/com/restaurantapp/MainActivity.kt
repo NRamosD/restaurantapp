@@ -1,4 +1,4 @@
-package com.nramos25.restaurantapp
+package com.restaurantapp
 
 import android.os.Build
 import android.os.Bundle
