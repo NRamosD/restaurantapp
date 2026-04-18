@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { CView } from '../CView'
 import { CText } from '../CText'
 import { Product } from '../../interfaces/'
-import { Image, StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native'
 import { Divider } from 'react-native-paper'
 import CImage from '../CImage'
 import { mostSellsProduct } from '@/app/inventory/top-sellers'
@@ -16,33 +16,35 @@ const DetailTopSeller = ({
     producto,
     position
 }: Props) => {
-
-  const [errorImage, setErrorImage] = useState(false);
-
   return (
     <CView style={style.container}>
-        <CView style={{flex:1, justifyContent:"center", alignItems:"center"}}>
-          <CText style={{fontSize:30, fontWeight:900, fontStyle:"italic"}}>{position+1}</CText>
+        <CView style={style.rankContainer}>
+          <CView style={style.rankBadge}>
+            <CText style={style.rankText}>{position+1}</CText>
+          </CView>
         </CView>
-        <CView style={{flex:4}}>
+        <CView style={style.imageContainer}>
             <CImage style={style.imgProduct} 
               src={producto.imagen_url}
             />
         </CView>
         <CView style={style.containerDataProduct}>
-            <CView>
-                <CText style={{fontWeight:"bold"}}>{producto.nombre || "Nombre del producto"}</CText>
-                <CText style={{fontWeight:900, fontSize:20, paddingVertical:5}}>${producto.ingreso_total.toFixed(2) || "Ingresos"}</CText>
-            </CView>
-            <Divider/>
-            <CView style={style.containerStockSold}>
-                <CView style={style.containerStockSoldItem1}>
-                    <CText style={{fontWeight:"bold"}}>{producto.cantidad_total || "28"}</CText>
-                    <CText style={{fontSize:12}}>Cantidad Vendida</CText>
+            <CView style={style.headerContainer}>
+                <CText style={style.productName}>{producto.nombre || "Nombre del producto"}</CText>
+                <CView style={style.revenueBadge}>
+                  <CText style={style.revenueText}>${producto.ingreso_total.toFixed(2)}</CText>
                 </CView>
-                <CView style={style.containerStockSoldItem2}>
-                    <CText style={{fontWeight:"bold"}}>{producto.veces_vendido || "28"}</CText>
-                    <CText style={{fontSize:12}}>Órdenes</CText>
+            </CView>
+            <CText style={style.subtitle}>Ingresos generados</CText>
+            <Divider style={style.divider}/>
+            <CView style={style.containerStockSold}>
+                <CView style={style.metricCard}>
+                    <CText style={style.metricValue}>{producto.cantidad_total}</CText>
+                    <CText style={style.metricLabel}>Cantidad Vendida</CText>
+                </CView>
+                <CView style={style.metricCard}>
+                    <CText style={style.metricValue}>{producto.veces_vendido}</CText>
+                    <CText style={style.metricLabel}>Órdenes</CText>
                 </CView>
             </CView>
             
@@ -57,38 +59,97 @@ export default DetailTopSeller
 const style = StyleSheet.create({
   container:{
     flexDirection:"row",
-    padding:2,
+    padding:10,
     gap:10,
-    borderWidth:2,
-    borderColor:"#cecece",
-    borderRadius:5,
-    marginVertical:2,
-    
+    borderWidth:1,
+    borderColor:"#d9d9d9",
+    borderRadius:14,
+    marginVertical:4,
+    alignItems:"center",
+    backgroundColor:"#ffffff",
+  },
+  rankContainer:{
+    width:42,
+    justifyContent:"center",
+    alignItems:"center",
+  },
+  rankBadge:{
+    width:42,
+    height:42,
+    borderRadius:21,
+    justifyContent:"center",
+    alignItems:"center",
+    backgroundColor:"#1c1c1c",
+  },
+  rankText:{
+    fontSize:20,
+    fontWeight:"900",
+    fontStyle:"italic",
+    color:"#ffffff",
+  },
+  imageContainer:{
+    width:90,
+    height:90,
+    borderRadius:12,
+    overflow:"hidden",
   },
   imgProduct:{
     width:"100%",
-    height:130,
+    height:"100%",
     objectFit:"cover",
+    borderRadius:12,
   },
   containerDataProduct:{
-    flex:8,
-  },
-  containerStockSold:{
     flex:1,
+    gap:6,
+  },
+  headerContainer:{
     flexDirection:"row",
     justifyContent:"space-between",
-    padding:5
-  },
-  containerStockSoldItem1:{
-    flex:1,
-    justifyContent:"flex-end",
     alignItems:"flex-start",
-    paddingHorizontal:5
+    gap:8,
   },
-  containerStockSoldItem2:{
+  productName:{
     flex:1,
-    justifyContent:"flex-end",
-    alignItems:"flex-end",
-    paddingHorizontal:5
+    fontWeight:"bold",
+    fontSize:16,
+  },
+  revenueBadge:{
+    paddingHorizontal:10,
+    paddingVertical:6,
+    borderRadius:999,
+    backgroundColor:"#1c1c1c",
+  },
+  revenueText:{
+    fontWeight:"900",
+    fontSize:15,
+    color:"#ffffff",
+  },
+  subtitle:{
+    fontSize:12,
+    opacity:0.7,
+  },
+  divider:{
+    marginVertical:2,
+  },
+  containerStockSold:{
+    flexDirection:"row",
+    justifyContent:"space-between",
+    gap:8,
+  },
+  metricCard:{
+    flex:1,
+    paddingVertical:8,
+    paddingHorizontal:10,
+    borderRadius:10,
+    backgroundColor:"#f5f5f5",
+  },
+  metricValue:{
+    fontWeight:"bold",
+    fontSize:18,
+  },
+  metricLabel:{
+    fontSize:12,
+    opacity:0.75,
   }
 })

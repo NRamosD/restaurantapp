@@ -5,80 +5,68 @@ import { CText } from '@/components/CText'
 import { CView } from '@/components/CView'
 import { router } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { ScrollView, StyleSheet } from 'react-native'
+import { ScrollView, StyleSheet, ToastAndroid } from 'react-native'
 import * as ImagePicker from 'expo-image-picker';
 import { Switch } from 'react-native-paper'
-import { Picker } from '@react-native-picker/picker'
 import CImage from '@/components/CImage'
-import { Product } from '@/interfaces'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { getColors } from '@/constants/Colors'
+import { useProductoService } from '@/modules'
+import { useAuthStore } from '@/hooks/useAuthStore'
 
 type Props = {}
 
-
+type ProductFormData = {
+    nombre: string;
+    descripcion: string;
+    precio: number;
+    precioFinal: number;
+    stock: number;
+    imagenUrl: string;
+    aplicaIva: boolean;
+    porcentajeIva: number;
+    ilimitado: boolean;
+    estado: 'DISPONIBLE' | 'NO_DISPONIBLE';
+}
 
 const CreateProductScreen = ({}: Props) => {
     const color = useColorScheme()
-    const [formData, setFormData] = useState<Omit<Product, 'id_producto' | 'negocioUuid' | 'uuid'>>({
-        perfilNegocioUuid: 'TEMP_PERFIL_NEGOCIO_UUID',
+    const colors = getColors(color)
+    const { crearProducto } = useProductoService()
+    const { user } = useAuthStore()
+    const [formData, setFormData] = useState<ProductFormData>({
         nombre: '',
         descripcion: '',
         precio: 0,
-        precio_total: 0,
+        precioFinal: 0,
         stock: 0,
-        estado: 'disponible',
-        envio_gratis: false,
-        descuento: 0,
-        precio_anterior: 0,
-        imagen_url: '',
-        galeria: '',
-        video_url: '',
-        codigo_barras: '',
-        iva: null,
-        slug: '',
-        tiempo_entrega: '',
-        ilimitado: false
+        imagenUrl: '',
+        aplicaIva: true,
+        porcentajeIva: 12,
+        ilimitado: false,
+        estado: 'DISPONIBLE'
     });
-    const [selectedCategory, setSelectedCategory] = useState<string>('');
-    const [switchEnvioGratis, setSwitchEnvioGratis] = useState(false);
-    const [switchIlimitado, setSwitchIlimitado] = useState(false);
+    const [saving, setSaving] = useState(false);
     const [image, setImage] = useState<string>("");
 
-    const handleInputChange = (field: keyof Product, value: any) => {
+    const handleInputChange = <K extends keyof ProductFormData>(field: K, value: ProductFormData[K]) => {
         setFormData(prev => {
-            const newData = {
+            return {
                 ...prev,
                 [field]: value
             };
-            
-            // Auto-generate slug from nombre
-            if (field === 'nombre') {
-                newData.slug = encodeURI(value.toLowerCase());
-            }
-            
-            return newData;
         });
-
     };
 
-    const onToggleSwitchEnvioGratis = (nameField: keyof Product) => {
-        const newValue = !switchEnvioGratis;
-        setSwitchEnvioGratis(newValue);
-        handleInputChange(nameField, newValue);
-    };
-
-    const onToggleSwitchIlimitado = (nameField: keyof Product) => {
-        const newValue = !switchIlimitado;
+    const onToggleSwitchIlimitado = () => {
+        const newValue = !formData.ilimitado;
         if(newValue){
             handleInputChange("stock", 0);
         }
-        setSwitchIlimitado(newValue);
-        handleInputChange(nameField, newValue);
+        handleInputChange("ilimitado", newValue);
     };
 
     const pickImage = async () => {
-        // No permissions request is necessary for launching the image library
         let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
@@ -88,40 +76,91 @@ const CreateProductScreen = ({}: Props) => {
 
         if (!result.canceled && result.assets && result.assets.length > 0) {
             setImage(result.assets?.[0]?.uri ||"");
-            handleInputChange("imagen_url", result.assets?.[0]?.uri ||"");
+            handleInputChange("imagenUrl", result.assets?.[0]?.uri ||"");
         }
     };
 
     const handleSaveProduct = async() => {
-        router.dismissTo("/")
+        if (!user?.perfilNegocioUuid) {
+            ToastAndroid.show('No se encontró el perfil del negocio', ToastAndroid.SHORT)
+            return
+        }
+
+        if (!formData.nombre.trim()) {
+            ToastAndroid.show('Ingresa el nombre del producto', ToastAndroid.SHORT)
+            return
+        }
+
+        if (formData.precio <= 0) {
+            ToastAndroid.show('Ingresa un precio válido', ToastAndroid.SHORT)
+            return
+        }
+
+        try {
+            setSaving(true)
+            await crearProducto({
+                nombre: formData.nombre.trim(),
+                descripcion: formData.descripcion.trim() || undefined,
+                precio: Math.round(formData.precio * 100),
+                aplicaIva: formData.aplicaIva,
+                porcentajeIva: formData.porcentajeIva,
+                stock: formData.ilimitado ? 0 : formData.stock,
+                ilimitado: formData.ilimitado,
+                imagenUrl: formData.imagenUrl || undefined,
+                perfilNegocioUuid: user.perfilNegocioUuid,
+                estado: formData.estado
+            })
+            ToastAndroid.show('Producto creado correctamente', ToastAndroid.SHORT)
+            router.back()
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'No se pudo crear el producto'
+            ToastAndroid.show(message, ToastAndroid.LONG)
+        } finally {
+            setSaving(false)
+        }
     };
 
     useEffect(() => {
-        const descuento = formData.descuento || 0;
-        const precioConDescuento = formData.precio * (1 - descuento / 100);
+        const precioBase = formData.precio || 0;
+        const precioConIva = formData.aplicaIva
+            ? precioBase * (1 + (formData.porcentajeIva || 0) / 100)
+            : precioBase;
         setFormData(prev => ({
             ...prev,
-            precio_total: Number(precioConDescuento.toFixed(2))
+            precioFinal: Number(precioConIva.toFixed(2))
         }));
-    }, [formData.precio, formData.descuento]);
-
+    }, [formData.precio, formData.aplicaIva, formData.porcentajeIva]);
 
     return (
         <CContainerView style={{flex:1}}>
-            <CView style={{flex:1, backgroundColor:getColors(color).tint, justifyContent:"center", height:20 }}>
+            <CView style={{flex:1, backgroundColor:colors.tint, justifyContent:"center", height:20 }}>
               <CText type="title" style={{ textAlign:"center", color:"white"}}>Nuevo Producto</CText>
             </CView>
             <CView style={{flex:9}}>
-                <ScrollView style={{padding:10}}>
+                <ScrollView style={{padding:10}} contentContainerStyle={style.scrollContent}>
+                    <CView style={style.summaryCard}>
+                        <CView>
+                            <CText type="subtitle">Resumen rápido</CText>
+                            <CText>{formData.estado}</CText>
+                        </CView>
+                        <CView style={style.summaryRow}>
+                            <CText>Precio final</CText>
+                            <CText type="defaultSemiBold">${formData.precioFinal.toFixed(2)}</CText>
+                        </CView>
+                        <CView style={style.summaryRow}>
+                            <CText>Stock inicial</CText>
+                            <CText type="defaultSemiBold">{formData.ilimitado ? 'Ilimitado' : formData.stock}</CText>
+                        </CView>
+                    </CView>
                     
-                    <CView style={{ padding:5, justifyContent:"center", gap:5, marginVertical:5}}>
+                    <CView style={style.imageSection}>
                             <CImage style={style.imgComponent} 
                             src={image}
                             fallback='https://images.unsplash.com/photo-1546069901-ba9599a7e63c'/>
                             <CButton containerStyles={style.btnStyle} title='Subir Imagen' onPress={pickImage}/>
 
                     </CView>
-                    <CView style={{ gap:10, marginBottom:20, padding:10}}>
+                    <CView style={style.formSection}>
                         <CView>
                             <CInputText 
                                 label={"Nombre"} 
@@ -156,87 +195,51 @@ const CreateProductScreen = ({}: Props) => {
                                     keyboardType="numeric"
                                     value={formData.stock?.toString()}
                                     onChangeText={(text) => handleInputChange('stock', parseInt(text) || 0)}
-                                    disabled={switchIlimitado}
+                                    disabled={formData.ilimitado}
                                 />
                             </CView>
                         </CView>
-                        <CView style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderRadius: 5}}>
+                        <CView style={style.switchRow}>
                             <CText>Ilimitado</CText>
                             <Switch 
                                 value={formData.ilimitado} 
-                                onValueChange={()=>onToggleSwitchIlimitado("ilimitado")} 
+                                onValueChange={onToggleSwitchIlimitado} 
                             />
                         </CView>
-                        
-                        <CView>
-                            <CText style={{paddingHorizontal:2, marginBottom: 4}}>Categoría</CText>
-                            <CView style={{borderWidth:1, borderColor:"#cacacaff", borderRadius:5}}>
-                                <Picker
-                                    selectedValue={selectedCategory}
-                                    onValueChange={(itemValue) => {
-                                        setSelectedCategory(itemValue);
-                                        // You might want to map this to a category ID in your actual implementation
-                                    }}
-                                    style={{color: getColors(color).text}}
-                                >
-                                    <Picker.Item label="Seleccione una categoría" value="" />
-                                    <Picker.Item label="Comida" value="comida" />
-                                    <Picker.Item label="Entrada" value="entrada" />
-                                    <Picker.Item label="Plato Fuerte" value="plato_fuerte" />
-                                    <Picker.Item label="Comida Rápida" value="comida_rapida" />
-                                    <Picker.Item label="Bebidas" value="bebidas" />
-                                    <Picker.Item label="Adicionales" value="adicionales" />
-                                    <Picker.Item label="Postres" value="postres" />
-                                </Picker>
-                            </CView>
-                        </CView>
-
-                        <CView>
-                            <CInputText 
-                                label={"Código de Barras"} 
-                                placeholder='Código de barras del producto'
-                                value={formData.codigo_barras}
-                                onChangeText={(text) => handleInputChange('codigo_barras', text)}
-                            />
-                        </CView>
-
                         <CView style={{flexDirection: 'row', gap: 10}}>
-                            <CView style={{flex: 1, gap: 10}}>
+                            <CView style={{flex: 1}}>
                                 <CInputText 
-                                    label={"Descuento %"} 
-                                    placeholder='0'
+                                    label={"IVA %"} 
+                                    placeholder='12'
                                     keyboardType="numeric"
-                                    maxLength={2}
-                                    value={formData.descuento?.toString()}
-                                    onChangeText={(text) => handleInputChange('descuento', parseInt(text) || 0)}
+                                    value={formData.porcentajeIva?.toString()}
+                                    onChangeText={(text) => handleInputChange('porcentajeIva', parseFloat(text) || 0)}
                                 />
                             </CView>
                             <CView style={{flex: 1}}>
                                 <CInputText 
-                                    label={"Nuevo Precio"} 
+                                    label={"Precio Final"} 
                                     placeholder='0'
                                     disabled
-                                    value={
-                                        ((formData.precio||0)-(formData.precio||0)*(formData.descuento||0)/100).toString()
-                                    }
+                                    value={formData.precioFinal.toString()}
                                 />
 
                             </CView>
                         </CView>
 
-                        <CView>
-                            <CInputText 
-                                label={"Tiempo de Entrega"} 
-                                placeholder='Ej: 3-5 días'
-                                value={formData.tiempo_entrega}
-                                onChangeText={(text) => handleInputChange('tiempo_entrega', text)}
+                        <CView style={style.switchRow}>
+                            <CText>Aplica IVA</CText>
+                            <Switch 
+                                value={formData.aplicaIva} 
+                                onValueChange={(value)=>handleInputChange('aplicaIva', value)} 
                             />
                         </CView>
-                        <CView style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 8, borderRadius: 5}}>
-                            <CText>Envío Gratis</CText>
+
+                        <CView style={style.switchRow}>
+                            <CText>Disponible para venta</CText>
                             <Switch 
-                                value={formData.envio_gratis} 
-                                onValueChange={()=>onToggleSwitchEnvioGratis("envio_gratis")} 
+                                value={formData.estado === 'DISPONIBLE'} 
+                                onValueChange={(value)=>handleInputChange('estado', value ? 'DISPONIBLE' : 'NO_DISPONIBLE')} 
                             />
                         </CView>
                     </CView>
@@ -247,23 +250,57 @@ const CreateProductScreen = ({}: Props) => {
                 containerStyles={{borderRadius:10}} 
                 textStyles={{fontSize:24, paddingVertical:0}}
                 onPress={handleSaveProduct}
-                title='Guardar'/>
+                disabled={saving}
+                title={saving ? 'Guardando...' : 'Guardar'}/>
                 <CButton title="Inicio" onPress={()=>router.dismissTo("/")}
                 textStyles={{fontSize:16, paddingVertical:0}}
                 containerStyles={{borderRadius:10, paddingVertical:0, borderWidth:5, borderStyle:"solid", borderColor:"#cecece", backgroundColor:"transparent"}}
                 />
             </CView>
-
-            
-
         </CContainerView>
-        
     )
 }
 
 export default CreateProductScreen
 
 const style = StyleSheet.create({
+    scrollContent:{
+        paddingBottom:20,
+        gap:12,
+    },
+    summaryCard:{
+        gap:8,
+        padding:14,
+        borderRadius:14,
+        borderWidth:1,
+        borderColor:'#d7dde5',
+        backgroundColor:'rgba(2,219,183,0.08)',
+    },
+    summaryRow:{
+        flexDirection:'row',
+        justifyContent:'space-between',
+        alignItems:'center',
+    },
+    imageSection:{
+        padding:5,
+        justifyContent:"center",
+        gap:8,
+        marginVertical:5,
+    },
+    formSection:{
+        gap:10,
+        marginBottom:20,
+        padding:10,
+    },
+    switchRow:{
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'space-between',
+        padding:8,
+        borderRadius:10,
+        borderWidth:1,
+        borderColor:'#d7dde5',
+    },
     imgComponent:{
         width:300,
         height: 300,

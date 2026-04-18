@@ -5,16 +5,14 @@ import { CView } from '@/components/CView'
 import { router } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import { ScrollView } from 'react-native'
-import { useSQLiteContext } from 'expo-sqlite'
 import { SegmentedButtons } from 'react-native-paper';
 import DetailTopSeller from '@/components/inventory/DetailTopSeller'
-import { getTopSellingProducts } from '@/db/order_product.operations'
-import dayjs from 'dayjs'
+import { ProductoMasVendido, TopSellingFilter, useOrdenService } from '@/modules'
 
 type Props = {}
 
 export type mostSellsProduct = {
-    id_producto: number;
+    id_producto: string;
     nombre: string;
     imagen_url: string;
     veces_vendido: number;
@@ -23,38 +21,27 @@ export type mostSellsProduct = {
 }
 
 const CreateProductScreen = (props: Props) => {
-    const db = useSQLiteContext();
+    const { obtenerProductosMasVendidos } = useOrdenService();
     
     const [todos, setTodos] = useState<mostSellsProduct[]>([]);
-    const [segmentedButtonValue, setSegmentedButtonValue] = useState('today');
+    const [segmentedButtonValue, setSegmentedButtonValue] = useState<TopSellingFilter>('today');
 
-
-
-
-    async function setup(
-        startDate = dayjs.utc().startOf("day").toISOString(),
-        endDate = dayjs.utc().endOf("day").toISOString()
-    ) {
-        const result = await getTopSellingProducts(db, 10, startDate, endDate);
-        setTodos(result);
+    async function setup(filter: TopSellingFilter) {
+        const result = await obtenerProductosMasVendidos(filter, 10);
+        const normalized: mostSellsProduct[] = result.map((item: ProductoMasVendido) => ({
+            id_producto: item.productoUuid,
+            nombre: item.nombre,
+            imagen_url: item.imagenUrl || '',
+            veces_vendido: item.vecesVendido,
+            cantidad_total: item.cantidadTotal,
+            ingreso_total: item.ingresoTotal / 100,
+        }));
+        setTodos(normalized);
     }
 
     useEffect(() => {
-        switch (segmentedButtonValue) {
-            case 'today':
-                setup();
-                break;
-            case 'week':
-                setup(dayjs.utc().startOf("day").subtract(7, "day").toISOString(), dayjs.utc().endOf("day").toISOString());
-                break;
-            case 'month':
-                setup(dayjs.utc().startOf("day").subtract(30, "day").toISOString(), dayjs.utc().endOf("day").toISOString());
-                break;
-            default:
-                break;
-        }
+        setup(segmentedButtonValue);
     }, [segmentedButtonValue]);
-
 
     return (
         <CContainerView style={{flex:1}}>

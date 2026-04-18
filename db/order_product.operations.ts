@@ -211,9 +211,10 @@ export const getTopSellingProducts = async (
         SELECT 
             p.id_producto,
             p.nombre,
-            COUNT(op.id_producto) as veces_vendido,
-            SUM(op.cantidad) as cantidad_total,
-            SUM(op.subtotal) as ingreso_total
+            p.imagen_url,
+            COUNT(DISTINCT op.id_orden) as veces_vendido,
+            COALESCE(SUM(op.cantidad), 0) as cantidad_total,
+            COALESCE(SUM(op.subtotal), 0) as ingreso_total
         FROM Ordenes_Producto op
         JOIN Producto p ON op.id_producto = p.id_producto
         JOIN Ordenes o ON op.id_orden = o.id_orden

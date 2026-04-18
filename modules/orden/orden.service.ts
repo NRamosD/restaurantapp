@@ -42,6 +42,17 @@ interface SyncOrdenProductoItem {
   notas?: string | null;
 }
 
+export type TopSellingFilter = 'today' | 'week' | 'month';
+
+export interface ProductoMasVendido {
+  productoUuid: string;
+  nombre: string;
+  imagenUrl: string | null;
+  vecesVendido: number;
+  cantidadTotal: number;
+  ingresoTotal: number;
+}
+
 export function useOrdenService() {
   const db = useDrizzle();
 
@@ -297,6 +308,65 @@ export function useOrdenService() {
     return db.select().from(Orden).orderBy(desc(Orden.createdAt));
   };
 
+  const obtenerProductosMasVendidos = async (
+    filtro: TopSellingFilter = 'today',
+    limit: number = 10
+  ): Promise<ProductoMasVendido[]> => {
+    const inicio = new Date();
+    const fin = new Date();
+
+    if (filtro === 'today') {
+      inicio.setHours(0, 0, 0, 0);
+      fin.setDate(fin.getDate() + 1);
+      fin.setHours(0, 0, 0, 0);
+    }
+
+    if (filtro === 'week') {
+      const diaActual = inicio.getDay();
+      const ajusteInicioSemana = diaActual === 0 ? -6 : 1 - diaActual;
+      inicio.setDate(inicio.getDate() + ajusteInicioSemana);
+      inicio.setHours(0, 0, 0, 0);
+      fin.setTime(inicio.getTime());
+      fin.setDate(fin.getDate() + 7);
+    }
+
+    if (filtro === 'month') {
+      inicio.setDate(1);
+      inicio.setHours(0, 0, 0, 0);
+      fin.setMonth(fin.getMonth() + 1, 1);
+      fin.setHours(0, 0, 0, 0);
+    }
+
+    const cantidadTotalSql = sql<number>`CAST(COALESCE(SUM(${OrdenProducto.cantidad}), 0) AS INTEGER)`;
+    const ingresoTotalSql = sql<number>`CAST(COALESCE(SUM(${OrdenProducto.total}), 0) AS INTEGER)`;
+    const vecesVendidoSql = sql<number>`CAST(COUNT(DISTINCT ${OrdenProducto.ordenUuid}) AS INTEGER)`;
+
+    const resultados = await db
+      .select({
+        productoUuid: Producto.uuid,
+        nombre: Producto.nombre,
+        imagenUrl: Producto.imagenUrl,
+        vecesVendido: vecesVendidoSql,
+        cantidadTotal: cantidadTotalSql,
+        ingresoTotal: ingresoTotalSql,
+      })
+      .from(OrdenProducto)
+      .innerJoin(Orden, eq(OrdenProducto.ordenUuid, Orden.uuid))
+      .innerJoin(Producto, eq(OrdenProducto.productoUuid, Producto.uuid))
+      .where(
+        and(
+          inArray(Orden.estado, ['COMPLETADO', 'ENTREGADO']),
+          gte(Orden.createdAt, inicio.toISOString()),
+          lt(Orden.createdAt, fin.toISOString())
+        )
+      )
+      .groupBy(Producto.uuid, Producto.nombre, Producto.imagenUrl)
+      .orderBy(desc(cantidadTotalSql), desc(vecesVendidoSql), asc(Producto.nombre))
+      .limit(limit);
+
+    return resultados;
+  };
+
   const obtenerOrdenesExcluyendoEstado = async (estado?: OrdenEstado) => {
     if (estado) {
       return db
@@ -409,6 +479,7 @@ export function useOrdenService() {
     obtenerOrdenesExcluyendoEstado,
     obtenerOrdenesPorEstados,
     obtenerOrdenesPorFecha,
+    obtenerProductosMasVendidos,
     obtenerOrdenConClienteYUsuario,
     eliminarProductoDeOrden,
     cancelarOrden,

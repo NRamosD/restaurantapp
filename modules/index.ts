@@ -1,4 +1,5 @@
 export { useOrdenService } from './orden/orden.service';
+export type { TopSellingFilter, ProductoMasVendido } from './orden/orden.service';
 export { useProductoService } from './producto/producto.service';
 export { useClienteService } from './cliente/cliente.service';
 export { useFacturaService } from './facturacion/factura.service';

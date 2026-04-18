@@ -38,6 +38,7 @@ interface CrearProductoParams {
   ilimitado?: boolean;
   imagenUrl?: string;
   perfilNegocioUuid: string;
+  estado?: ProductoEstado;
 }
 
 interface ActualizarProductoParams {
@@ -124,7 +125,7 @@ export function useProductoService() {
       porcentajeIva: params.porcentajeIva || 12.0,
       stock: params.stock || 0,
       ilimitado: params.ilimitado ? 1 : 0,
-      estado: 'DISPONIBLE',
+      estado: params.estado || 'DISPONIBLE',
       imagenUrl: params.imagenUrl,
       perfilNegocioUuid: params.perfilNegocioUuid,
       createdAt: now,
