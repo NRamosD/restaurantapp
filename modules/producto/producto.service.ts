@@ -1,8 +1,8 @@
 import { eq, like, asc, desc, sql, and, or } from 'drizzle-orm';
 import { useDrizzle } from '@/db/db';
-import { Producto, Componente, ProductoComponente, CategoriaProducto, VariacionesProducto, ProductoOpciones } from '@/db/schema';
+import { Producto, Componente, ProductoComponente, CategoriaProducto, ProductoOpciones } from '@/db/schema';
 import { v4 as uuidv4 } from 'uuid';
-import { Producto as ProductoInterface } from '@/interfaces/general.interface';
+import { Producto as ProductoInterface, ProductoOpciones as ProductoOpcionesInterface } from '@/interfaces/general.interface';
 
 type ProductoEstado = 'DISPONIBLE' | 'NO_DISPONIBLE';
 
@@ -40,7 +40,6 @@ interface CrearProductoParams {
   perfilNegocioUuid: string;
   estado?: ProductoEstado;
   categoriaProductoUuid?: string;
-  variacionesProductoUuid?: string;
 }
 
 interface ActualizarProductoParams {
@@ -55,7 +54,6 @@ interface ActualizarProductoParams {
   estado?: ProductoEstado;
   imagenUrl?: string;
   categoriaProductoUuid?: string;
-  variacionesProductoUuid?: string;
 }
 
 export function useProductoService() {
@@ -75,11 +73,6 @@ export function useProductoService() {
           .from(CategoriaProducto)
           .where(eq(CategoriaProducto.uuid, producto.categoriaProductoUuid || ''))
           .limit(1);
-        const [variacion] = await db
-          .select()
-          .from(VariacionesProducto)
-          .where(eq(VariacionesProducto.uuid, producto.variacionesProductoUuid || ''))
-          .limit(1);
         const opciones = await db
           .select()
           .from(ProductoOpciones)
@@ -88,7 +81,6 @@ export function useProductoService() {
         return {
           ...producto,
           categoriaProducto: categoria || null,
-          variacionesProducto: variacion || null,
           productoOpciones: opciones,
         };
       })
@@ -115,11 +107,6 @@ export function useProductoService() {
           .from(CategoriaProducto)
           .where(eq(CategoriaProducto.uuid, producto.categoriaProductoUuid || ''))
           .limit(1);
-        const [variacion] = await db
-          .select()
-          .from(VariacionesProducto)
-          .where(eq(VariacionesProducto.uuid, producto.variacionesProductoUuid || ''))
-          .limit(1);
         const opciones = await db
           .select()
           .from(ProductoOpciones)
@@ -128,7 +115,6 @@ export function useProductoService() {
         return {
           ...producto,
           categoriaProducto: categoria || null,
-          variacionesProducto: variacion || null,
           productoOpciones: opciones,
         };
       })
@@ -149,11 +135,6 @@ export function useProductoService() {
       .from(CategoriaProducto)
       .where(eq(CategoriaProducto.uuid, producto.categoriaProductoUuid || ''))
       .limit(1);
-    const [variacion] = await db
-      .select()
-      .from(VariacionesProducto)
-      .where(eq(VariacionesProducto.uuid, producto.variacionesProductoUuid || ''))
-      .limit(1);
     const opciones = await db
       .select()
       .from(ProductoOpciones)
@@ -162,7 +143,6 @@ export function useProductoService() {
     return {
       ...producto,
       categoriaProducto: categoria || null,
-      variacionesProducto: variacion || null,
       productoOpciones: opciones,
     };
   };
@@ -186,11 +166,6 @@ export function useProductoService() {
           .from(CategoriaProducto)
           .where(eq(CategoriaProducto.uuid, producto.categoriaProductoUuid || ''))
           .limit(1);
-        const [variacion] = await db
-          .select()
-          .from(VariacionesProducto)
-          .where(eq(VariacionesProducto.uuid, producto.variacionesProductoUuid || ''))
-          .limit(1);
         const opciones = await db
           .select()
           .from(ProductoOpciones)
@@ -199,7 +174,6 @@ export function useProductoService() {
         return {
           ...producto,
           categoriaProducto: categoria || null,
-          variacionesProducto: variacion || null,
           productoOpciones: opciones,
         };
       })
@@ -222,7 +196,6 @@ export function useProductoService() {
       estado: params.estado || 'DISPONIBLE',
       imagenUrl: params.imagenUrl,
       categoriaProductoUuid: params.categoriaProductoUuid,
-      variacionesProductoUuid: params.variacionesProductoUuid,
       perfilNegocioUuid: params.perfilNegocioUuid,
       createdAt: now,
     });
@@ -244,8 +217,6 @@ export function useProductoService() {
     if (params.estado) updates.estado = params.estado;
     if (params.imagenUrl !== undefined) updates.imagenUrl = params.imagenUrl;
     if (params.categoriaProductoUuid !== undefined) updates.categoriaProductoUuid = params.categoriaProductoUuid;
-    if (params.variacionesProductoUuid !== undefined) updates.variacionesProductoUuid = params.variacionesProductoUuid;
-
     await db.update(Producto).set(updates).where(eq(Producto.uuid, params.uuid));
   };
 
@@ -304,11 +275,6 @@ export function useProductoService() {
           .from(CategoriaProducto)
           .where(eq(CategoriaProducto.uuid, producto.categoriaProductoUuid || ''))
           .limit(1);
-        const [variacion] = await db
-          .select()
-          .from(VariacionesProducto)
-          .where(eq(VariacionesProducto.uuid, producto.variacionesProductoUuid || ''))
-          .limit(1);
         const opciones = await db
           .select()
           .from(ProductoOpciones)
@@ -317,7 +283,6 @@ export function useProductoService() {
         return {
           ...producto,
           categoriaProducto: categoria || null,
-          variacionesProducto: variacion || null,
           productoOpciones: opciones,
         };
       })
@@ -340,6 +305,56 @@ export function useProductoService() {
       .orderBy(asc(CategoriaProducto.nombre));
   };
 
+  const obtenerOpcionesPorProducto = async (productoUuid: string) => {
+    return db
+      .select()
+      .from(ProductoOpciones)
+      .where(eq(ProductoOpciones.productoUuid, productoUuid));
+  };
+
+  const crearProductoOpcion = async (opcion: Partial<ProductoOpcionesInterface>) => {
+    const uuid = uuidv4();
+    const now = new Date().toISOString();
+    await db.insert(ProductoOpciones).values({
+      uuid,
+      productoUuid: opcion.productoUuid!,
+      nombre: opcion.nombre!,
+      descripcion: opcion.descripcion || null,
+      valorAdicional: opcion.valorAdicional || 0,
+      orden: opcion.orden || 0,
+      activo: opcion.activo ? 1 : 0,
+      estadoSync: 'PENDIENTE',
+      createdAt: now,
+      updatedAt: now,
+      updatedByUuid: opcion.updatedByUuid || null,
+      deletedAt: null,
+    });
+  };
+
+  const editarProductoOpcion = async (opcion: Partial<ProductoOpcionesInterface>) => {
+    const now = new Date().toISOString();
+    await db
+      .update(ProductoOpciones)
+      .set({
+        nombre: opcion.nombre!,
+        descripcion: opcion.descripcion || null,
+        valorAdicional: opcion.valorAdicional || 0,
+        orden: opcion.orden || 0,
+        activo: opcion.activo ? 1 : 0,
+        estadoSync: 'PENDIENTE',
+        updatedAt: now,
+        updatedByUuid: opcion.updatedByUuid || null,
+      })
+      .where(eq(ProductoOpciones.uuid, opcion.uuid!));
+  };
+
+  const obtenerProductoOpcionPorUuid = async (uuid: string) => {
+    return db
+      .select()
+      .from(ProductoOpciones)
+      .where(eq(ProductoOpciones.uuid, uuid));
+  };
+
   return {
     obtenerProductos,
     obtenerProductosDisponibles,
@@ -353,5 +368,9 @@ export function useProductoService() {
     obtenerTopProductos,
     cambiarEstado,
     obtenerCategorias,
+    obtenerOpcionesPorProducto,
+    crearProductoOpcion,
+    editarProductoOpcion,
+    obtenerProductoOpcionPorUuid,
   };
 }

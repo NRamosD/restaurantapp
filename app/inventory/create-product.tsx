@@ -13,6 +13,7 @@ import { useColorScheme } from '@/hooks/useColorScheme'
 import { getColors } from '@/constants/Colors'
 import { useProductoService } from '@/modules'
 import { useAuthStore } from '@/hooks/useAuthStore'
+import FormProducto from '@/components/inventory/FormProducto'
 
 type Props = {}
 
@@ -160,92 +161,27 @@ const CreateProductScreen = ({}: Props) => {
                             <CButton containerStyles={style.btnStyle} title='Subir Imagen' onPress={pickImage}/>
 
                     </CView>
-                    <CView style={style.formSection}>
-                        <CView>
-                            <CInputText 
-                                label={"Nombre"} 
-                                placeholder='Escriba aquí el nombre'
-                                value={formData.nombre}
-                                onChangeText={(text) => handleInputChange('nombre', text)}
-                            />
-                        </CView>
-                        <CView>
-                            <CInputText 
-                                label={"Descripción"} 
-                                placeholder='Escriba aquí la descripción' 
-                                multiline
-                                value={formData.descripcion as string}
-                                onChangeText={(text) => handleInputChange('descripcion', text)}
-                            />
-                        </CView>
-                        <CView style={{flexDirection: 'row', gap: 10}}>
-                            <CView style={{flex: 1}}>
-                                <CInputText 
-                                    label={"Precio"} 
-                                    placeholder='0.00'
-                                    keyboardType="numeric"
-                                    value={formData.precio?.toString()}
-                                    onChangeText={(text) => handleInputChange('precio', parseFloat(text) || 0)}
-                                />
-                            </CView>
-                            <CView style={{flex: 1}}>
-                                <CInputText 
-                                    label={"Stock"} 
-                                    placeholder='0'
-                                    keyboardType="numeric"
-                                    value={formData.stock?.toString()}
-                                    onChangeText={(text) => handleInputChange('stock', parseInt(text) || 0)}
-                                    disabled={formData.ilimitado}
-                                />
-                            </CView>
-                        </CView>
-                        <CView style={style.switchRow}>
-                            <CText>Ilimitado</CText>
-                            <Switch 
-                                value={formData.ilimitado} 
-                                onValueChange={onToggleSwitchIlimitado} 
-                            />
-                        </CView>
-                        <CView style={{flexDirection: 'row', gap: 10}}>
-                            <CView style={{flex: 1}}>
-                                <CInputText 
-                                    label={"IVA %"} 
-                                    placeholder='12'
-                                    keyboardType="numeric"
-                                    value={formData.porcentajeIva?.toString()}
-                                    onChangeText={(text) => handleInputChange('porcentajeIva', parseFloat(text) || 0)}
-                                />
-                            </CView>
-                            <CView style={{flex: 1}}>
-                                <CInputText 
-                                    label={"Precio Final"} 
-                                    placeholder='0'
-                                    disabled
-                                    value={formData.precioFinal.toString()}
-                                />
 
-                            </CView>
-                        </CView>
 
-                        <CView style={style.switchRow}>
-                            <CText>Aplica IVA</CText>
-                            <Switch 
-                                value={formData.aplicaIva} 
-                                onValueChange={(value)=>handleInputChange('aplicaIva', value)} 
-                            />
-                        </CView>
+                    <FormProducto
+                    formData={formData}
+                    setFormData={setFormData}
+                    />
 
-                        <CView style={style.switchRow}>
-                            <CText>Disponible para venta</CText>
-                            <Switch 
-                                value={formData.estado === 'DISPONIBLE'} 
-                                onValueChange={(value)=>handleInputChange('estado', value ? 'DISPONIBLE' : 'NO_DISPONIBLE')} 
-                            />
-                        </CView>
-                    </CView>
                 </ScrollView>
             </CView>
-            <CView style={{flex:1.5, gap:5, justifyContent:"center", padding:10, }}>
+            <CView style={{flex:1, flexDirection:"row", gap:5, justifyContent:"center", paddingBottom:40, }}>
+                <CButton title="Volver" onPress={()=>router.back()}
+                textStyles={{fontSize:16, paddingVertical:0}}
+                containerStyles={{borderRadius:10, paddingVertical:0, flex:1}}
+                />
+                <CButton 
+                containerStyles={{borderRadius:10, borderWidth:5, borderStyle:"solid", borderColor:"#cecece", flex:1}} 
+                textStyles={{fontSize:24, paddingVertical:0}}
+                onPress={handleSaveProduct}
+                title={saving ? 'Guardando...' : 'Guardar'} />
+            </CView>
+            {/* <CView style={{flex:1.5, gap:5, justifyContent:"center", padding:10, }}>
                 <CButton 
                 containerStyles={{borderRadius:10}} 
                 textStyles={{fontSize:24, paddingVertical:0}}
@@ -256,7 +192,7 @@ const CreateProductScreen = ({}: Props) => {
                 textStyles={{fontSize:16, paddingVertical:0}}
                 containerStyles={{borderRadius:10, paddingVertical:0, borderWidth:5, borderStyle:"solid", borderColor:"#cecece", backgroundColor:"transparent"}}
                 />
-            </CView>
+            </CView> */}
         </CContainerView>
     )
 }

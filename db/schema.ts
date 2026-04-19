@@ -32,16 +32,6 @@ export const CategoriaProducto = sqliteTable('CategoriaProducto', {
   deletedAt: text('deleted_at'),
 });
 
-export const VariacionesProducto = sqliteTable('VariacionesProducto', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  uuid: text('uuid').notNull().unique(),
-  nombre: text('nombre').notNull(),
-  descripcion: text('descripcion'),
-  createdAt: text('created_at').notNull().default(new Date().toISOString()),
-  updatedAt: text('updated_at').notNull().default(new Date().toISOString()),
-  deletedAt: text('deleted_at'),
-});
-
 export const Usuario = sqliteTable('Usuario', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   uuid: text('uuid').notNull().unique(),
@@ -115,7 +105,6 @@ export const Producto = sqliteTable('Producto', {
   galeria: text('galeria'),
   estado: text('estado').notNull().default('DISPONIBLE'),
   categoriaProductoUuid: text('categoria_producto_uuid'),
-  variacionesProductoUuid: text('variaciones_producto_uuid'),
   perfilNegocioUuid: text('perfil_negocio_uuid').notNull(),
   estadoSync: text('estado_sync').notNull().default('PENDIENTE'),
   createdAt: text('created_at').notNull().default(new Date().toISOString()),
@@ -312,10 +301,6 @@ export const ClienteRelations = relations(Cliente, ({ many }) => ({
 export const CategoriaProductoRelations = relations(CategoriaProducto, ({ many }) => ({
   productos: many(Producto),
 }));
-export const VariacionesProductoRelations = relations(VariacionesProducto, ({ many }) => ({
-  productos: many(Producto),
-}));
-
 export const ProductoOpcionesRelations = relations(ProductoOpciones, ({ one }) => ({
   producto: one(Producto, {
     fields: [ProductoOpciones.productoUuid],
@@ -331,10 +316,6 @@ export const ProductoRelations = relations(Producto, ({ one, many }) => ({
   categoriaProducto: one(CategoriaProducto, {
     fields: [Producto.categoriaProductoUuid],
     references: [CategoriaProducto.uuid],
-  }),
-  variacionesProducto: one(VariacionesProducto, {
-    fields: [Producto.variacionesProductoUuid],
-    references: [VariacionesProducto.uuid],
   }),
   productoComponentes: many(ProductoComponente),
   productoOpciones: many(ProductoOpciones),

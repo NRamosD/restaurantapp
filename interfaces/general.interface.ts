@@ -106,16 +106,6 @@ export interface CategoriaProducto {
     deletedAt?: Date | null | string;
 }
 
-export interface VariacionesProducto {
-    id: number;
-    uuid: string;
-    nombre: string;
-    descripcion?: string | null;
-    createdAt: Date | string;
-    updatedAt: Date | string;
-    deletedAt?: Date | null | string;
-}
-
 export interface ProductoOpciones {
     id: number;
     uuid: string;
@@ -153,15 +143,11 @@ export interface Producto {
 
     categoriaProductoUuid?: string | null;
     categoriaProducto?: Partial<CategoriaProducto> | null;
-
-    variacionesProductoUuid?: string | null;
-    variacionesProducto?: Partial<VariacionesProducto> | null;
+    productoOpciones?: Partial<ProductoOpciones>[] | null;
 
     perfilNegocioUuid: string;
 
     estadoSync: 'PENDIENTE' | 'SINCRONIZADO' | string;
-
-    productoOpciones?: Partial<ProductoOpciones>[];
 
     createdAt: Date | string;
     updatedAt?: Date | null | string;

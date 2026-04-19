@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { CView } from '../CView';
 import CInputText from '../CInputText';
-import { Producto } from '@/interfaces/general.interface';
+import { Producto, ProductoOpciones } from '@/interfaces/general.interface';
 import { CategoriaProducto } from '@/interfaces';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { CText } from '../CText';
 import { Switch } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import { useProductoService } from '@/modules';
 import { useAppTheme } from '@/theme';
+import GenericModal from '../ui/GenericModal';
 
 type Props = {
     formData: Partial<Producto>;
@@ -23,8 +24,20 @@ const FormProducto = ({
     const [categorias, setCategorias] = useState<CategoriaProducto[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [switchIlimitado, setSwitchIlimitado] = useState(false);
-    
-    const { obtenerCategorias } = useProductoService();
+    const [aplicaIvaActive, setAplicaIvaActive] = useState(false);
+    const [productoDisponible, setProductoDisponible] = useState(true);
+    const [opciones, setOpciones] = useState<ProductoOpciones[]>([]);
+    const [opcionesForm, setOpcionesForm] = useState<Partial<ProductoOpciones>>({});
+    const [modalVisibleProductoOpcion, setModalVisibleProductoOpcion] = useState(false);
+
+
+    const {
+        obtenerOpcionesPorProducto, 
+        obtenerCategorias, 
+        crearProductoOpcion,
+        editarProductoOpcion,
+        obtenerProductoOpcionPorUuid
+    } = useProductoService();
 
     const handleInputChange = (field: keyof Producto, value: any) => {
         setFormData((prev: Partial<Producto>) => {
@@ -32,12 +45,12 @@ const FormProducto = ({
                 ...prev,
                 [field]: value
             };
-            
+
             // Auto-generate slug from nombre
             // if (field === 'nombre') {
             //     newData.slug = encodeURI(value.toLowerCase());
             // }
-            
+
             return newData;
         });
 
@@ -52,11 +65,60 @@ const FormProducto = ({
         handleInputChange(nameField, newValue);
     };
 
+    const cargarOpciones = async () => {
+        if (!formData.uuid) {
+            setOpciones([]);
+            return;
+        }
+        const resultado = await obtenerOpcionesPorProducto(formData.uuid);
+        console.log('[FORM PRODUCTO] Cargando opciones', resultado);
+        setOpciones(resultado);
+    };
+
+
+    const handleCrearOpcion = async () => {
+        if (!formData.uuid || !opcionesForm?.nombre?.trim()) {
+            return;
+        }
+        await crearProductoOpcion({
+            productoUuid: formData.uuid,
+            nombre: opcionesForm.nombre,
+            descripcion: opcionesForm.descripcion,
+            valorAdicional: Number(opcionesForm.valorAdicional) || 0,
+            activo: true,
+        });
+        setOpcionesForm({ nombre: '', descripcion: '', valorAdicional: 0 });
+        await cargarOpciones();
+        setModalVisibleProductoOpcion(false);
+    };
+    const handleActualizarOpcion = async () => {
+        if (!formData.uuid || !opcionesForm?.nombre?.trim()) {
+            return;
+        }
+        await editarProductoOpcion({
+            uuid: opcionesForm.uuid!,
+            nombre: opcionesForm.nombre,
+            descripcion: opcionesForm.descripcion,
+            valorAdicional: Number(opcionesForm.valorAdicional) || 0
+        });
+        setOpcionesForm({ nombre: '', descripcion: '', valorAdicional: 0 });
+        await cargarOpciones();
+        setModalVisibleProductoOpcion(false);
+    };
+
     useEffect(() => {
         obtenerCategorias().then((categorias) => {
             setCategorias(categorias);
         });
     }, []);
+    useEffect(() => {
+        cargarOpciones();
+    }, [formData.uuid]);
+
+    useEffect(() => {
+        setAplicaIvaActive(Boolean(formData.aplicaIva));
+        setProductoDisponible(formData.estado !== 'NO_DISPONIBLE');
+    }, [formData.aplicaIva, formData.estado]);
 
     return (
         <CView style={{ gap:10, marginBottom:20, padding:10}}>
@@ -107,6 +169,44 @@ const FormProducto = ({
                 />
             </CView>
 
+            <CView style={style.switchRow}>
+                <CText>Aplica IVA</CText>
+                <Switch
+                    value={aplicaIvaActive}
+                    onValueChange={(value) => {
+                        setAplicaIvaActive(value);
+                        handleInputChange('aplicaIva', value);
+                        if (!value) {
+                            handleInputChange('porcentajeIva', null);
+                        }
+                    }}
+                />
+            </CView>
+
+            {aplicaIvaActive && (
+                <CView style={{flexDirection: 'row', gap: 10}}>
+                    <CView style={{flex: 1}}>
+                        <CInputText
+                            label="% IVA"
+                            placeholder="12"
+                            keyboardType="numeric"
+                            value={formData.porcentajeIva?.toString()}
+                            onChangeText={(text) => handleInputChange('porcentajeIva', parseFloat(text) || 0)}
+                        />
+                    </CView>
+                    <CView style={{flex: 1}}>
+                        <CText style={{marginBottom: 8}}>Disponible para venta</CText>
+                        <Switch
+                            value={productoDisponible}
+                            onValueChange={(value) => {
+                                setProductoDisponible(value);
+                                handleInputChange('estado', value ? 'DISPONIBLE' : 'NO_DISPONIBLE');
+                            }}
+                        />
+                    </CView>
+                </CView>
+            )}
+
             <CView style={style.fieldCard}>
                 <CText style={{paddingHorizontal:2, marginBottom: 4}}>Categoría</CText>
                 <CView style={style.pickerWrapper}>
@@ -130,6 +230,81 @@ const FormProducto = ({
                     </Picker>
                 </CView>
             </CView>
+
+            {
+                !!formData?.nombre && (
+                    <>
+                    <CView style={style.switchRow}>
+                        <CText type="defaultSemiBold">Opciones del Producto</CText>
+                        <TouchableOpacity onPress={() => setModalVisibleProductoOpcion(true)} style={style.addButton}>
+                            <CText style={{ color: theme.colors.text.primary }}>+ Añadir opción</CText>
+                        </TouchableOpacity>
+                    </CView>
+        
+                    {opciones.length > 0 && (
+                        <CView style={style.chipsContainer}>
+                            {opciones.map((opcion) => (
+                                <TouchableOpacity onPress={async ()=>{
+                                    const result = await obtenerProductoOpcionPorUuid(opcion.uuid!);
+                                    setOpcionesForm(result[0])
+                                    setModalVisibleProductoOpcion(true)
+                                }} key={opcion.uuid}>
+                                    <View style={style.chip}>
+                                        <CText style={style.chipText}>{opcion.nombre}</CText>
+                                    </View>
+                                </TouchableOpacity>
+                            ))}
+                        </CView>
+                    )}
+        
+                    <GenericModal
+                        showModal={modalVisibleProductoOpcion}
+                        setShowModal={setModalVisibleProductoOpcion}
+                        showConfirmButton={true}
+                        textCloseButton='Cerrar'
+                        title={
+                            opcionesForm?.uuid 
+                                ? "Editar Opción del Producto"
+                                : "Agregar Opción del Producto"
+                        }
+                        nodeContent={<>
+                            <CInputText
+                                label="Nombre"
+                                placeholder="Nombre"
+                                value={opcionesForm.nombre || ''}
+                                onChangeText={(text) => setOpcionesForm({...opcionesForm, nombre: text})}
+                            />
+                            <CInputText
+                                label="Descripción"
+                                placeholder="Descripción"
+                                value={opcionesForm.descripcion || ''}
+                                onChangeText={(text) => setOpcionesForm({...opcionesForm, descripcion: text})}
+                            />
+                            <CInputText
+                                label="Valor Adicional"
+                                placeholder="Valor Adicional"
+                                value={opcionesForm.valorAdicional?.toString() || ''}
+                                onChangeText={(text) => setOpcionesForm({...opcionesForm, valorAdicional: parseFloat(text) || 0})}
+                            />
+                        
+                        </>}
+                        withButton={false}
+                        textConfirmButton='Guardar'
+                        onConfirm={() => {
+                            if(!!opcionesForm?.uuid){
+                                handleActualizarOpcion()
+                            }else{
+                                handleCrearOpcion()
+                            }
+                            setModalVisibleProductoOpcion(false);
+                        }}
+                    />
+                    </>
+                )
+            }
+
+
+
         </CView>
     )
 }
@@ -207,5 +382,29 @@ const style = StyleSheet.create({
         borderRadius:12,
         // backgroundColor: '#fafafc',
         overflow: 'hidden',
+    },
+    addButton: {
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        borderWidth: 1,
+        borderColor: '#d1d5db',
+        borderRadius: 8,
+    },
+    chipsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: 8,
+        marginTop: 8,
+    },
+    chip: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: '#d1d5db',
+    },
+    chipText: {
+        fontSize: 13,
+        fontWeight: '500',
     },
 })
