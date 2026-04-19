@@ -3,11 +3,12 @@ import { CView } from "../CView";
 import { Image, StyleSheet, TouchableOpacity } from "react-native";
 import { CText } from "../CText";
 import { Ionicons } from "@expo/vector-icons";
-import { Product } from "@/interfaces/products";
+// import { Product } from "@/interfaces/products";
 import { router } from 'expo-router';
+import { Producto } from "@/interfaces/general.interface";
 
 type Props = {
-  data:Product
+  data:Producto
 };
 
 const ItemMenuSquareDetails = ({
@@ -19,12 +20,12 @@ const ItemMenuSquareDetails = ({
     <CView style={styles.containerItem}>
       <TouchableOpacity
         activeOpacity={0.9}
-        onPress={() => router.navigate(`/inventory/${data.uuid}`)}
+        onPress={() => router.push({pathname:"/inventory/[uuidProducto]", params:{uuidProducto:data.uuid}})}
       >
         <CView style={styles.containerImgText}>
           <CView style={styles.imageWrapper}>
             <Image
-                source={{ uri: data?.imagen_url ||'https://reactnative.dev/img/tiny_logo.png' }}
+                source={{ uri: data?.imagenUrl ||'https://reactnative.dev/img/tiny_logo.png' }}
               style={styles.image}
             />
           </CView>
@@ -67,11 +68,11 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     width: "48%",
     // backgroundColor: '#ffffff',
-    shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
+    // shadowColor: '#000',
+    // shadowOpacity: 0.06,
+    // shadowRadius: 8,
+    // shadowOffset: { width: 0, height: 4 },
+    // elevation: 2,
   },
   containerImgText : { flex:1, alignItems:"flex-start", gap: 8 },
   imageWrapper: { width:"100%", height:124, borderRadius:14, overflow:'hidden', backgroundColor:'#f4f4f5' },

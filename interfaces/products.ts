@@ -62,6 +62,17 @@ export interface ProductOld {
 }
 
 
+export interface CategoriaProducto {
+  id: number;
+  uuid: string;
+  nombre: string;
+  slug: string;
+  activo: boolean | number;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  deletedAt?: Date | null | string;
+}
+
 export interface Product {
   id_producto?: number;
   uuid: string;
@@ -87,6 +98,9 @@ export interface Product {
   descuento?: number;           // En porcentaje
   precio_anterior?: number;
   envio_gratis?: boolean;
-  tiempo_entrega?: string;  
+  tiempo_entrega?: string;
 
+  // Relaciones
+  categoriaProductoUuid?: string | null;
+  categoriaProducto?: Partial<CategoriaProducto> | null;
 }

@@ -95,6 +95,43 @@ export interface Cliente {
 }
 
 
+export interface CategoriaProducto {
+    id: number;
+    uuid: string;
+    nombre: string;
+    slug: string;
+    activo: boolean | number;
+    createdAt: Date | string;
+    updatedAt: Date | string;
+    deletedAt?: Date | null | string;
+}
+
+export interface VariacionesProducto {
+    id: number;
+    uuid: string;
+    nombre: string;
+    descripcion?: string | null;
+    createdAt: Date | string;
+    updatedAt: Date | string;
+    deletedAt?: Date | null | string;
+}
+
+export interface ProductoOpciones {
+    id: number;
+    uuid: string;
+    productoUuid: string;
+    nombre: string;
+    descripcion?: string | null;
+    valorAdicional: number;
+    orden: number;
+    activo: boolean | number;
+    estadoSync: 'PENDIENTE' | 'SINCRONIZADO' | string;
+    createdAt: Date | string;
+    updatedAt: Date | string;
+    updatedByUuid?: string | null;
+    deletedAt?: Date | null | string;
+}
+
 export interface Producto {
     id: number;
     uuid: string;
@@ -114,9 +151,17 @@ export interface Producto {
 
     estado: 'DISPONIBLE' | 'NO_DISPONIBLE' | string;
 
+    categoriaProductoUuid?: string | null;
+    categoriaProducto?: Partial<CategoriaProducto> | null;
+
+    variacionesProductoUuid?: string | null;
+    variacionesProducto?: Partial<VariacionesProducto> | null;
+
     perfilNegocioUuid: string;
 
     estadoSync: 'PENDIENTE' | 'SINCRONIZADO' | string;
+
+    productoOpciones?: Partial<ProductoOpciones>[];
 
     createdAt: Date | string;
     updatedAt?: Date | null | string;

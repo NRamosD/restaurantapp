@@ -3,36 +3,40 @@ import { CContainerView } from '@/components/CContainerView';
 import { TopBarWithMenu } from '@/components/TopBarWithMenu';
 import { CView } from '@/components/CView';
 import { CText } from '@/components/CText';
-import { Product } from "@/interfaces/products";
+// import { Product } from "@/interfaces/products";
 import ItemMenuSquareDetails from '@/components/orders/ItemMenuSquareDetails';
 import { useSQLiteContext } from 'expo-sqlite';
-import { getProducts } from '@/db/product.operations';
+// import { getProducts } from '@/db/product.operations';
 import { useCallback, useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
+import { Producto } from '@/interfaces/general.interface';
+import { useProductoService } from '@/modules';
 
 export default function TabTwoScreen() {
 
-  const db = useSQLiteContext();
+  // const db = useSQLiteContext();
   const isFocused = useIsFocused();
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const { obtenerProductos } = useProductoService()
 
   const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
-      const productResults = await getProducts(db);
-      setProducts(productResults);
+      const productResults = await obtenerProductos();
+      setProducts(productResults as any);
     } catch (error) {
       console.log('[PRODUCTS] Error cargando productos', error);
       setProducts([]);
     } finally {
       setLoading(false);
     }
-  }, [db]);
+  }, [isFocused]);
 
   useEffect(() => {
     fetchProducts();
-  }, [fetchProducts, isFocused]);
+  }, [isFocused]);
 
   return (
     <CContainerView style={styles.container}>
@@ -42,7 +46,7 @@ export default function TabTwoScreen() {
             <CText type="subtitle">Catálogo</CText>
             <CText>{loading ? 'Cargando productos...' : `${products.length} productos disponibles`}</CText>
           </CView>
-          <FlatList<Product>
+          <FlatList<Producto>
             data={products}
             renderItem={({item}) => <ItemMenuSquareDetails data={item}/> }
             horizontal={false}

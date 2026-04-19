@@ -1,8 +1,8 @@
 import { eq, asc, desc, and, sql, gte, lt, inArray, not } from 'drizzle-orm';
 import { useDrizzle } from '@/db/db';
-import { Orden, OrdenProducto, Producto, Cliente, Usuario, PerfilNegocio } from '@/db/schema';
+import { Orden, OrdenProducto, Producto, Cliente, Usuario, PerfilNegocio, CategoriaProducto, VariacionesProducto, ProductoOpciones } from '@/db/schema';
 import { v4 as uuidv4 } from 'uuid';
-import { Cliente as ClienteInterface, Orden as OrdenInterface, OrdenProducto as OrdenProductoInterface, Producto as ProductoInterface, Usuario as UsuarioInterface } from '@/interfaces/general.interface';
+import { Cliente as ClienteInterface, Orden as OrdenInterface, OrdenProducto as OrdenProductoInterface, Producto as ProductoInterface, Usuario as UsuarioInterface, CategoriaProducto as CategoriaProductoInterface, VariacionesProducto as VariacionesProductoInterface, ProductoOpciones as ProductoOpcionesInterface } from '@/interfaces/general.interface';
 
 type OrdenEstado = 'PENDIENTE' | 'EN_PREPARACION' | 'LISTO' | 'ENTREGADO' | 'COMPLETADO' | 'CANCELADO';
 export type OrdenTipo = 'LOCAL' | 'LLEVAR' | 'DELIVERY';
@@ -22,7 +22,11 @@ interface AgregarProductoParams {
 }
 
 export interface OrdenProductoDetails extends Partial<OrdenProductoInterface>{
-  producto: Partial<ProductoInterface>;
+  producto: Partial<ProductoInterface> & {
+    categoriaProducto?: Partial<CategoriaProductoInterface> | null;
+    variacionesProducto?: Partial<VariacionesProductoInterface> | null;
+    productoOpciones?: Partial<ProductoOpcionesInterface>[];
+  } | null;
 }
 
 export interface OrdenDetails{
@@ -269,7 +273,7 @@ export function useOrdenService() {
     await cambiarEstadoOrden(ordenUuid, 'ENTREGADO');
   };
 
-  const obtenerOrdenPorUuid = async (ordenUuid: string) : Promise<OrdenDetails | null> => {
+  const obtenerOrdenPorUuid = async (ordenUuid: string): Promise<OrdenDetails | null> => {
     const [orden] = await db
       .select()
       .from(Orden)
@@ -290,11 +294,39 @@ export function useOrdenService() {
           .from(Producto)
           .where(eq(Producto.uuid, op.productoUuid))
           .limit(1);
-        return { ...op, producto };
+
+        if (!producto) {
+          return { ...op, producto: null } as OrdenProductoDetails;
+        }
+
+        const [categoria] = await db
+          .select()
+          .from(CategoriaProducto)
+          .where(eq(CategoriaProducto.uuid, producto.categoriaProductoUuid || ''))
+          .limit(1);
+        const [variacion] = await db
+          .select()
+          .from(VariacionesProducto)
+          .where(eq(VariacionesProducto.uuid, producto.variacionesProductoUuid || ''))
+          .limit(1);
+        const opciones = await db
+          .select()
+          .from(ProductoOpciones)
+          .where(eq(ProductoOpciones.productoUuid, producto.uuid));
+
+        return {
+          ...op,
+          producto: {
+            ...producto,
+            categoriaProducto: categoria || null,
+            variacionesProducto: variacion || null,
+            productoOpciones: opciones,
+          },
+        };
       })
     );
 
-    return { orden: orden , ordenProductos: productosConDetalle };
+    return { orden: orden, ordenProductos: productosConDetalle };
   };
 
   const obtenerOrdenesPorEstado = async (estado?: OrdenEstado) => {

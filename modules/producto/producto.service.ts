@@ -1,6 +1,6 @@
 import { eq, like, asc, desc, sql, and, or } from 'drizzle-orm';
 import { useDrizzle } from '@/db/db';
-import { Producto, Componente, ProductoComponente } from '@/db/schema';
+import { Producto, Componente, ProductoComponente, CategoriaProducto, VariacionesProducto, ProductoOpciones } from '@/db/schema';
 import { v4 as uuidv4 } from 'uuid';
 import { Producto as ProductoInterface } from '@/interfaces/general.interface';
 
@@ -39,6 +39,8 @@ interface CrearProductoParams {
   imagenUrl?: string;
   perfilNegocioUuid: string;
   estado?: ProductoEstado;
+  categoriaProductoUuid?: string;
+  variacionesProductoUuid?: string;
 }
 
 interface ActualizarProductoParams {
@@ -52,20 +54,45 @@ interface ActualizarProductoParams {
   ilimitado?: boolean;
   estado?: ProductoEstado;
   imagenUrl?: string;
+  categoriaProductoUuid?: string;
+  variacionesProductoUuid?: string;
 }
 
 export function useProductoService() {
   const db = useDrizzle();
 
   const obtenerProductos = async (perfilNegocioUuid?: string) => {
-    if (perfilNegocioUuid) {
-      return db
-        .select()
-        .from(Producto)
-        .where(eq(Producto.perfilNegocioUuid, perfilNegocioUuid))
-        .orderBy(asc(Producto.nombre));
-    }
-    return db.select().from(Producto).orderBy(asc(Producto.nombre));
+    const productos = await db
+      .select()
+      .from(Producto)
+      .where(perfilNegocioUuid ? eq(Producto.perfilNegocioUuid, perfilNegocioUuid) : undefined)
+      .orderBy(asc(Producto.nombre));
+
+    return Promise.all(
+      productos.map(async (producto) => {
+        const [categoria] = await db
+          .select()
+          .from(CategoriaProducto)
+          .where(eq(CategoriaProducto.uuid, producto.categoriaProductoUuid || ''))
+          .limit(1);
+        const [variacion] = await db
+          .select()
+          .from(VariacionesProducto)
+          .where(eq(VariacionesProducto.uuid, producto.variacionesProductoUuid || ''))
+          .limit(1);
+        const opciones = await db
+          .select()
+          .from(ProductoOpciones)
+          .where(eq(ProductoOpciones.productoUuid, producto.uuid));
+
+        return {
+          ...producto,
+          categoriaProducto: categoria || null,
+          variacionesProducto: variacion || null,
+          productoOpciones: opciones,
+        };
+      })
+    );
   };
 
   
@@ -75,20 +102,69 @@ export function useProductoService() {
       condiciones.push(eq(Producto.perfilNegocioUuid, perfilNegocioUuid));
     }
 
-    return db
+    const productos = await db
       .select()
       .from(Producto)
       .where(and(...condiciones))
       .orderBy(asc(Producto.nombre));
+
+    return Promise.all(
+      productos.map(async (producto) => {
+        const [categoria] = await db
+          .select()
+          .from(CategoriaProducto)
+          .where(eq(CategoriaProducto.uuid, producto.categoriaProductoUuid || ''))
+          .limit(1);
+        const [variacion] = await db
+          .select()
+          .from(VariacionesProducto)
+          .where(eq(VariacionesProducto.uuid, producto.variacionesProductoUuid || ''))
+          .limit(1);
+        const opciones = await db
+          .select()
+          .from(ProductoOpciones)
+          .where(eq(ProductoOpciones.productoUuid, producto.uuid));
+
+        return {
+          ...producto,
+          categoriaProducto: categoria || null,
+          variacionesProducto: variacion || null,
+          productoOpciones: opciones,
+        };
+      })
+    );
   };
 
-  const obtenerProductoPorUuid = async (productoUuid: string) => {
+  const obtenerProductoPorUuid = async (productoUuid: string): Promise<ProductoInterface | null> => {
     const [producto] = await db
       .select()
       .from(Producto)
       .where(eq(Producto.uuid, productoUuid))
       .limit(1);
-    return producto || null;
+
+    if (!producto) return null;
+
+    const [categoria] = await db
+      .select()
+      .from(CategoriaProducto)
+      .where(eq(CategoriaProducto.uuid, producto.categoriaProductoUuid || ''))
+      .limit(1);
+    const [variacion] = await db
+      .select()
+      .from(VariacionesProducto)
+      .where(eq(VariacionesProducto.uuid, producto.variacionesProductoUuid || ''))
+      .limit(1);
+    const opciones = await db
+      .select()
+      .from(ProductoOpciones)
+      .where(eq(ProductoOpciones.productoUuid, producto.uuid));
+
+    return {
+      ...producto,
+      categoriaProducto: categoria || null,
+      variacionesProducto: variacion || null,
+      productoOpciones: opciones,
+    };
   };
 
   const buscarProductos = async (termino: string, perfilNegocioUuid?: string) => {
@@ -97,19 +173,37 @@ export function useProductoService() {
       like(Producto.descripcion, `%${termino}%`)
     );
 
-    if (perfilNegocioUuid) {
-      return db
-        .select()
-        .from(Producto)
-        .where(and(condiciones, eq(Producto.perfilNegocioUuid, perfilNegocioUuid)))
-        .orderBy(asc(Producto.nombre));
-    }
-
-    return db
+    const productos = await db
       .select()
       .from(Producto)
-      .where(condiciones)
+      .where(perfilNegocioUuid ? and(condiciones, eq(Producto.perfilNegocioUuid, perfilNegocioUuid)) : condiciones)
       .orderBy(asc(Producto.nombre));
+
+    return Promise.all(
+      productos.map(async (producto) => {
+        const [categoria] = await db
+          .select()
+          .from(CategoriaProducto)
+          .where(eq(CategoriaProducto.uuid, producto.categoriaProductoUuid || ''))
+          .limit(1);
+        const [variacion] = await db
+          .select()
+          .from(VariacionesProducto)
+          .where(eq(VariacionesProducto.uuid, producto.variacionesProductoUuid || ''))
+          .limit(1);
+        const opciones = await db
+          .select()
+          .from(ProductoOpciones)
+          .where(eq(ProductoOpciones.productoUuid, producto.uuid));
+
+        return {
+          ...producto,
+          categoriaProducto: categoria || null,
+          variacionesProducto: variacion || null,
+          productoOpciones: opciones,
+        };
+      })
+    );
   };
 
   const crearProducto = async (params: CrearProductoParams) => {
@@ -127,6 +221,8 @@ export function useProductoService() {
       ilimitado: params.ilimitado ? 1 : 0,
       estado: params.estado || 'DISPONIBLE',
       imagenUrl: params.imagenUrl,
+      categoriaProductoUuid: params.categoriaProductoUuid,
+      variacionesProductoUuid: params.variacionesProductoUuid,
       perfilNegocioUuid: params.perfilNegocioUuid,
       createdAt: now,
     });
@@ -147,6 +243,8 @@ export function useProductoService() {
     if (params.ilimitado !== undefined) updates.ilimitado = params.ilimitado ? 1 : 0;
     if (params.estado) updates.estado = params.estado;
     if (params.imagenUrl !== undefined) updates.imagenUrl = params.imagenUrl;
+    if (params.categoriaProductoUuid !== undefined) updates.categoriaProductoUuid = params.categoriaProductoUuid;
+    if (params.variacionesProductoUuid !== undefined) updates.variacionesProductoUuid = params.variacionesProductoUuid;
 
     await db.update(Producto).set(updates).where(eq(Producto.uuid, params.uuid));
   };
@@ -191,13 +289,39 @@ export function useProductoService() {
     );
   };
 
-  const obtenerTopProductos = async (limite: number = 10, perfilNegocioUuid?: string) => {
-    return db
+  const obtenerTopProductos = async (limite: number = 10, perfilNegocioUuid?: string): Promise<ProductoInterface[]> => {
+    const productos = await db
       .select()
       .from(Producto)
       .where(perfilNegocioUuid ? eq(Producto.perfilNegocioUuid, perfilNegocioUuid) : undefined)
       .orderBy(desc(Producto.createdAt))
       .limit(limite);
+
+    return Promise.all(
+      productos.map(async (producto) => {
+        const [categoria] = await db
+          .select()
+          .from(CategoriaProducto)
+          .where(eq(CategoriaProducto.uuid, producto.categoriaProductoUuid || ''))
+          .limit(1);
+        const [variacion] = await db
+          .select()
+          .from(VariacionesProducto)
+          .where(eq(VariacionesProducto.uuid, producto.variacionesProductoUuid || ''))
+          .limit(1);
+        const opciones = await db
+          .select()
+          .from(ProductoOpciones)
+          .where(eq(ProductoOpciones.productoUuid, producto.uuid));
+
+        return {
+          ...producto,
+          categoriaProducto: categoria || null,
+          variacionesProducto: variacion || null,
+          productoOpciones: opciones,
+        };
+      })
+    );
   };
 
   const cambiarEstado = async (productoUuid: string, estado: ProductoEstado) => {
@@ -206,6 +330,14 @@ export function useProductoService() {
       .update(Producto)
       .set({ estado, updatedAt: now })
       .where(eq(Producto.uuid, productoUuid));
+  };
+
+  const obtenerCategorias = async () => {
+    return db
+      .select()
+      .from(CategoriaProducto)
+      .where(eq(CategoriaProducto.activo, 1))
+      .orderBy(asc(CategoriaProducto.nombre));
   };
 
   return {
@@ -220,5 +352,6 @@ export function useProductoService() {
     obtenerComponentesPorProducto,
     obtenerTopProductos,
     cambiarEstado,
+    obtenerCategorias,
   };
 }

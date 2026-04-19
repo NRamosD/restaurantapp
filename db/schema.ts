@@ -21,6 +21,27 @@ export const PerfilNegocio = sqliteTable('PerfilNegocio', {
   deletedAt: text('deleted_at'),
 });
 
+export const CategoriaProducto = sqliteTable('CategoriaProducto', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  uuid: text('uuid').notNull().unique(),
+  nombre: text('nombre').notNull(),
+  slug: text('slug').notNull().unique(),
+  activo: integer('activo').notNull().default(1),
+  createdAt: text('created_at').notNull().default(new Date().toISOString()),
+  updatedAt: text('updated_at').notNull().default(new Date().toISOString()),
+  deletedAt: text('deleted_at'),
+});
+
+export const VariacionesProducto = sqliteTable('VariacionesProducto', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  uuid: text('uuid').notNull().unique(),
+  nombre: text('nombre').notNull(),
+  descripcion: text('descripcion'),
+  createdAt: text('created_at').notNull().default(new Date().toISOString()),
+  updatedAt: text('updated_at').notNull().default(new Date().toISOString()),
+  deletedAt: text('deleted_at'),
+});
+
 export const Usuario = sqliteTable('Usuario', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   uuid: text('uuid').notNull().unique(),
@@ -93,6 +114,8 @@ export const Producto = sqliteTable('Producto', {
   imagenUrl: text('imagen_url'),
   galeria: text('galeria'),
   estado: text('estado').notNull().default('DISPONIBLE'),
+  categoriaProductoUuid: text('categoria_producto_uuid'),
+  variacionesProductoUuid: text('variaciones_producto_uuid'),
   perfilNegocioUuid: text('perfil_negocio_uuid').notNull(),
   estadoSync: text('estado_sync').notNull().default('PENDIENTE'),
   createdAt: text('created_at').notNull().default(new Date().toISOString()),
@@ -121,6 +144,22 @@ export const ProductoComponente = sqliteTable('ProductoComponente', {
   componenteUuid: text('componente_uuid').notNull(),
   cantidad: real('cantidad').notNull().default(1),
   estadoSync: text('estado_sync').default('PENDIENTE'),
+  createdAt: text('created_at').notNull().default(new Date().toISOString()),
+  updatedAt: text('updated_at').notNull().default(new Date().toISOString()),
+  updatedByUuid: text('updated_by_uuid'),
+  deletedAt: text('deleted_at'),
+});
+
+export const ProductoOpciones = sqliteTable('ProductoOpciones', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  uuid: text('uuid').notNull().unique(),
+  productoUuid: text('producto_uuid').notNull(),
+  nombre: text('nombre').notNull(),
+  descripcion: text('descripcion'),
+  valorAdicional: integer('valor_adicional').notNull().default(0),
+  orden: integer('orden').notNull().default(0),
+  activo: integer('activo').notNull().default(1),
+  estadoSync: text('estado_sync').notNull().default('PENDIENTE'),
   createdAt: text('created_at').notNull().default(new Date().toISOString()),
   updatedAt: text('updated_at').notNull().default(new Date().toISOString()),
   updatedByUuid: text('updated_by_uuid'),
@@ -270,12 +309,35 @@ export const ClienteRelations = relations(Cliente, ({ many }) => ({
   facturas: many(Factura),
 }));
 
+export const CategoriaProductoRelations = relations(CategoriaProducto, ({ many }) => ({
+  productos: many(Producto),
+}));
+export const VariacionesProductoRelations = relations(VariacionesProducto, ({ many }) => ({
+  productos: many(Producto),
+}));
+
+export const ProductoOpcionesRelations = relations(ProductoOpciones, ({ one }) => ({
+  producto: one(Producto, {
+    fields: [ProductoOpciones.productoUuid],
+    references: [Producto.uuid],
+  }),
+}));
+
 export const ProductoRelations = relations(Producto, ({ one, many }) => ({
   perfilNegocio: one(PerfilNegocio, {
     fields: [Producto.perfilNegocioUuid],
     references: [PerfilNegocio.uuid],
   }),
+  categoriaProducto: one(CategoriaProducto, {
+    fields: [Producto.categoriaProductoUuid],
+    references: [CategoriaProducto.uuid],
+  }),
+  variacionesProducto: one(VariacionesProducto, {
+    fields: [Producto.variacionesProductoUuid],
+    references: [VariacionesProducto.uuid],
+  }),
   productoComponentes: many(ProductoComponente),
+  productoOpciones: many(ProductoOpciones),
   ordenProductos: many(OrdenProducto),
 }));
 

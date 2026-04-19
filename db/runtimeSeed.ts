@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm';
 import type { DrizzleDb } from '@/db/db';
 import {
   AppConfig,
+  CategoriaProducto,
   Cliente,
   Componente,
   Factura,
@@ -20,12 +21,22 @@ import {
   UsuarioPermiso,
 } from '@/db/schema';
 
-const SEED_VERSION = '2026-04-13-runtime';
+const SEED_VERSION = '2026-04-18-runtime-categoria-producto';
 
 interface AppConfigEntry {
   clave: string;
   valor: string | null;
 }
+
+const categoriasProducto = [
+  { uuid: 'bb5a41a2-7a8c-42bf-90f7-d7497e428101', nombre: 'Comida', slug: 'comida', activo: 1 },
+  { uuid: 'ed889bdc-0e75-4d26-8783-a2b688240202', nombre: 'Entrada', slug: 'entrada', activo: 1 },
+  { uuid: 'c5a2eb88-3bdf-4e38-96f2-34b98258d303', nombre: 'Plato Fuerte', slug: 'plato_fuerte', activo: 1 },
+  { uuid: 'e2cc18cb-f63f-4275-a364-2ac857d38404', nombre: 'Comida Rápida', slug: 'comida_rapida', activo: 1 },
+  { uuid: '22845d4f-3b2f-4634-8208-6d2e6c670505', nombre: 'Bebidas', slug: 'bebidas', activo: 1 },
+  { uuid: '1535441b-faec-45f2-8481-53d38972f106', nombre: 'Adicionales', slug: 'adicionales', activo: 1 },
+  { uuid: '2714b273-978f-42e3-910b-a9f211d07707', nombre: 'Postres', slug: 'postres', activo: 1 },
+] as const;
 
 const perfiles = [
   {
@@ -204,12 +215,12 @@ const clientes = [
 ] as const;
 
 const productos = [
-  { uuid: '280c5928-d65a-437e-9f42-93c60c245201', nombre: 'Hamburguesa Clasica', descripcion: 'Hamburguesa con queso, lechuga y tomate', precio: 599, aplicaIva: 1, porcentajeIva: 12, stock: 50, ilimitado: 0, imagenUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd', estado: 'DISPONIBLE', perfilNegocioUuid: perfiles[0].uuid },
-  { uuid: 'd887b3bf-d0f8-45a3-935c-d6e2eaf80502', nombre: 'Pizza Margarita', descripcion: 'Pizza con salsa de tomate, mozzarella y albahaca', precio: 850, aplicaIva: 1, porcentajeIva: 12, stock: 30, ilimitado: 0, imagenUrl: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3', estado: 'DISPONIBLE', perfilNegocioUuid: perfiles[0].uuid },
-  { uuid: '8adf9498-f4b7-4f5a-928a-27f11a6ec303', nombre: 'Ensalada Caesar', descripcion: 'Ensalada con pollo, crutones y aderezo cesar', precio: 450, aplicaIva: 1, porcentajeIva: 12, stock: 20, ilimitado: 0, imagenUrl: 'https://images.unsplash.com/photo-1546793665-c74683f339c1', estado: 'DISPONIBLE', perfilNegocioUuid: perfiles[0].uuid },
-  { uuid: 'e4c9cb30-fddd-43fe-982e-4c665fefb504', nombre: 'Cappuccino Grande', descripcion: 'Cafe espresso con leche vaporizada', precio: 375, aplicaIva: 1, porcentajeIva: 12, stock: 100, ilimitado: 1, imagenUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93', estado: 'DISPONIBLE', perfilNegocioUuid: perfiles[3].uuid },
-  { uuid: '5e35dca7-5455-4c1d-84a7-6cb245e73d05', nombre: 'Sushi Roll Salmon', descripcion: 'Roll de salmon con aguacate y queso crema', precio: 1299, aplicaIva: 1, porcentajeIva: 12, stock: 25, ilimitado: 0, imagenUrl: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c', estado: 'DISPONIBLE', perfilNegocioUuid: perfiles[4].uuid },
-  { uuid: 'b48df2fa-cb9e-4e16-8523-a272dc687906', nombre: 'Taco al Pastor', descripcion: 'Taco de cerdo adobado con pina y cebolla', precio: 299, aplicaIva: 1, porcentajeIva: 12, stock: 80, ilimitado: 0, imagenUrl: 'https://images.unsplash.com/photo-1613514785940-daed07799d9b', estado: 'DISPONIBLE', perfilNegocioUuid: perfiles[5].uuid },
+  { uuid: '280c5928-d65a-437e-9f42-93c60c245201', nombre: 'Hamburguesa Clasica', descripcion: 'Hamburguesa con queso, lechuga y tomate', precio: 599, aplicaIva: 1, porcentajeIva: 12, stock: 50, ilimitado: 0, imagenUrl: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd', estado: 'DISPONIBLE', categoriaProductoUuid: categoriasProducto[3].uuid, perfilNegocioUuid: perfiles[0].uuid },
+  { uuid: 'd887b3bf-d0f8-45a3-935c-d6e2eaf80502', nombre: 'Pizza Margarita', descripcion: 'Pizza con salsa de tomate, mozzarella y albahaca', precio: 850, aplicaIva: 1, porcentajeIva: 12, stock: 30, ilimitado: 0, imagenUrl: 'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3', estado: 'DISPONIBLE', categoriaProductoUuid: categoriasProducto[2].uuid, perfilNegocioUuid: perfiles[0].uuid },
+  { uuid: '8adf9498-f4b7-4f5a-928a-27f11a6ec303', nombre: 'Ensalada Caesar', descripcion: 'Ensalada con pollo, crutones y aderezo cesar', precio: 450, aplicaIva: 1, porcentajeIva: 12, stock: 20, ilimitado: 0, imagenUrl: 'https://images.unsplash.com/photo-1546793665-c74683f339c1', estado: 'DISPONIBLE', categoriaProductoUuid: categoriasProducto[1].uuid, perfilNegocioUuid: perfiles[0].uuid },
+  { uuid: 'e4c9cb30-fddd-43fe-982e-4c665fefb504', nombre: 'Cappuccino Grande', descripcion: 'Cafe espresso con leche vaporizada', precio: 375, aplicaIva: 1, porcentajeIva: 12, stock: 100, ilimitado: 1, imagenUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93', estado: 'DISPONIBLE', categoriaProductoUuid: categoriasProducto[4].uuid, perfilNegocioUuid: perfiles[3].uuid },
+  { uuid: '5e35dca7-5455-4c1d-84a7-6cb245e73d05', nombre: 'Sushi Roll Salmon', descripcion: 'Roll de salmon con aguacate y queso crema', precio: 1299, aplicaIva: 1, porcentajeIva: 12, stock: 25, ilimitado: 0, imagenUrl: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c', estado: 'DISPONIBLE', categoriaProductoUuid: categoriasProducto[0].uuid, perfilNegocioUuid: perfiles[4].uuid },
+  { uuid: 'b48df2fa-cb9e-4e16-8523-a272dc687906', nombre: 'Taco al Pastor', descripcion: 'Taco de cerdo adobado con pina y cebolla', precio: 299, aplicaIva: 1, porcentajeIva: 12, stock: 80, ilimitado: 0, imagenUrl: 'https://images.unsplash.com/photo-1613514785940-daed07799d9b', estado: 'DISPONIBLE', categoriaProductoUuid: categoriasProducto[0].uuid, perfilNegocioUuid: perfiles[5].uuid },
 ] as const;
 
 const componentes = [
@@ -322,6 +333,7 @@ export async function seedDatabaseIfNeeded(db: DrizzleDb) {
 
   console.log('[DB SEED] Iniciando seed runtime', { seedVersion: SEED_VERSION });
 
+  await insertIfNeeded(db, CategoriaProducto, categoriasProducto);
   await insertIfNeeded(db, PerfilNegocio, perfiles);
   await insertIfNeeded(db, Usuario, usuarios);
   await insertIfNeeded(db, Sesion, sesiones);
