@@ -42,7 +42,7 @@ interface CrearProductoParams {
   categoriaProductoUuid?: string;
 }
 
-interface ActualizarProductoParams {
+export interface ActualizarProductoParams {
   uuid: string;
   nombre?: string;
   descripcion?: string;

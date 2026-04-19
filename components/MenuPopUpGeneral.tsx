@@ -5,10 +5,12 @@ import { IconSymbol } from './ui/IconSymbol'
 import { Ionicons } from '@expo/vector-icons'
 import { router } from 'expo-router'
 import { usePopUpGeneralActions } from '@/hooks/usePopUpGeneralActions'
+import { useAppTheme } from '@/theme'
 
 type Props = {}
 
 const MenuPopUpGeneral = (props: Props) => {
+  const theme =  useAppTheme()
   const colorScheme = useColorScheme();
 
   const { changeRole, changeProfile, closeSession } = usePopUpGeneralActions({});
@@ -16,7 +18,7 @@ const MenuPopUpGeneral = (props: Props) => {
   return (
     <Menu>
       <MenuTrigger style={{ alignItems:"flex-end"}} >
-          <Ionicons name="ellipsis-vertical" size={25} color={colorScheme === 'dark' ? "white" : "black"} />
+          <Ionicons name="ellipsis-vertical" size={25} color={theme.colors.icon.primary} />
       </MenuTrigger>
       <MenuOptions customStyles={{
         optionsContainer: {

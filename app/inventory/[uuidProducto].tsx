@@ -4,11 +4,11 @@ import { CText } from '@/components/CText'
 import { CView } from '@/components/CView'
 import { router, useLocalSearchParams } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { ScrollView, StyleSheet, useColorScheme } from 'react-native'
+import { ScrollView, StyleSheet, ToastAndroid, useColorScheme } from 'react-native'
 import * as ImagePicker from 'expo-image-picker';
 import { Switch } from 'react-native-paper'
 import { Picker } from '@react-native-picker/picker'
-import { useProductoService } from '@/modules/producto/producto.service'
+import { ActualizarProductoParams, useProductoService } from '@/modules/producto/producto.service'
 import CImage from '@/components/CImage'
 import { getColors } from '@/constants/Colors'
 import { useAppTheme } from '@/theme'
@@ -32,7 +32,7 @@ const DetailedProductScreen = ({
     // const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
-    const { obtenerProductoPorUuid } = useProductoService();
+    const { obtenerProductoPorUuid, actualizarProducto } = useProductoService();
 
     const [formData, setFormData] = useState<Partial<Producto>>({});
 
@@ -58,9 +58,14 @@ const DetailedProductScreen = ({
     };
 
     const handleSaveProduct = async() => {
-        // if (!currentProduct?.id_producto) {
-        //     return;
-        // }
+        if (!currentProduct?.id) {
+            return;
+        }
+        await actualizarProducto({
+            ...formData as ActualizarProductoParams
+        });
+        ToastAndroid.show(`Producto actualizado`, ToastAndroid.SHORT);
+        router.back();
 
         // try {
         //     setSaving(true);
