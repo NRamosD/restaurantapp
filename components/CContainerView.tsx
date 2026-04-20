@@ -2,6 +2,7 @@ import { View, type ViewProps, KeyboardAvoidingView, Platform } from 'react-nati
 
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 export type CContainerViewProps = ViewProps & {
   withBottomPadding?: boolean;
@@ -13,10 +14,14 @@ export function CContainerView({ style, withBottomPadding=true, avoidKeyboard=fa
   const insets = useSafeAreaInsets()
 
   if(avoidKeyboard){
-    return <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={[{ backgroundColor,
-      paddingTop: insets.top,
-      paddingBottom: withBottomPadding ? insets.bottom : 0,
-    }, style]} {...otherProps} />;
+    return (
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView behavior={'padding'} style={[{ backgroundColor,
+        paddingTop: insets.top,
+        paddingBottom: withBottomPadding ? insets.bottom : 0,
+      }, style, { flex:1 }]} {...otherProps}/>
+      </TouchableWithoutFeedback>
+    );
   }
 
   return <View style={[{ backgroundColor,

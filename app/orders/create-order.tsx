@@ -159,29 +159,30 @@ const CreateOrder = ({
     }
   }, [textSearchedItem]);
 
-  useEffect(() => {
-    const backSubscription = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (isSearchFocused) {
-        handleBlurSearch();
-        return true;
-      }
+  // useEffect(() => {
+  //   const backSubscription = BackHandler.addEventListener('hardwareBackPress', () => {
+  //     if (isSearchFocused) {
+  //       handleBlurSearch();
+  //       return true;
+  //     }
 
-      return false;
-    });
+  //     return false;
+  //   });
 
-    return () => backSubscription.remove();
-  }, [isSearchFocused]);
+  //   return () => backSubscription.remove();
+  // }, [isSearchFocused]);
 
 
   return (
-    <CContainerView style={{flex:1}} avoidKeyboard>
-      <TouchableOpacity style={{flex:1}} activeOpacity={1} onPress={handleBlurSearch}>
+    <CContainerView avoidKeyboard={true}>
+      {/* <TouchableOpacity style={{flex:1}} activeOpacity={1} onPress={handleBlurSearch}> */}
       <CView style={{flex:1.5, flexDirection:"row", backgroundColor:"#000000", justifyContent:"center", alignItems:"center", height:20 }}>
         <CText type="subtitle" style={{flex:1, textAlign:"left", color:"white", paddingHorizontal:10, fontSize:20}}>{id_orden ? "Editar" : "Nuevo"} Pedido</CText>
         <CText type="subtitle" style={{flex:1, textAlign:"right", color:"white", paddingHorizontal:10, fontSize:16}}>Total: ${getTotal().toFixed(2)}</CText>
       </CView>
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
         <FlatList<any>
+          keyboardShouldPersistTaps="handled" 
           data={items || []}
           renderItem={({item}) => <ItemOrderSelected singleProduct={item} removeItem={(productoUuid)=>removeItem(productoUuid)} /> }
           keyExtractor={item => item.uuid}
@@ -192,6 +193,7 @@ const CreateOrder = ({
       <CView style={{flex: 5, flexDirection:"row", gap:15,
         justifyContent:"flex-start", alignItems:"center", borderWidth:1, borderColor:"#cecece"}}>
           <FlatList<Producto>
+            keyboardShouldPersistTaps="handled" 
             data={productsList.filter(x=>!items.find(y=>y.productoUuid==x.uuid))}
             horizontal={true}
             keyExtractor={item => item.uuid}
@@ -231,10 +233,13 @@ const CreateOrder = ({
           </CView>
         </CView>
       )}
-      <CView style={{flex:isSearchFocused?3:2, paddingHorizontal:10, justifyContent:"center", flexDirection:"row" }}>
+      <CView style={{flex:isSearchFocused?4:2, paddingHorizontal:10, justifyContent:"center", flexDirection:"row" }}>
         <CView style={{flex:7}}>
           <CInputText label={"Ingresa el producto a buscar..."} value={textSearchedItem} 
-            onChangeText={(val)=>setTextSearchedItem(val)} onFocus={()=>setIsSearchFocused(true)} onBlur={handleBlurSearch} style={{flex:1}} />
+            onFocus={()=>setIsSearchFocused(true)}
+            onBlur={()=>setTimeout(() => setIsSearchFocused(false), 150)}
+            // onPress={()=>setIsSearchFocused(true)}
+            onChangeText={(val)=>setTextSearchedItem(val)} style={{flex:1}} />
         </CView>
         <CView style={{flex:1, justifyContent:"center", alignItems:"center"}}>
           <TouchableOpacity onPress={()=>setOpenModalObservaciones(true)}>
@@ -243,8 +248,8 @@ const CreateOrder = ({
         </CView>
       </CView>
       {!isSearchFocused && (
-      <CView style={{flex:2, flexDirection:"row", gap:10,
-        justifyContent:"space-between", paddingHorizontal:10, alignItems:"center" }}>
+      <CView style={{flex:2, flexDirection:"row", gap:10, 
+        justifyContent:"space-between", paddingHorizontal:10 }}>
           <TouchableOpacity style={styles.orderButton} onPress={()=>{
             clearOrder()
             router.dismissTo({pathname:"/"})
@@ -276,7 +281,7 @@ const CreateOrder = ({
           </TouchableOpacity>
       </CView>
       )}
-      </TouchableOpacity>
+      {/* </TouchableOpacity> */}
 
 
 
@@ -333,8 +338,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth:1,
-    borderColor:"#8c8c8c",
+    borderRadius: 10,
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)"
   }
 })
 
