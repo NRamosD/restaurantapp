@@ -135,7 +135,7 @@ const CreateProductScreen = ({}: Props) => {
     return (
         <CContainerView style={{flex:1}}>
             <CView style={{flex:1, backgroundColor:colors.tint, justifyContent:"center", height:20 }}>
-              <CText type="title" style={{ textAlign:"center", color:"white"}}>Nuevo Producto</CText>
+              <CText type="title" style={{ textAlign:"center", color: colors.text, fontSize:20}}>Nuevo Producto</CText>
             </CView>
             <CView style={{flex:9}}>
                 <ScrollView style={{padding:10}} contentContainerStyle={style.scrollContent}>
@@ -158,7 +158,7 @@ const CreateProductScreen = ({}: Props) => {
                             <CImage style={style.imgComponent} 
                             src={image}
                             fallback='https://images.unsplash.com/photo-1546069901-ba9599a7e63c'/>
-                            <CButton containerStyles={style.btnStyle} title='Subir Imagen' onPress={pickImage}/>
+                            <CButton containerStyles={style.btnStyle} textStyles={{fontSize:16}} title='Subir Imagen' onPress={pickImage}/>
 
                     </CView>
 
@@ -170,7 +170,7 @@ const CreateProductScreen = ({}: Props) => {
 
                 </ScrollView>
             </CView>
-            <CView style={{flex:1, flexDirection:"row", gap:5, justifyContent:"center", paddingBottom:40, }}>
+            <CView style={{flex:1, flexDirection:"row", gap:10, justifyContent:"center", paddingHorizontal:10, paddingTop:20, paddingBottom:40, }}>
                 <CButton title="Volver" onPress={()=>router.back()}
                 textStyles={{fontSize:16, paddingVertical:0}}
                 containerStyles={{borderRadius:10, paddingVertical:0, flex:1}}
@@ -244,7 +244,7 @@ const style = StyleSheet.create({
         margin:"auto"
     },
     btnStyle: {
-        padding:2,
+        padding:5,
         borderRadius:5,
         borderWidth:2,
         borderColor:"gray"

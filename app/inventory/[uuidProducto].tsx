@@ -1,4 +1,4 @@
-import { CButton } from '@/components'
+import { CButton, CContainerView } from '@/components'
 import CInputText from '@/components/CInputText'
 import { CText } from '@/components/CText'
 import { CView } from '@/components/CView'
@@ -167,7 +167,7 @@ const DetailedProductScreen = ({
     // }
 
     return (
-    <>
+    <CContainerView style={{flex:1}}>
         <CView style={[style.header, { backgroundColor: colors.tint }] }>
           <CText type="title" style={style.headerTitle}>Editar Producto</CText>
           <CText style={style.headerSubtitle}>{currentProduct?.nombre || 'Detalle del producto'}</CText>
@@ -204,7 +204,7 @@ const DetailedProductScreen = ({
 
             </ScrollView>
         </CView>
-        <CView style={{flex:1, flexDirection:"row", gap:5, justifyContent:"center", paddingBottom:40, }}>
+        <CView style={{flex:1, flexDirection:"row", paddingHorizontal:10, gap:10, justifyContent:"center", paddingBottom:40, paddingTop:20 }}>
             <CButton title="Volver" onPress={()=>router.back()}
             textStyles={{fontSize:16, paddingVertical:0}}
             containerStyles={{borderRadius:10, paddingVertical:0, flex:1}}
@@ -215,7 +215,7 @@ const DetailedProductScreen = ({
             onPress={handleSaveProduct}
             title={saving ? 'Guardando...' : 'Guardar'} />
         </CView>
-        </>
+    </CContainerView>
 
         
 

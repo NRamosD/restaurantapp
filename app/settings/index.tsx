@@ -122,8 +122,8 @@ const SettingsIndex = (props: Props) => {
     <CContainerView style={styles.container}>
 
       <CView style={[styles.header, { backgroundColor: theme.colors.brand.primary }]}>
-          <CText type="title" style={{color:theme.colors.brand.onPrimary, textAlign:"center"}}>Configuración</CText>
-          <CText style={{color:theme.colors.brand.onPrimary}}>Personaliza la experiencia de tu app</CText>
+          <CText type="title" style={{color:theme.colors.brand.onPrimary, textAlign:"center", fontSize:18}}>Configuración</CText>
+          <CText style={{color:theme.colors.brand.onPrimary, fontSize:12}}>Personaliza la experiencia de tu app</CText>
       </CView>
       <CView style={styles.content}>
         <CView style={[styles.profileCard, { backgroundColor: theme.colors.surface.card, borderColor: theme.colors.border.default }]}>
