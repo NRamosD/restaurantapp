@@ -16,6 +16,7 @@ import { useAppTheme } from '@/theme';
 import GenericModal from '@/components/ui/GenericModal';
 import useOrderOperations from '@/hooks/useOrderOperations';
 import { OrdenTipo } from '@/modules/orden/orden.service';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 // import { Producto } from '@/modules/producto/producto.service'
 
 type Props = {}
@@ -42,11 +43,14 @@ const CreateOrder = ({
   const {id_orden} = useLocalSearchParams<{ id_orden: string }>()
     const theme = useAppTheme()
     const colorTheme = theme.components.button["primary"]
+  const insets = useSafeAreaInsets();
 
   //state
+  const [ indexView, setIndexView ] = useState(0)
   const [dataProducts, setDataProducts] = useState<Producto[]>([]);
   const [productsList, setProductsList] = useState<Producto[]>([]);
   const [textSearchedItem, setTextSearchedItem] = useState<string>("");
+  const [debouncedTexto, setDebouncedTexto] = useState(textSearchedItem);
   const [orderType, setOrderType] = useState<OrdenTipo>('LOCAL');
   const [orderStatus, setOrderStatus] = useState<OrderStatus>('PENDIENTE');
   const [isSearchFocused, setIsSearchFocused] = useState<boolean>(false);
@@ -144,45 +148,59 @@ const CreateOrder = ({
     setObservacionOrden(orderDetails.orden.observaciones || "");
   }, [orderDetails?.orden]);
 
-  useEffect(() => {
-    if(!!textSearchedItem){
+  // useEffect(() => {
+  //   if(!!textSearchedItem){
 
-      const filteredSearched = dataProducts?.filter(x=>{
-        if(x.nombre.toLowerCase().includes(textSearchedItem.toLowerCase())){
-          return x
-        }
-      })
-      console.log("filteredSearched", filteredSearched)
-      setProductsList(filteredSearched)
+  //     const filteredSearched = dataProducts?.filter(x=>{
+  //       if(x.nombre.toLowerCase().includes(textSearchedItem.toLowerCase())){
+  //         return x
+  //       }
+  //     })
+  //     console.log("filteredSearched", filteredSearched)
+  //     setProductsList(filteredSearched)
+  //   }else{
+  //     setProductsList(dataProducts)
+  //   }
+  // }, [textSearchedItem]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedTexto(textSearchedItem);
+    }, 500);
+
+    return () => clearTimeout(timeout);
+  }, [textSearchedItem]);
+
+  useEffect(() => {
+    if (debouncedTexto) {
+      if(!!textSearchedItem){
+        const filteredSearched = dataProducts?.filter(x=>{
+          if(x.nombre.toLowerCase().includes(textSearchedItem.toLowerCase())){
+            return x
+          }
+        })
+        console.log("filteredSearched", filteredSearched)
+        setProductsList(filteredSearched)
+      }else{
+        setProductsList(dataProducts)
+      }
     }else{
       setProductsList(dataProducts)
     }
-  }, [textSearchedItem]);
+  }, [debouncedTexto]);
 
-  // useEffect(() => {
-  //   const backSubscription = BackHandler.addEventListener('hardwareBackPress', () => {
-  //     if (isSearchFocused) {
-  //       handleBlurSearch();
-  //       return true;
-  //     }
-
-  //     return false;
-  //   });
-
-  //   return () => backSubscription.remove();
-  // }, [isSearchFocused]);
 
 
   return (
-    <CContainerView avoidKeyboard={true}>
-      {/* <TouchableOpacity style={{flex:1}} activeOpacity={1} onPress={handleBlurSearch}> */}
-      <CView style={{flex:1.5, flexDirection:"row", backgroundColor:"#000000", justifyContent:"center", alignItems:"center", height:20 }}>
+    <CContainerView key={indexView} style={{flex:1}} avoidKeyboard={true}>
+      {!isSearchFocused && (
+      <CView style={{flex:2, flexDirection:"row", backgroundColor:"#000000", justifyContent:"center", alignItems:"center", height:20 }}>
         <CText type="subtitle" style={{flex:1, textAlign:"left", color:"white", paddingHorizontal:10, fontSize:20}}>{id_orden ? "Editar" : "Nuevo"} Pedido</CText>
         <CText type="subtitle" style={{flex:1, textAlign:"right", color:"white", paddingHorizontal:10, fontSize:16}}>Total: ${getTotal().toFixed(2)}</CText>
       </CView>
+      )}
       <CView style={{flex:12, flexDirection:"row", zIndex:0, overflow:'hidden'}}>
-        <FlatList<any>
-          keyboardShouldPersistTaps="handled" 
+        <FlatList<any> 
           data={items || []}
           renderItem={({item}) => <ItemOrderSelected singleProduct={item} removeItem={(productoUuid)=>removeItem(productoUuid)} /> }
           keyExtractor={item => item.uuid}
@@ -198,7 +216,11 @@ const CreateOrder = ({
             horizontal={true}
             keyExtractor={item => item.uuid}
             showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => <ItemOrderOptionSquare singleProduct={item} touchAction={()=>addProductToOrder(item)}/>}
+            renderItem={({ item }) => <ItemOrderOptionSquare singleProduct={item} touchAction={()=>{
+              addProductToOrder(item)
+              setTextSearchedItem("")
+              setDebouncedTexto("")
+            }}/>}
             contentContainerStyle={{ paddingHorizontal: 10 }}
           />
       </CView>
@@ -233,11 +255,15 @@ const CreateOrder = ({
           </CView>
         </CView>
       )}
-      <CView style={{flex:isSearchFocused?4:2, paddingHorizontal:10, justifyContent:"center", flexDirection:"row" }}>
+      <CView style={{flex:isSearchFocused?3:2, paddingHorizontal:10, justifyContent:"center", flexDirection:"row" }}>
         <CView style={{flex:7}}>
           <CInputText label={"Ingresa el producto a buscar..."} value={textSearchedItem} 
             onFocus={()=>setIsSearchFocused(true)}
-            onBlur={()=>setTimeout(() => setIsSearchFocused(false), 150)}
+            onBlur={()=>setTimeout(() => {
+              setIsSearchFocused(false);
+              setIndexView(prev=>prev+1);
+              Keyboard.dismiss();
+            }, 150)}
             // onPress={()=>setIsSearchFocused(true)}
             onChangeText={(val)=>setTextSearchedItem(val)} style={{flex:1}} />
         </CView>
@@ -247,9 +273,18 @@ const CreateOrder = ({
           </TouchableOpacity>
         </CView>
       </CView>
-      {!isSearchFocused && (
-      <CView style={{flex:2, flexDirection:"row", gap:10, 
-        justifyContent:"space-between", paddingHorizontal:10 }}>
+      {/* {!isSearchFocused && ( */}
+      <CView
+        style={{
+          flex: 2,
+          flexDirection: "row",
+          gap: 10,
+          justifyContent: "space-between",
+          paddingHorizontal: 10,
+          paddingTop: 6,
+        }}
+      >
+      
           <TouchableOpacity style={styles.orderButton} onPress={()=>{
             clearOrder()
             router.dismissTo({pathname:"/"})
@@ -280,8 +315,7 @@ const CreateOrder = ({
             <CText type="subtitle">Ir a Pagar</CText>
           </TouchableOpacity>
       </CView>
-      )}
-      {/* </TouchableOpacity> */}
+      {/* )} */}
 
 
 

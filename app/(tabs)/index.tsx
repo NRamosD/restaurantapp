@@ -20,6 +20,7 @@ import { useIsFocused } from "@react-navigation/native";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { getColors } from "@/constants/Colors";
 import { useOrdenService } from "@/modules";
+import useOrderStore from "@/hooks/useOrderStore";
 
 export default function HomeScreen() {
 
@@ -30,6 +31,8 @@ export default function HomeScreen() {
 
   const { obtenerOrdenesPorEstados } = useOrdenService()
   const insets = useSafeAreaInsets()
+
+  const { clearOrder } = useOrderStore()
 
   const getAllOrdersList = async () => {
     const result = await obtenerOrdenesPorEstados(["PENDIENTE", "EN_PREPARACION", "LISTO", "ENTREGADO"])
@@ -105,6 +108,7 @@ export default function HomeScreen() {
         </View>
         <View style={styles.contNewPedido}>
           <CButton onPress={()=>{
+            clearOrder()
             router.push("/orders/create-order")
           }} title={"NUEVO PEDIDO"} textStyles={{fontSize:25}} containerStyles={styles.touchableCreate}/>
         </View>
