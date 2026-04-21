@@ -1,5 +1,5 @@
 import React from 'react'
-import { DimensionValue, StyleProp, TextStyle } from 'react-native';
+import { DimensionValue, KeyboardTypeOptions, StyleProp, TextStyle } from 'react-native';
 import { TextInput, TextInputProps } from 'react-native-paper';
 import { useAppTheme } from '@/theme';
 import { useAppearanceStore } from '@/hooks/useAppearanceStore';
@@ -11,6 +11,7 @@ type Props =  TextInputProps & {
     fontSize?:number
     style?: StyleProp<TextStyle>
     height?: DimensionValue | undefined
+    keyboardType?: KeyboardTypeOptions
 }
 
 const CInputText = ({
@@ -19,6 +20,7 @@ const CInputText = ({
     fontSize=15,
     style,
     height,
+    keyboardType='default',
     ...rest
 }: Props) => {
     const theme = useAppTheme()
@@ -36,6 +38,7 @@ const CInputText = ({
             }, style]}
             label={label}
             mode="outlined"
+            keyboardType={keyboardType}
             theme={{
                 colors: {
                     primary: theme.components.input.activeBorderColor,

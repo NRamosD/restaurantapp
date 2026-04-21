@@ -28,6 +28,7 @@ const FormProducto = ({
     const [productoDisponible, setProductoDisponible] = useState(true);
     const [opciones, setOpciones] = useState<ProductoOpciones[]>([]);
     const [opcionesForm, setOpcionesForm] = useState<Partial<ProductoOpciones>>({});
+    const [valorAdicionalRaw, setValorAdicionalRaw] = useState('');
     const [modalVisibleProductoOpcion, setModalVisibleProductoOpcion] = useState(false);
 
 
@@ -88,6 +89,7 @@ const FormProducto = ({
             activo: true,
         });
         setOpcionesForm({ nombre: '', descripcion: '', valorAdicional: 0 });
+        setValorAdicionalRaw('');
         await cargarOpciones();
         setModalVisibleProductoOpcion(false);
     };
@@ -102,6 +104,7 @@ const FormProducto = ({
             valorAdicional: Number(opcionesForm.valorAdicional) || 0
         });
         setOpcionesForm({ nombre: '', descripcion: '', valorAdicional: 0 });
+        setValorAdicionalRaw('');
         await cargarOpciones();
         setModalVisibleProductoOpcion(false);
     };
@@ -247,6 +250,7 @@ const FormProducto = ({
                                 <TouchableOpacity onPress={async ()=>{
                                     const result = await obtenerProductoOpcionPorUuid(opcion.uuid!);
                                     setOpcionesForm(result[0])
+                                    setValorAdicionalRaw(result[0]?.valorAdicional?.toString() ?? '')
                                     setModalVisibleProductoOpcion(true)
                                 }} key={opcion.uuid}>
                                     <View style={style.chip}>
@@ -282,9 +286,16 @@ const FormProducto = ({
                             />
                             <CInputText
                                 label="Valor Adicional"
+                                keyboardType="decimal-pad"
                                 placeholder="Valor Adicional"
-                                value={opcionesForm.valorAdicional?.toString() || ''}
-                                onChangeText={(text) => setOpcionesForm({...opcionesForm, valorAdicional: parseFloat(text) || 0})}
+                                value={valorAdicionalRaw}
+                                onChangeText={(text) => {
+                                  const clean = text.replace(/[^0-9.]/g, '');
+                                  setValorAdicionalRaw(clean);
+                                  if (clean !== '' && !clean.endsWith('.')) {
+                                    setOpcionesForm({...opcionesForm, valorAdicional: parseFloat(clean) || 0});
+                                  }
+                                }}
                             />
                         
                         </>}
