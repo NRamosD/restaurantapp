@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { CView } from "../CView";
-import { TouchableOpacity, useColorScheme } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { CText } from "../CText";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -10,6 +10,7 @@ import { Orden } from "@/interfaces/general.interface";
 import useOrderStore from "@/hooks/useOrderStore";
 import ChipOrderStatus from "./ChipOrderStatus";
 import dayjs from "dayjs";
+import { useAppTheme } from "@/theme";
 
 type Props = {
   path?:any
@@ -22,7 +23,7 @@ const ItemOrderLink = ({
   order,
   loadOrder = true
 }: Props) => {
-  const theme = useColorScheme()
+  const theme = useAppTheme()
   const text1 = "Description of order in one line qioweu qoiwu e qwe qjweqw";
 
 
@@ -84,7 +85,7 @@ const ItemOrderLink = ({
             alignItems: "flex-end",
           }}
         >
-          <Ionicons name="chevron-forward-outline" size={30} color={theme === "dark" ? "white" : "black"} />
+          <Ionicons name="chevron-forward-outline" size={30} color={theme.colors.icon.primary} />
         </CView>
       </TouchableOpacity>
     </CView>
