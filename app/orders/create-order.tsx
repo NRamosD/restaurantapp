@@ -373,7 +373,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 10,
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)"
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.2)",
+    borderWidth: 1,
+    borderColor: '#cecece',
   }
 })
 

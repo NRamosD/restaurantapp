@@ -1,5 +1,6 @@
 export {default as CButton} from "./CButton"
 export {default as MenuPopUpGeneral} from "./MenuPopUpGeneral"
+export {default as GenericLoading} from "./ui/GenericLoading"
 export * from "./TopBarWithMenu"
 export * from "./CContainerView"
 export * from "./CText"
